@@ -148,7 +148,7 @@ public class GwasDashboardGenerator {
             }
             
             pw.println("            <div class='glass stat-card'>");
-            pw.println("                <div class='stat-val' style='color:" + lambdaColor + "'>" + String.format("%.3f", lambdaGC) + "</div>");
+            pw.println("                <div class='stat-val' style='color:" + lambdaColor + "'>" + String.format(java.util.Locale.US, "%.3f", lambdaGC) + "</div>");
             pw.println("                <div class='stat-label'>Lambda GC | <span style='font-weight:700'>" + lambdaStatus + "</span></div>");
             pw.println("                <div style='font-size:0.7rem; color:var(--text-dim); margin-top:5px;'>" + lambdaDesc + "</div>");
             pw.println("            </div>");
@@ -189,7 +189,7 @@ public class GwasDashboardGenerator {
                 pw.println("                    <thead><tr><th>Lead Marker</th><th>Interacts with</th><th>P-Value</th><th>Effect</th></tr></thead>");
                 pw.println("                    <tbody>");
                 for (GwasInteraction gi : interactions) {
-                    pw.println("                        <tr><td>" + gi.marker1 + "</td><td>" + gi.marker2 + "</td><td>" + String.format("%.2e", gi.pValue) + "</td><td>" + String.format("%.3f", gi.effect) + "</td></tr>");
+                    pw.println("                        <tr><td>" + gi.marker1 + "</td><td>" + gi.marker2 + "</td><td>" + String.format(java.util.Locale.US, "%.2e", gi.pValue) + "</td><td>" + String.format(java.util.Locale.US, "%.3f", gi.effect) + "</td></tr>");
                 }
                 pw.println("                    </tbody>");
                 pw.println("                </table>");
@@ -255,6 +255,7 @@ public class GwasDashboardGenerator {
             pw.println("                <div id='selBoxplot' style='height: 400px;'></div>");
             pw.println("            </div>");
             pw.println("        </div>");
+            pw.println("        </div>"); // Close gwas-tab
             pw.println("");
             pw.println("        <div id='ld-tab' class='tab-content'>");
             pw.println("            <div class='glass card'>");
@@ -355,7 +356,7 @@ public class GwasDashboardGenerator {
 
                 double score = -Math.log10(h.pValue);
                 double thresh = (h.qValue < 0.05) ? fdrThresholdLogP : -Math.log10(0.05 / Math.max(1, result.totalMarkersScanned));
-                pw.print("{trait:'" + traitName + "',model:'" + h.model + "',thresh:" + String.format("%.2f", thresh) + ",id:'" + h.markerId + "',chr:'" + h.chromosome + "',pos:" + h.position + ",ref:'" + h.refAllele + "',alt:'" + h.altAllele + "',score:" + score + ",eff:" + h.effect + ",r2:" + h.r2 + ",p:" + h.pValue + ",q:" + h.qValue + ",aic:" + h.aic + ",isBest:" + h.isBestModel);
+                pw.print("{trait:'" + traitName + "',model:'" + h.model + "',thresh:" + String.format(java.util.Locale.US, "%.2f", thresh) + ",id:'" + h.markerId + "',chr:'" + h.chromosome + "',pos:" + h.position + ",ref:'" + h.refAllele + "',alt:'" + h.altAllele + "',score:" + score + ",eff:" + h.effect + ",r2:" + h.r2 + ",p:" + h.pValue + ",q:" + h.qValue + ",aic:" + h.aic + ",isBest:" + h.isBestModel);
                 if (h.phenotypesByDosage != null && j < 150) {
                     pw.print(",dist:[" + formatDosages(h.phenotypesByDosage) + "],samples:[" + formatSamples(h.samplesByDosage) + "]");
                 }
@@ -445,7 +446,11 @@ public class GwasDashboardGenerator {
             pw.println("                plot_bgcolor: 'rgba(0,0,0,0)', paper_bgcolor: 'rgba(0,0,0,0)',");
             pw.println("                margin: { t: 20, b: 50, l: 50, r: 20 }");
             pw.println("            };");
-            pw.println("            Plotly.newPlot('ldPlot', [trace, curve], layout);");
+            pw.println("            console.log('LD data points', ld_data.length);");
+            pw.println("            setTimeout(() => {");
+            pw.println("                Plotly.newPlot('ldPlot', [trace, curve], layout);");
+            pw.println("                Plotly.Plots.resize('ldPlot');");
+            pw.println("            }, 50);");
             pw.println("        }");
             pw.println("");
             pw.println("        renderTable();");
@@ -647,7 +652,7 @@ public class GwasDashboardGenerator {
         if (data == null) return "[]";
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < data.size(); i++) {
-            sb.append("[").append((long)data.get(i)[0]).append(",").append(String.format("%.4f", data.get(i)[1])).append("]");
+            sb.append("[").append((long)data.get(i)[0]).append(",").append(String.format(java.util.Locale.US, "%.4f", data.get(i)[1])).append("]");
             if (i < data.size() - 1) sb.append(",");
         }
         sb.append("]");
