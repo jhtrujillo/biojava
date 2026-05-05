@@ -374,10 +374,26 @@ java -jar target/biojava.jar gwas \
   --maf 0.05 \
   --max-missing 0.1 \
   --max-geno-freq 0.95 \
-  --models ADDITIVE,GENERAL \
+  --models ADDITIVE,SIMPLEX_DOMINANT,DUPLEX_DOMINANT,GENERAL \
   --fixed env \
   -o taller_bioinformatica/gwas_poly_parity.html
 ```
+
+#### Catálogo de Modelos Genéticos Disponibles:
+BioJava permite evaluar múltiples hipótesis biológicas sobre cómo los alelos afectan el rasgo. Puedes pasar una lista separada por comas al parámetro `--models`:
+
+| Modelo | Descripción | Uso Recomendado |
+|---|---|---|
+| `ADDITIVE` | Efecto lineal por cada copia del alelo alternativo (0, 1, 2, 3, 4...). | Búsqueda general de QTLs. |
+| `GENERAL` | Trata cada genotipo como categoría independiente (ANOVA). | Detecta efectos de dominancia compleja. |
+| `SIMPLEX_DOMINANT` | El efecto se manifiesta con al menos una copia del alelo alternativo. | Genes dominantes simples. |
+| `DUPLEX_DOMINANT` | Requiere al menos dos copias del alelo alternativo para ver el efecto. | Herencia tetrasómica específica. |
+| `TRIPLEX_DOMINANT` | Requiere al menos tres copias del alelo alternativo. | Casos raros de dosaje alto. |
+| `SIMPLEX_DOMINANT_REF`| Igual al simplex pero para el alelo de **Referencia**. | Cuando el alelo "salvaje" es el dominante. |
+| `DIPLO_ADDITIVE` | Trata al poliploide como un diploide (0 vs >0). | Simplificación para baja profundidad. |
+
+> [!TIP]
+> **Evaluación Multimodelo**: Puedes correr todos a la vez: `--models ADDITIVE,GENERAL,SIMPLEX_DOMINANT,DUPLEX_DOMINANT`. BioJava encontrará automáticamente cuál de todos explica mejor cada marcador.
 
 #### ¿Por qué estos parámetros?
 *   **`--gwaspoly`**: Activa el algoritmo **EMMA** (REML exacto) y cambia el cálculo del parentesco (Kinship) para usar la media global de todos los marcadores bialélicos.
