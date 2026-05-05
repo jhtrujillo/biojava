@@ -433,13 +433,13 @@ public class GwasDashboardGenerator {
             pw.println("                mode: 'markers', type: 'scatter', marker: { color: 'rgba(79,70,229,0.2)', size: 5 }, name: 'Observed r2'");
             pw.println("            };");
             pw.println("            const curveX = []; const curveY = [];");
-            pw.println("            const winSize = 30;");
+            pw.println("            const winSize = 350;");
             pw.println("            for(let i=0; i<ld_data.length-winSize; i+=5) {");
             pw.println("                let sumX = 0, sumY = 0;");
             pw.println("                for(let j=0; j<winSize; j++) { sumX += ld_data[i+j][0]; sumY += ld_data[i+j][1]; }");
             pw.println("                curveX.push(sumX/(winSize*1000000)); curveY.push(sumY/winSize);");
             pw.println("            }");
-            pw.println("            const curve = { x: curveX, y: curveY, type: 'scatter', line: { color: '#dc2626', width: 3 }, name: 'Mean Decay' };");
+            pw.println("            const curve = { x: curveX, y: curveY, type: 'scatter', line: { color: '#dc2626', width: 3, shape: 'spline', smoothing: 1.3 }, name: 'Mean Decay' };");
             pw.println("            const layout = {");
             pw.println("                xaxis: { title: 'Physical Distance (Mbp)', gridcolor: '#f1f5f9' },");
             pw.println("                yaxis: { title: 'r2', range: [0, 1.05], gridcolor: '#f1f5f9' },");
