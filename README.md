@@ -322,6 +322,14 @@ The output `.html` file provides a professional research console:
     *   **Elite Candidates**: A dynamic table of individuals that carry the ideal genotype for that specific QTL.
 *   **Genotype Reconstruction**: Displays the exact allelic configuration (e.g., `AAAT`, `GGCC`) based on the ploidy level.
 *   **Epistasis Table**: A dedicated section for "Genetic Synergies" showing pairs of interacting genes.
+*   **Elite Selection Filters**: The dashboard now includes "Best Model Only" and "Lead SNPs Only" filters to clean up results and focus on candidate genes.
+*   **Standardized Reporting**: Tables include R2, Effect, P-value, and Score columns for full compatibility with scientific reporting standards.
+
+### GWASpoly Compatibility Mode (`--gwaspoly`)
+BioJava includes a dedicated engine for **GWASpoly** compatibility, ensuring that your results are mathematically identical to the industry-standard R package. 
+*   **Exact REML (EMMA)**: Uses the same eigen-decomposition approach for variance component estimation.
+*   **Global Kinship Scaling**: Matches the mean-scaled kinship construction used in polyploid research.
+*   **Standard Thresholds**: Automatically adjusts Bonferroni thresholds based on the total unfiltered marker count of the VCF.
 
 ### Parameters
 | Flag | Description |
@@ -330,11 +338,12 @@ The output `.html` file provides a professional research console:
 | `--pheno` | **(Required)** Phenotype file (CSV/TSV). Must include a `Sample` column |
 | `--trait` | **(Required)** Target trait name as found in the phenotype file |
 | `-p` / `--ploidy` | **(Required)** Ploidy level (e.g., `4` for potato, `10` for sugarcane) |
-| `--loco` | **(Optional)** Enable Leave-One-Chromosome-Out analysis (Recommended) |
+| `--gwaspoly` | **(New)** Enable total parity with R/GWASpoly (EMMA algorithm + scaling) |
+| `--loco` | **(Optional)** Enable Leave-One-Chromosome-Out analysis (Recommended for BioJava mode) |
 | `-w` / `--window` | **(Optional)** Window size for Haplotype blocks (Default: 1, SNP-based) |
 | `--epistasis` | **(Optional)** Run targeted GxG interaction scan for top hits |
 | `--fixed` | **(Optional)** Comma-separated list of fixed effect columns (e.g., `env,block`) |
-| `-k` / `--kinship` | **(Optional)** Path to pre-computed Kinship CSV |
+| `--max-geno-freq` | **(Optional)** Filter for dominant genotypes (Default: 0.95, style GWASpoly) |
 | `--maf` | **(Optional)** Minimum Allele Frequency filter (Default: 0.05) |
 | `-o` / `--output` | **(Optional)** Path for the interactive HTML dashboard |
 
