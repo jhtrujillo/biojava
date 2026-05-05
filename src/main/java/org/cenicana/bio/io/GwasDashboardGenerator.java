@@ -110,6 +110,12 @@ public class GwasDashboardGenerator {
             pw.println("        .badge { padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }");
             pw.println("        .sig { background: #dcfce7; color: #15803d; }");
             pw.println("        .non-sig { background: #f1f5f9; color: var(--text-dim); }");
+            pw.println("        .tab-bar { display: flex; gap: 8px; margin-bottom: 24px; padding: 4px; background: rgba(79,70,229,0.05); border-radius: 12px; width: fit-content; }");
+            pw.println("        .tab-btn { padding: 10px 24px; border: none; background: none; color: var(--text-dim); font-weight: 600; cursor: pointer; border-radius: 10px; transition: all 0.2s; }");
+            pw.println("        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }");
+            pw.println("        .tab-content { display: none; animation: fadeIn 0.4s ease; }");
+            pw.println("        .tab-content.active { display: block; }");
+            pw.println("        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }");
             pw.println("    </style>");
             pw.println("</head>");
             pw.println("<body>");
@@ -150,8 +156,14 @@ public class GwasDashboardGenerator {
             pw.println("            <div class='glass stat-card'><div class='stat-val' id='sigCount'>0</div><div class='stat-label'>Significant (Bonf)</div></div>");
             pw.println("            <div class='glass stat-card'><div class='stat-val' style='color:var(--secondary)'>" + fdrCount + "</div><div class='stat-label'>Significant (FDR)</div></div>");
             pw.println("        </div>");
-
-            pw.println("        <div class='main-grid'>");
+            pw.println("");
+            pw.println("        <div class='tab-bar'>");
+            pw.println("            <button class='tab-btn active' onclick='switchTab(\"gwas-tab\", this)'>GWAS Analysis</button>");
+            pw.println("            <button class='tab-btn' onclick='switchTab(\"ld-tab\", this)'>LD Decay</button>");
+            pw.println("        </div>");
+            pw.println("");
+            pw.println("        <div id='gwas-tab' class='tab-content active'>");
+            pw.println("            <div class='main-grid'>");
             pw.println("            <div class='glass card'>");
             pw.println("                <div style='display:flex; justify-content:space-between; align-items:center;'>");
             pw.println("                    <h2 style='margin:0; font-size:1.25rem;'>Manhattan Discovery Plot</h2>");
@@ -243,11 +255,26 @@ public class GwasDashboardGenerator {
             pw.println("                <div id='selBoxplot' style='height: 400px;'></div>");
             pw.println("            </div>");
             pw.println("        </div>");
+            pw.println("");
+            pw.println("        <div id='ld-tab' class='tab-content'>");
+            pw.println("            <div class='glass card'>");
+            pw.println("                <div class='card-title'>Genomic Linkage Disequilibrium (LD) Decay</div>");
+            pw.println("                <div id='ldPlot' style='height: 600px;'></div>");
+            pw.println("            </div>");
+            pw.println("        </div>");
             pw.println("    </div>");
 
             pw.println("    <script>");
             pw.println("        window.onload = () => document.getElementById('loader').style.opacity = '0';");
             pw.println("        setTimeout(() => document.getElementById('loader').style.display = 'none', 500);");
+            pw.println("        function switchTab(id, btn) {");
+            pw.println("            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));");
+            pw.println("            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));");
+            pw.println("            document.getElementById(id).classList.add('active');");
+            pw.println("            btn.classList.add('active');");
+            pw.println("            if(id === 'ld-tab') setTimeout(renderLD, 10);");
+            pw.println("            window.dispatchEvent(new Event('resize'));");
+            pw.println("        }");
             pw.println("        const totalM = " + result.totalMarkersScanned + ";");
             pw.println("        const palette = ['#4f46e5', '#7c3aed', '#db2777', '#dc2626', '#d97706', '#059669', '#0891b2', '#2563eb'];");
             pw.println("        const bonferroni = " + (-Math.log10(0.05 / Math.max(1, result.totalMarkersScanned))) + ";");
@@ -292,6 +319,8 @@ public class GwasDashboardGenerator {
             }
             pw.println("        ];");
             pw.println("        document.getElementById('sigCount').innerText = '" + sigCount + "';");
+            pw.println("        const ploidy = " + ploidy + ";");
+            pw.println("        const ld_data = " + formatLD(result.ldDecayData) + ";");
 
             pw.println("        const ticks = { val: [" + String.join(",", mainChroms.stream().map(c -> String.valueOf(chromOffsets.get(c) + chromMaxPos.get(c)/2)).toArray(String[]::new)) + "], text: [" + String.join(",", mainChroms.stream().map(c -> "'" + c + "'").toArray(String[]::new)) + "] };");
 
@@ -391,8 +420,34 @@ public class GwasDashboardGenerator {
                 pw.println("                const sliced = filtered.slice(0, size);");
                 pw.println("                document.getElementById('tableBody').innerHTML = sliced.map(h => `<tr onclick=\"showSelectionAnalysis('${h.id}')\" style='cursor:pointer'><td>${h.trait}</td><td><span class='badge' style='background:#e0e7ff; color:#3730a3'>${h.model}</span></td><td style='color:var(--text-dim)'>${h.thresh.toFixed(2)}</td><td style='font-weight:600; color:var(--text)'>${h.id}</td><td>${h.chr}</td><td>${h.pos.toLocaleString()}</td><td>${h.ref}</td><td>${h.alt}</td><td style='font-weight:bold; color:var(--primary)'>${h.score.toFixed(2)}</td><td style='font-family:monospace; color:${h.eff > 0 ? \"#059669\" : \"#dc2626\"}'>${h.eff.toFixed(4)}</td><td style='color:var(--text-dim)'>${(h.r2 * 100).toFixed(2)}%</td><td style='font-size:0.75rem; color:var(--text-dim)'>${h.p < 0.0001 ? h.p.toExponential(2) : h.p.toFixed(4)}</td></tr>`).join('');");
                 pw.println("                if(loader) loader.style.display = 'none';");
+                pw.println("                renderLD();");
             pw.println("            }, 50);");
             pw.println("        }");
+            pw.println("");
+            pw.println("        function renderLD() {");
+            pw.println("            if(typeof ld_data === 'undefined' || ld_data.length === 0) return;");
+            pw.println("            const trace = {");
+            pw.println("                x: ld_data.map(d => d[0]/1000000),");
+            pw.println("                y: ld_data.map(d => d[1]),");
+            pw.println("                mode: 'markers', type: 'scatter', marker: { color: 'rgba(79,70,229,0.2)', size: 5 }, name: 'Observed r2'");
+            pw.println("            };");
+            pw.println("            const curveX = []; const curveY = [];");
+            pw.println("            const winSize = 30;");
+            pw.println("            for(let i=0; i<ld_data.length-winSize; i+=5) {");
+            pw.println("                let sumX = 0, sumY = 0;");
+            pw.println("                for(let j=0; j<winSize; j++) { sumX += ld_data[i+j][0]; sumY += ld_data[i+j][1]; }");
+            pw.println("                curveX.push(sumX/(winSize*1000000)); curveY.push(sumY/winSize);");
+            pw.println("            }");
+            pw.println("            const curve = { x: curveX, y: curveY, type: 'scatter', line: { color: '#dc2626', width: 3 }, name: 'Mean Decay' };");
+            pw.println("            const layout = {");
+            pw.println("                xaxis: { title: 'Physical Distance (Mbp)', gridcolor: '#f1f5f9' },");
+            pw.println("                yaxis: { title: 'r2', range: [0, 1.05], gridcolor: '#f1f5f9' },");
+            pw.println("                plot_bgcolor: 'rgba(0,0,0,0)', paper_bgcolor: 'rgba(0,0,0,0)',");
+            pw.println("                margin: { t: 20, b: 50, l: 50, r: 20 }");
+            pw.println("            };");
+            pw.println("            Plotly.newPlot('ldPlot', [trace, curve], layout);");
+            pw.println("        }");
+            pw.println("");
             pw.println("        renderTable();");
             pw.println("");
             pw.println("        function showView(view) {");
@@ -584,6 +639,17 @@ public class GwasDashboardGenerator {
             if (i < pValues.length - 1) sb.append(",");
         }
         if (sb.length() > 1 && sb.charAt(sb.length()-1) == ',') sb.setLength(sb.length()-1);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    private String formatLD(List<double[]> data) {
+        if (data == null) return "[]";
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < data.size(); i++) {
+            sb.append("[").append((long)data.get(i)[0]).append(",").append(String.format("%.4f", data.get(i)[1])).append("]");
+            if (i < data.size() - 1) sb.append(",");
+        }
         sb.append("]");
         return sb.toString();
     }

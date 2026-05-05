@@ -216,5 +216,26 @@ public class GwasMathUtils {
         for (int c : counts) if (c > max) max = c;
         return (double) max / total;
     }
+
+    public static double calculateR2(double[] x, double[] y) {
+        int n = Math.min(x.length, y.length);
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (Double.isNaN(x[i]) || Double.isNaN(y[i])) continue;
+            sumX += x[i];
+            sumY += y[i];
+            sumXY += x[i] * y[i];
+            sumX2 += x[i] * x[i];
+            sumY2 += y[i] * y[i];
+            count++;
+        }
+        if (count < 2) return 0;
+        double num = count * sumXY - sumX * sumY;
+        double den = Math.sqrt((count * sumX2 - sumX * sumX) * (count * sumY2 - sumY * sumY));
+        if (den == 0) return 0;
+        double r = num / den;
+        return r * r;
+    }
 }
 

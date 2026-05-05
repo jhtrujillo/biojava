@@ -43,6 +43,7 @@ public class GwasEngine {
         public List<GwasHit> hits;
         public List<GwasInteraction> interactions = new ArrayList<>();
         public int totalMarkersScanned;
+        public List<double[]> ldDecayData; // [distance, r2]
     }
 
 
@@ -394,7 +395,35 @@ public class GwasEngine {
             result.interactions = runEpistasisScan(allHits, chromToMarkers, Yf, W, weights, U, Ystar, Wstar);
         }
 
+        result.ldDecayData = computeSampledLD(chromToMarkers, 2000);
+        System.out.println("[GWAS] Calculated " + result.ldDecayData.size() + " LD data points for decay plot.");
         return result;
+    }
+
+    private List<double[]> computeSampledLD(Map<String, List<MarkerData>> chromToMarkers, int samples) {
+        List<double[]> data = new ArrayList<>();
+        Random rand = new Random(42);
+        List<MarkerData> all = new ArrayList<>();
+        for (List<MarkerData> list : chromToMarkers.values()) all.addAll(list);
+        if (all.size() < 2) return data;
+
+        int count = 0;
+        while (count < samples) {
+            int i = rand.nextInt(all.size());
+            int j = rand.nextInt(all.size());
+            if (i == j) continue;
+            MarkerData m1 = all.get(i);
+            MarkerData m2 = all.get(j);
+            if (!m1.chrom.equals(m2.chrom)) continue;
+            long dist = Math.abs(m1.pos - m2.pos);
+            if (dist > 30_000_000) continue; // Max 30Mb
+
+            double r2 = GwasMathUtils.calculateR2(m1.dosages, m2.dosages);
+            data.add(new double[]{dist, r2});
+            count++;
+        }
+        data.sort((a, b) -> Double.compare(a[0], b[0]));
+        return data;
     }
 
     public int getTotalMarkersUnfiltered() {
