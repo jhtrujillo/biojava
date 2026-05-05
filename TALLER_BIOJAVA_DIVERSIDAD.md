@@ -356,6 +356,62 @@ java -jar target/biojava.jar gwas \
 
 ---
 
+## 11. Comparativa: GWAS Estándar vs. Compatibilidad GWASpoly
+
+BioJava permite elegir entre un enfoque genómico moderno y uno estrictamente compatible con el estándar de la industria **GWASpoly (R)**. Es vital entender cuándo usar cada uno.
+
+### Escenario A: Modo de Compatibilidad GWASpoly
+Utiliza este modo si necesitas validar tus resultados contra estudios previos realizados en R o si prefieres el rigor conservador del paquete de Endelman.
+
+```bash
+# GWAS con paridad total frente a R
+java -jar target/biojava.jar gwas \
+  -v potato_converted.vcf \
+  --pheno benchmarks/gwas/new_potato_pheno.csv \
+  --trait vine.maturity \
+  -p 4 \
+  --gwaspoly \
+  --maf 0.05 \
+  --max-missing 0.1 \
+  --max-geno-freq 0.95 \
+  --models ADDITIVE,GENERAL \
+  --fixed env \
+  -o taller_bioinformatica/gwas_poly_parity.html
+```
+
+#### ¿Por qué estos parámetros?
+*   **`--gwaspoly`**: Activa el algoritmo **EMMA** (REML exacto) y cambia el cálculo del parentesco (Kinship) para usar la media global de todos los marcadores bialélicos.
+*   **`--maf 0.05`**: Asegura que el parentesco se calcule con marcadores informativos, evitando que alelos extremadamente raros distorsionen la estructura.
+*   **`--max-geno-freq 0.95`**: Filtro crítico de GWASpoly. Elimina marcadores donde un solo genotipo (ej: todos son 0) está en más del 95% de las muestras.
+*   **`--models ADDITIVE,GENERAL`**: Evalúa tanto el efecto lineal de los alelos como efectos de dominancia complejos.
+
+### Escenario B: Modo BioJava Nativo (Alto Rendimiento)
+Utiliza este modo para descubrir nuevos QTLs que podrían estar ocultos por los filtros conservadores de GWASpoly, aprovechando escalas genómicas más modernas.
+
+```bash
+# GWAS de alta potencia con LOCO y VanRaden
+java -jar target/biojava.jar gwas \
+  -v potato_converted.vcf \
+  --pheno benchmarks/gwas/new_potato_pheno.csv \
+  --trait vine.maturity \
+  -p 4 \
+  --loco \
+  --maf 0.01 \
+  --max-missing 0.2 \
+  -o taller_bioinformatica/gwas_biojava_power.html
+```
+
+#### Diferencias Clave:
+| Característica | Modo GWASpoly | Modo BioJava Nativo |
+|---|---|---|
+| **Cálculo de Kinship** | Mean-scaled (Global) | VanRaden (Escalado por HWE) |
+| **Umbral Bonferroni** | Basado en el VCF original | Basado en marcadores filtrados |
+| **Poder de Detección** | Conservador (Menos falsos +) | Sensible (Detecta efectos pequeños) |
+| **Multialélicos** | Los ignora (solo bialélicos) | Intenta incluirlos en el análisis |
+
+---
+
+
 ## Conclusión
 El uso de la Suite BioJava permite a los mejoradores capturar la verdadera variación genética en poliploides, facilitando decisiones más precisas desde la estructura poblacional hasta la validación de marcadores funcionales en el laboratorio.
 

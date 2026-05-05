@@ -62,15 +62,21 @@ public class GwasCommand implements Callable<Integer> {
     private String fixedEffects;
 
     @Option(names = {
-            "--models" }, description = "Genetic models to test: ADDITIVE, SIMPLEX_DOMINANT, DUPLEX_DOMINANT, TRIPLEX_DOMINANT, SIMPLEX_DOMINANT_REF, DUPLEX_DOMINANT_REF, TRIPLEX_DOMINANT_REF, GENERAL (default: ADDITIVE)", split = ",")
-    private List<GwasEngine.GeneticModel> geneticModels = List.of(GwasEngine.GeneticModel.ADDITIVE);
+            "--models" }, description = "Genetic models to test: ADDITIVE, SIMPLEX_DOMINANT, DUPLEX_DOMINANT, TRIPLEX_DOMINANT, SIMPLEX_DOMINANT_REF, DUPLEX_DOMINANT_REF, TRIPLEX_DOMINANT_REF, GENERAL (default: ADDITIVE, GENERAL)", split = ",")
+    private List<GwasEngine.GeneticModel> geneticModels = List.of(GwasEngine.GeneticModel.ADDITIVE, GwasEngine.GeneticModel.GENERAL);
 
     @Option(names = {
             "--max-missing" }, description = "Maximum allowed missing data per marker (0.0 to 1.0). Default: 0.1 (10%)", defaultValue = "0.1")
     private double maxMissing;
 
-    @Option(names = { "--n-pc" }, description = "Number of principal components to include as covariates (default: 5)", defaultValue = "5")
+    @Option(names = { "--n-pc" }, description = "Number of principal components to include as covariates (default: 0)", defaultValue = "0")
     private int nPc;
+
+    @Option(names = { "--gwaspoly" }, description = "Enable GWASpoly compatibility mode (kinship scaling, simple imputation, etc.)")
+    private boolean gwasPolyCompatibility = false;
+
+    @Option(names = { "--max-geno-freq" }, description = "Maximum allowed frequency for a single genotype (GWASpoly filter). Default: 0.95", defaultValue = "0.95")
+    private double maxGenoFreq = 0.95;
 
     @Override
     public Integer call() throws Exception {
@@ -91,11 +97,25 @@ public class GwasCommand implements Callable<Integer> {
             System.out.println("[GWAS] Loading Kinship from " + kinshipPath + "...");
             kinship = loadMatrix(kinshipPath, sampleNames.length);
         } else {
-            System.out.println("[GWAS] Kinship not provided. Computing VanRaden matrix from VCF...");
+            String method = gwasPolyCompatibility ? "GWASpoly (mean-scaled)" : "VanRaden (HWE-scaled)";
+            System.out.println("[GWAS] Kinship not provided. Computing " + method + " matrix from VCF...");
             PopulationStructureAnalyzer analyzer = new PopulationStructureAnalyzer();
             PopulationStructureAnalyzer.PcaResult res = analyzer.computePCA(vcfPath, ploidy, nPc, minMaf, 0.2, true);
+            
+            // Re-calculate kinship if gwaspoly mode is on (PCA uses VanRaden by default)
+            if (gwasPolyCompatibility) {
+                // In a real run, engine.run will recalculate it if needed, but for PCA consistency:
+                // res.kinshipMatrix is calculated inside computePCA. 
+                // However, GwasEngine.run() handles kinship calculation fallback.
+            }
             kinship = res.kinshipMatrix;
             pcaCovar = res.pcMatrix;
+            
+            // If in GWASpoly compatibility mode, we must re-calculate kinship inside GwasEngine
+            // using the GWASpoly scaling method. So we set it to null here to trigger recalculation.
+            if (gwasPolyCompatibility) {
+                kinship = null;
+            }
         }
 
         // 2.5 Load Q-Matrix if provided
@@ -111,11 +131,28 @@ public class GwasCommand implements Callable<Integer> {
         engine.setLoco(useLoco);
         engine.setWindowSize(windowSize);
         engine.setRunEpistasis(runEpistasis);
-        engine.setModels(new java.util.HashSet<>(geneticModels));
+        Set<GwasEngine.GeneticModel> activeModels = new HashSet<>(geneticModels);
+        if (gwasPolyCompatibility) {
+            Set<GwasEngine.GeneticModel> expanded = new HashSet<>();
+            for (GwasEngine.GeneticModel m : activeModels) {
+                expanded.add(m);
+                if (m == GwasEngine.GeneticModel.SIMPLEX_DOMINANT) expanded.add(GwasEngine.GeneticModel.SIMPLEX_DOMINANT_REF);
+                if (m == GwasEngine.GeneticModel.DUPLEX_DOMINANT) expanded.add(GwasEngine.GeneticModel.DUPLEX_DOMINANT_REF);
+                if (m == GwasEngine.GeneticModel.TRIPLEX_DOMINANT) expanded.add(GwasEngine.GeneticModel.TRIPLEX_DOMINANT_REF);
+                if (m == GwasEngine.GeneticModel.SIMPLEX_DOMINANT_REF) expanded.add(GwasEngine.GeneticModel.SIMPLEX_DOMINANT);
+                if (m == GwasEngine.GeneticModel.DUPLEX_DOMINANT_REF) expanded.add(GwasEngine.GeneticModel.DUPLEX_DOMINANT);
+                if (m == GwasEngine.GeneticModel.TRIPLEX_DOMINANT_REF) expanded.add(GwasEngine.GeneticModel.TRIPLEX_DOMINANT);
+            }
+            activeModels = expanded;
+        }
+
+        engine.setModels(activeModels);
         engine.setLdPruneThreshold(ldPruneThreshold);
         engine.setImputationMode(imputationMode);
         engine.setMaxMissing(maxMissing);
         engine.setMafThreshold(minMaf);
+        engine.setMaxGenoFreq(maxGenoFreq);
+        engine.setGwasPolyCompatibility(gwasPolyCompatibility);
 
         // Combine PCA + Q-Matrix + Fixed Effects
         double[][] combinedCovar = engine.combineAllCovariates(pcaCovar, qCovar, pheno, fixedCols);

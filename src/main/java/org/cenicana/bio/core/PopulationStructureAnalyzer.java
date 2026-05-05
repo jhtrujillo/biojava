@@ -361,6 +361,58 @@ public class PopulationStructureAnalyzer {
         return kinship;
     }
 
+    /**
+     * Calculates kinship using GWASpoly scaling: K = ZZ' / mean(diag(ZZ'))
+     */
+    public static double[][] calculateGwasPolyKinship(List<double[]> dosageMatrix) {
+        if (dosageMatrix.isEmpty()) return null;
+        int m = dosageMatrix.size();
+        int n = dosageMatrix.get(0).length;
+        double[][] kinship = new double[n][n];
+        
+        double[] p = new double[m];
+        for (int j = 0; j < m; j++) {
+            double[] dosages = dosageMatrix.get(j);
+            double sum = 0;
+            int count = 0;
+            for (double d : dosages) {
+                if (!Double.isNaN(d)) {
+                    sum += d;
+                    count++;
+                }
+            }
+            p[j] = sum / count; // observed mean
+        }
+
+        // 1. Compute ZZ'
+        double diagSum = 0;
+        for (int i1 = 0; i1 < n; i1++) {
+            for (int i2 = i1; i2 < n; i2++) {
+                double sumZ = 0;
+                for (int j = 0; j < m; j++) {
+                    double z1 = dosageMatrix.get(j)[i1] - p[j];
+                    double z2 = dosageMatrix.get(j)[i2] - p[j];
+                    if (!Double.isNaN(z1) && !Double.isNaN(z2)) {
+                        sumZ += z1 * z2;
+                    }
+                }
+                kinship[i1][i2] = sumZ;
+                kinship[i2][i1] = sumZ;
+                if (i1 == i2) diagSum += sumZ;
+            }
+        }
+        
+        // 2. Scale by mean(diag)
+        double meanDiag = diagSum / n;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                kinship[i][j] /= (meanDiag + 1e-10);
+            }
+        }
+        
+        return kinship;
+    }
+
     private double[][] runDAPC(double[][] pcs, int[] groups, int k) {
         int n = pcs.length;
         int d = Math.min(pcs[0].length, 30); // Use top 30 PCs to avoid overfitting

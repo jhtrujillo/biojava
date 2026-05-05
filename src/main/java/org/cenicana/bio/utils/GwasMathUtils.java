@@ -101,6 +101,11 @@ public class GwasMathUtils {
         if (x == 0) return 0;
         if (x == 1) return 1;
 
+        // Use symmetry identity for numerical stability
+        if (x > (a + 1.0) / (a + b + 2.0)) {
+            return 1.0 - betaIncomplete(1.0 - x, b, a);
+        }
+
         double eps = 1e-10;
         double fpmin = 1e-30;
 
@@ -172,4 +177,44 @@ public class GwasMathUtils {
         double x = (df1 * f) / (df1 * f + df2);
         return betaIncomplete(x, df1 / 2.0, df2 / 2.0);
     }
+
+    public static double calcMissing(double[] dosages) {
+        int missing = 0;
+        for (double d : dosages) if (Double.isNaN(d)) missing++;
+        return (double) missing / dosages.length;
+    }
+
+    public static double calcMaf(double[] dosages, int ploidy) {
+        double sum = 0;
+        int count = 0;
+        for (double d : dosages) {
+            if (!Double.isNaN(d)) {
+                sum += d;
+                count++;
+            }
+        }
+        if (count == 0) return 0;
+        double freq = sum / (count * ploidy);
+        return Math.min(freq, 1.0 - freq);
+    }
+
+    public static double calcGenoFreq(double[] dosages, int ploidy) {
+        int n = dosages.length;
+        int[] counts = new int[ploidy + 1];
+        int total = 0;
+        for (double d : dosages) {
+            if (!Double.isNaN(d)) {
+                int geno = (int) Math.round(d);
+                if (geno >= 0 && geno <= ploidy) {
+                    counts[geno]++;
+                    total++;
+                }
+            }
+        }
+        if (total == 0) return 1.0;
+        int max = 0;
+        for (int c : counts) if (c > max) max = c;
+        return (double) max / total;
+    }
 }
+

@@ -103,7 +103,9 @@ public class GwasDashboardGenerator {
             pw.println("        .toggle-container button.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }");
             pw.println("        select, input { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0,0,0,0.1); color: var(--text); padding: 10px 16px; border-radius: 12px; font-family: inherit; outline: none; }");
             pw.println("        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: -8px; }");
-            pw.println("        th { text-align: left; padding: 16px; color: var(--text-dim); font-weight: 400; font-size: 0.85rem; }");
+            pw.println("        th { text-align: left; padding: 16px; color: var(--text-dim); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; user-select: none; }");
+            pw.println("        th:hover { color: var(--primary); }");
+            pw.println("        th::after { content: ' ↕'; opacity: 0.2; }");
             pw.println("        td { padding: 16px; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.02); }");
             pw.println("        .badge { padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }");
             pw.println("        .sig { background: #dcfce7; color: #15803d; }");
@@ -184,22 +186,50 @@ public class GwasDashboardGenerator {
             }
 
             pw.println("        <div class='glass card'>");
-            pw.println("            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;'>");
+            pw.println("            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;'>");
             pw.println("                <div class='card-title'>Associated Markers</div>");
-            pw.println("                <div style='display: flex; gap: 12px; align-items: center;'>");
-            pw.println("                    <label style='font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;'>");
-            pw.println("                        <input type='checkbox' id='leadsOnly' onchange='renderTable()' style='width:16px; height:16px;'> Solo Leads (Clumping 5Mb)");
-            pw.println("                    </label>");
+            pw.println("                <div style='display: flex; gap: 12px; align-items: center; flex-wrap: wrap;'>");
             pw.println("                    <input type='text' id='search' placeholder='Search marker...' onkeyup='renderTable()'>");
             pw.println("                    <select id='pageSize' onchange='renderTable()'>");
             pw.println("                        <option value='20'>20 Results</option>");
             pw.println("                        <option value='50' selected>50 Results</option>");
             pw.println("                        <option value='100'>100 Results</option>");
+            pw.println("                        <option value='500'>500 Results</option>");
             pw.println("                    </select>");
             pw.println("                </div>");
             pw.println("            </div>");
+            pw.println("            <div style='display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:20px; padding:16px; background:rgba(79,70,229,0.03); border-radius:14px; border:1px solid rgba(79,70,229,0.08);'>");
+            pw.println("                <label style='font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;'>");
+            pw.println("                    <input type='checkbox' id='sigOnly' checked onchange='renderTable()' style='width:16px; height:16px;'>");
+            pw.println("                    <span style='font-weight:600; color:var(--text)'>Significant Only</span>");
+            pw.println("                </label>");
+            pw.println("                <label style='font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; gap:6px; padding-left:12px; border-left:1px solid rgba(0,0,0,0.1);'>");
+            pw.println("                    <input type='checkbox' id='leadsOnly' checked onchange='renderTable()' style='width:16px; height:16px;'>");
+            pw.println("                    <span style='font-weight:600; color:var(--text)'>Lead SNPs Only</span>");
+            pw.println("                </label>");
+            pw.println("                <label style='font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; gap:6px; padding-left:12px; border-left:1px solid rgba(0,0,0,0.1);'>");
+            pw.println("                    <input type='checkbox' id='bestOnly' checked onchange='renderTable()' style='width:16px; height:16px;'>");
+            pw.println("                    <span style='font-weight:600; color:var(--text)'>Best Model Only</span>");
+            pw.println("                </label>");
+            pw.println("                <div style='display:flex; align-items:center; gap:6px; padding-left:12px; border-left:1px solid rgba(0,0,0,0.1);'>");
+            pw.println("                    <span style='font-size:0.8rem; color:var(--text-dim)'>Clumping Window:</span>");
+            pw.println("                    <input type='number' id='clumpDist' value='5' min='1' max='999' step='1' onchange='renderTable()' style='width:70px; text-align:center;'>");
+            pw.println("                    <select id='clumpUnit' onchange='renderTable()' style='min-width:70px;'>");
+            pw.println("                        <option value='1000000' selected>Mbp</option>");
+            pw.println("                        <option value='1000'>Kbp</option>");
+            pw.println("                    </select>");
+            pw.println("                </div>");
+            pw.println("                <div style='display:flex; align-items:center; gap:6px; padding-left:12px; border-left:1px solid rgba(0,0,0,0.1);'>");
+            pw.println("                    <span style='font-size:0.8rem; color:var(--text-dim)'>Threshold:</span>");
+            pw.println("                    <select id='threshMethod' onchange='renderTable()'>");
+            pw.println("                        <option value='fdr' selected>FDR &lt; 0.05</option>");
+            pw.println("                        <option value='bonf'>Bonferroni</option>");
+            pw.println("                    </select>");
+            pw.println("                </div>");
+            pw.println("                <div id='resultCount' style='margin-left:auto; font-size:0.85rem; font-weight:600; color:var(--primary); background:rgba(79,70,229,0.08); padding:6px 14px; border-radius:20px;'></div>");
+            pw.println("            </div>");
             pw.println("            <div style='overflow-x: auto;'>");
-            pw.println("                <table><thead><tr><th>MARKER</th><th>CHR</th><th>POSITION</th><th>BEST MODEL</th><th>AIC</th><th>EFFECT</th><th>R²</th><th>Q-VALUE (FDR)</th><th>P-VALUE</th></tr></thead>");
+            pw.println("                <table id='markersTable'><thead><tr><th onclick='sortBy(\"trait\")'>TRAIT</th><th onclick='sortBy(\"model\")'>MODEL</th><th onclick='sortBy(\"thresh\")'>THRESHOLD</th><th onclick='sortBy(\"id\")'>MARKER</th><th onclick='sortBy(\"chr\")'>CHROM</th><th onclick='sortBy(\"pos\")'>POSITION</th><th onclick='sortBy(\"ref\")'>REF</th><th onclick='sortBy(\"alt\")'>ALT</th><th onclick='sortBy(\"score\")'>SCORE</th><th onclick='sortBy(\"eff\")'>EFFECT</th><th onclick='sortBy(\"r2\")'>R2</th><th onclick='sortBy(\"p\")'>PVAL</th></tr></thead>");
             pw.println("                <tbody id='tableBody'></tbody></table>");
             pw.println("            </div>");
             pw.println("        </div>");
@@ -218,9 +248,15 @@ public class GwasDashboardGenerator {
             pw.println("    <script>");
             pw.println("        window.onload = () => document.getElementById('loader').style.opacity = '0';");
             pw.println("        setTimeout(() => document.getElementById('loader').style.display = 'none', 500);");
-            pw.println("        const totalM = " + hits.size() + ";");
+            pw.println("        const totalM = " + result.totalMarkersScanned + ";");
             pw.println("        const palette = ['#4f46e5', '#7c3aed', '#db2777', '#dc2626', '#d97706', '#059669', '#0891b2', '#2563eb'];");
-            pw.println("        const bonferroni = " + (-Math.log10(0.05 / Math.max(1, hits.size()))) + ";");
+            pw.println("        const bonferroni = " + (-Math.log10(0.05 / Math.max(1, result.totalMarkersScanned))) + ";");
+            pw.println("        let currentSort = { key: 'p', asc: true };");
+            pw.println("        function sortBy(key) {");
+            pw.println("            if (currentSort.key === key) currentSort.asc = !currentSort.asc;");
+            pw.println("            else currentSort = { key, asc: (key === 'p' || key === 'q' || key === 'aic') };");
+            pw.println("            renderTable();");
+            pw.println("        }");
             
             pw.println("        const all_data = [");
             int sigCount = 0;
@@ -283,22 +319,30 @@ public class GwasDashboardGenerator {
 
 
             pw.println("        const top_hits = [");
-            for (int j = 0; j < Math.min(2000, hits.size()); j++) {
+            for (int j = 0; j < hits.size(); j++) {
                 GwasHit h = hits.get(j);
                 if (!h.isBestModel && h.pValue > 1e-4) continue;
-                pw.print("{id:'" + h.markerId + "',chr:'" + h.chromosome + "',pos:" + h.position + ",ref:'" + h.refAllele + "',alt:'" + h.altAllele + "',model:'" + h.model + "',eff:" + h.effect + ",r2:" + h.r2 + ",p:" + h.pValue + ",q:" + h.qValue + ",aic:" + h.aic + ",isBest:" + h.isBestModel);
+                if (j > 3000 && h.pValue > 1e-5) continue;
+
+                double score = -Math.log10(h.pValue);
+                double thresh = (h.qValue < 0.05) ? fdrThresholdLogP : -Math.log10(0.05 / Math.max(1, result.totalMarkersScanned));
+                pw.print("{trait:'" + traitName + "',model:'" + h.model + "',thresh:" + String.format("%.2f", thresh) + ",id:'" + h.markerId + "',chr:'" + h.chromosome + "',pos:" + h.position + ",ref:'" + h.refAllele + "',alt:'" + h.altAllele + "',score:" + score + ",eff:" + h.effect + ",r2:" + h.r2 + ",p:" + h.pValue + ",q:" + h.qValue + ",aic:" + h.aic + ",isBest:" + h.isBestModel);
                 if (h.phenotypesByDosage != null && j < 150) {
                     pw.print(",dist:[" + formatDosages(h.phenotypesByDosage) + "],samples:[" + formatSamples(h.samplesByDosage) + "]");
                 }
                 pw.print("}");
-                if (j < Math.min(2000, hits.size()) - 1) pw.print(",");
+                if (j < hits.size() - 1) pw.print(",");
             }
             pw.println("        ];");
-
-            pw.println("        function getLeads(data) {");
-            pw.println("            const significant = data.filter(h => h.p < (0.05 / totalM)).sort((a,b) => a.p - b.p);");
+            pw.println("        function getLeads(data, windowBP, threshMethod) {");
+            pw.println("            let significant;");
+            pw.println("            if (threshMethod === 'bonf') {");
+            pw.println("                significant = data.filter(h => h.p < (0.05 / totalM));");
+            pw.println("            } else {");
+            pw.println("                significant = data.filter(h => h.q < 0.05);");
+            pw.println("            }");
+            pw.println("            significant.sort((a,b) => a.p - b.p);");
             pw.println("            const leads = [];");
-            pw.println("            const windowBP = 5000000; // 5MB window");
             pw.println("            significant.forEach(h => {");
             pw.println("                const isProximal = leads.some(l => l.chr === h.chr && Math.abs(l.pos - h.pos) < windowBP);");
             pw.println("                if (!isProximal) leads.push(h);");
@@ -312,28 +356,45 @@ public class GwasDashboardGenerator {
             pw.println("            setTimeout(() => {");
             pw.println("                const q = document.getElementById('search').value.toLowerCase();");
             pw.println("                const size = parseInt(document.getElementById('pageSize').value);");
+            pw.println("                const sigOnly = document.getElementById('sigOnly').checked;");
             pw.println("                const leadsOnly = document.getElementById('leadsOnly').checked;");
+            pw.println("                const bestOnly = document.getElementById('bestOnly').checked;");
+            pw.println("                const clumpDist = parseFloat(document.getElementById('clumpDist').value) || 5;");
+            pw.println("                const clumpUnit = parseInt(document.getElementById('clumpUnit').value);");
+            pw.println("                const windowBP = clumpDist * clumpUnit;");
+            pw.println("                const threshMethod = document.getElementById('threshMethod').value;");
             pw.println("                ");
-            pw.println("                let filtered = top_hits.filter(h => h.isBest && h.id.toLowerCase().includes(q));");
+            pw.println("                let filtered = top_hits.filter(h => h.id.toLowerCase().includes(q));");
+            pw.println("                if (sigOnly) {");
+            pw.println("                    filtered = filtered.filter(h => h.score >= h.thresh);");
+            pw.println("                }");
+            pw.println("                if (bestOnly) {");
+            pw.println("                    filtered = filtered.filter(h => h.isBest);");
+            pw.println("                }");
             pw.println("                if (leadsOnly) {");
-            pw.println("                    filtered = getLeads(filtered);");
+            pw.println("                    filtered = getLeads(filtered, windowBP, threshMethod);");
             pw.println("                }");
             pw.println("                ");
-            pw.println("                const sliced = filtered.slice(0, size);");
-            pw.println("                document.getElementById('tableBody').innerHTML = sliced.map(h => `<tr onclick=\"showSelectionAnalysis('${h.id}')\" style='cursor:pointer'>");
-            pw.println("                    <td style='font-weight:600; color:var(--text)'>${h.id}</td><td>${h.chr}</td><td>${h.pos.toLocaleString()}</td>");
-            pw.println("                    <td><span class='badge' style='background:#e0e7ff; color:#3730a3'>${h.model}</span></td>");
-            pw.println("                    <td style='color:var(--text-dim); font-size:0.8rem'>${h.aic.toFixed(1)}</td>");
-            pw.println("                    <td style='font-family:monospace'>${h.eff.toFixed(4)}</td>");
-            pw.println("                    <td style='font-weight:600; color:var(--secondary)'>${(h.r2 * 100).toFixed(1)}%</td>");
-            pw.println("                    <td style='color:${h.q < 0.05 ? \"#15803d\" : \"inherit\"}'>${h.q.toExponential(2)}</td>");
-            pw.println("                    <td><span class='badge ${h.p < (0.05/ totalM) ? \"sig\" : \"non-sig\"}'>${h.p.toExponential(2)}</span></td>");
-            pw.println("                </tr>`).join('');");
-            pw.println("                if(loader) loader.style.display = 'none';");
+            pw.println("                const unitLabel = clumpUnit === 1000000 ? 'Mbp' : 'Kbp';");
+            pw.println("                const countEl = document.getElementById('resultCount');");
+            pw.println("                if (leadsOnly) {");
+            pw.println("                    countEl.innerHTML = filtered.length + ' Lead QTLs (' + clumpDist + ' ' + unitLabel + ', ' + (threshMethod === 'bonf' ? 'Bonferroni' : 'FDR<0.05') + ')';");
+            pw.println("                } else {");
+            pw.println("                    countEl.innerHTML = filtered.length + ' Results';");
+            pw.println("                }");
+            pw.println("                ");
+                pw.println("                filtered.sort((a, b) => {");
+                pw.println("                    let v1 = a[currentSort.key], v2 = b[currentSort.key];");
+                pw.println("                    if (typeof v1 === 'string') return currentSort.asc ? v1.localeCompare(v2) : v2.localeCompare(v1);");
+                pw.println("                    return currentSort.asc ? v1 - v2 : v2 - v1;");
+                pw.println("                });");
+                pw.println("                const sliced = filtered.slice(0, size);");
+                pw.println("                document.getElementById('tableBody').innerHTML = sliced.map(h => `<tr onclick=\"showSelectionAnalysis('${h.id}')\" style='cursor:pointer'><td>${h.trait}</td><td><span class='badge' style='background:#e0e7ff; color:#3730a3'>${h.model}</span></td><td style='color:var(--text-dim)'>${h.thresh.toFixed(2)}</td><td style='font-weight:600; color:var(--text)'>${h.id}</td><td>${h.chr}</td><td>${h.pos.toLocaleString()}</td><td>${h.ref}</td><td>${h.alt}</td><td style='font-weight:bold; color:var(--primary)'>${h.score.toFixed(2)}</td><td style='font-family:monospace; color:${h.eff > 0 ? \"#059669\" : \"#dc2626\"}'>${h.eff.toFixed(4)}</td><td style='color:var(--text-dim)'>${(h.r2 * 100).toFixed(2)}%</td><td style='font-size:0.75rem; color:var(--text-dim)'>${h.p < 0.0001 ? h.p.toExponential(2) : h.p.toFixed(4)}</td></tr>`).join('');");
+                pw.println("                if(loader) loader.style.display = 'none';");
             pw.println("            }, 50);");
             pw.println("        }");
             pw.println("        renderTable();");
-
+            pw.println("");
             pw.println("        function showView(view) {");
             pw.println("            if (view === 'linear') {");
             pw.println("                document.getElementById('manhattanPlot').style.display = 'block';");
