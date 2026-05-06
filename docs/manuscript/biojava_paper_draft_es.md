@@ -452,15 +452,33 @@ Para complementar la genómica estructural con una métrica pura de presión sel
 
 **Figura 6. Dashboard Interactivo de Sintenia, Genómica Estructural y Dinámica Evolutiva.**
 
-| ![Pan-genoma](../assets/comgenomic4.png) | ![Filtro Base](../assets/comgenomic1.png) |
-| :---: | :---: |
-| <small><b>(A) Macro-Sintenia Pan-genómica:</b> Mapeo masivo de genomas completos (>110k genes cruzados).</small> | <small><b>(B) Filtrado Estructural Dinámico:</b> Aislamiento de regiones sinténicas mediante selección de secuencias homólogas.</small> |
-| ![Filtro Estricto y Tooltips](../assets/comgenomic2.png) | ![Alineación de Subgenomas](../assets/comgenomic5.png) |
-| <small><b>(C) Depuración de Ruido e Interactividad:</b> Aplicación de umbrales altos de conservación y extracción *on-demand* de funciones génicas.</small> | <small><b>(D) Arquitectura de Subgenomas:</b> Mapeo estructural focalizado de una línea comercial contra la referencia ancestral.</small> |
-| ![Heatmap Evolutivo](../assets/comgenomic3.png) | ![Correlación Evolutiva/Estructural](../assets/comgenomic6.png) |
-| <small><b>(E) Mapa de Calor Evolutivo (SNPs):</b> Transición de la vista física a funcional, coloreando los bloques por su diversidad poblacional.</small> | <small><b>(F) Hotspots Mutacionales:</b> Visualización térmica sobre la estructura, identificando zonas de alta presión selectiva (rojo) y alta conservación (verde/azul).</small> |
-| ![Topología Circos](../assets/comgenomic7.png) | ![Aislamiento Circos](../assets/comgenomic8.png) |
-| <small><b>(G) Topología Circular (Circos):</b> Alineamiento de un cromosoma comercial contra múltiples alelos homólogos, ideal para análisis poliploides.</small> | <small><b>(H) Aislamiento de Señales:</b> Interacción de foco (*hover*) para iluminar relaciones ortólogas específicas en redes densas.</small> |
+<p align="center">
+  <img src="../assets/comgenomic4.png" width="48%">
+  <img src="../assets/comgenomic1.png" width="48%">
+  <br>
+  <small><b>(A) Macro-Sintenia Pan-genómica:</b> Mapeo masivo de genomas completos (>110k genes cruzados); <b>(B) Filtrado Estructural Dinámico:</b> Aislamiento de regiones sinténicas mediante selección de secuencias homólogas.</small>
+</p>
+
+<p align="center">
+  <img src="../assets/comgenomic2.png" width="48%">
+  <img src="../assets/comgenomic5.png" width="48%">
+  <br>
+  <small><b>(C) Depuración de Ruido e Interactividad:</b> Aplicación de umbrales altos de conservación y extracción *on-demand* de funciones génicas; <b>(D) Arquitectura de Subgenomas:</b> Mapeo estructural focalizado de una línea comercial contra la referencia ancestral.</small>
+</p>
+
+<p align="center">
+  <img src="../assets/comgenomic3.png" width="48%">
+  <img src="../assets/comgenomic6.png" width="48%">
+  <br>
+  <small><b>(E) Mapa de Calor Evolutivo (SNPs):</b> Transición de la vista física a funcional, coloreando los bloques por su diversidad poblacional; <b>(F) Hotspots Mutacionales:</b> Visualización térmica sobre la estructura, identificando zonas de alta presión selectiva (rojo) y alta conservación (verde/azul).</small>
+</p>
+
+<p align="center">
+  <img src="../assets/comgenomic7.png" width="48%">
+  <img src="../assets/comgenomic8.png" width="48%">
+  <br>
+  <small><b>(G) Topología Circular (Circos):</b> Alineamiento de un cromosoma comercial contra múltiples alelos homólogos, ideal para análisis poliploides; <b>(H) Aislamiento de Señales:</b> Interacción de foco (<i>hover</i>) para iluminar relaciones ortólogas específicas en redes densas.</small>
+</p>
 
 > [!NOTE]
 > **Exploración Genómica en Vivo:** La Figura 6 presenta capturas estáticas de la suite analítica `comp-gen`. Puedes interactuar de forma inmersiva con el *Heatmap Evolutivo*, explorar los valores reales de presión de selección (Ka/Ks), aplicar filtros dinámicos y probar las transiciones topológicas en tiempo real a través del visor público disponible en: [johntrujillomonte.com/projects/biocenicana/visor_heatmap_evolutivo.html](https://johntrujillomonte.com/projects/biocenicana/visor_heatmap_evolutivo.html)
