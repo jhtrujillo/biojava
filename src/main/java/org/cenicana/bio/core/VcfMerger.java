@@ -48,6 +48,7 @@ public class VcfMerger {
                             }
                         }
                         fileToSamples.put(i, samples);
+                        System.out.println("[Vcf-Merge] File: " + new File(inputFiles.get(i)).getName() + " -> Sample: " + samples);
                         break;
                     }
                 }
