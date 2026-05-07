@@ -112,7 +112,7 @@ public class VcfMerger {
                 int totalDP = 0;
 
                 for (String sample : allSamples) {
-                    String genotype = "./.";
+                    String genotype = "./.:0:0,0:0,0:0,0:0:0";
                     for (VcfLine site : currentSites) {
                         List<String> sourceSamples = fileToSamples.get(site.fileIndex);
                         int sampleIdx = sourceSamples.indexOf(sample);

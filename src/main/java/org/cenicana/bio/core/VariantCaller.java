@@ -613,13 +613,13 @@ public class VariantCaller {
      * Formats Genotype (GT) using the dosage level for the given ploidy.
      */
     private String formatGenotype(int dosage, int ploidy) {
-        List<String> alleles = new ArrayList<>();
-        for (int i = 0; i < ploidy - dosage; i++)
-            alleles.add("0");
-        for (int i = 0; i < dosage; i++)
-            alleles.add("1");
-
-        return String.join("/", alleles);
+        if (dosage == 0) {
+            return "0/0";
+        } else if (dosage == ploidy) {
+            return "1/1";
+        } else {
+            return "0/1";
+        }
     }
 
     /**
