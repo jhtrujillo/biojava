@@ -45,6 +45,15 @@ public class VariantCallCommand implements Callable<Integer> {
     @Option(names = {"--preset"}, description = "Variant calling model preset (fast, ngsep, freebayes, gatk)", defaultValue = "fast")
     private String preset;
 
+    @Option(names = {"--maf"}, description = "Minimum population Minor Allele Frequency (MAF) to retain a variant.", defaultValue = "0.0")
+    private double maf;
+
+    @Option(names = {"--min-call-rate"}, description = "Minimum population call rate to retain a variant.", defaultValue = "0.0")
+    private double minCallRate;
+
+    @Option(names = {"--auto-ploidy"}, description = "Automatically estimate individual ploidy for each sample.", defaultValue = "false")
+    private boolean autoPloidy;
+
     @Override
     public Integer call() throws Exception {
         System.out.println("=================================================");
@@ -53,15 +62,16 @@ public class VariantCallCommand implements Callable<Integer> {
         System.out.println("Input File:     " + inputFile);
         System.out.println("Ref Genome:     " + (referenceFile != null ? referenceFile : "None (Inferred REF)"));
         System.out.println("Output VCF:     " + outputFile);
-        System.out.println("Ploidy:         " + ploidy);
+        System.out.println("Ploidy:         " + (autoPloidy ? "Auto-estimate" : ploidy));
         System.out.println("Preset Model:   " + preset.toUpperCase());
         System.out.println("Threads:        " + threads);
-        System.out.println("Filters:        MinDepth > " + minDepth + ", MinMAPQ > " + minMapq + ", MinBaseQual > " + minQual + ", MinAF > " + minAf);
+        System.out.println("Filters:        MinDepth > " + minDepth + ", MinMAPQ > " + minMapq + ", MinBaseQual > " + minQual + ", MinAF > " + minAf + ", MAF > " + maf + ", MinCallRate > " + minCallRate);
         System.out.println("=================================================\n");
 
         long startTime = System.currentTimeMillis();
 
         VariantCaller caller = new VariantCaller(samtoolsPath, minDepth, minMapq, minQual, minAf);
+        caller.setAutoPloidy(autoPloidy);
         File inPath = new File(inputFile);
 
         if (inPath.isDirectory()) {
@@ -79,19 +89,35 @@ public class VariantCallCommand implements Callable<Integer> {
 
             for (int i = 0; i < files.length; i++) {
                 File bamFile = files[i];
-                System.out.println("\n[Batch] (" + (i+1) + "/" + files.length + ") Processing sample: " + bamFile.getName());
                 
+                // Draw interactive progress bar
+                int percent = (int) (((double) i / files.length) * 100);
+                int numBars = (percent * 30) / 100;
+                StringBuilder barStr = new StringBuilder();
+                for (int b = 0; b < 30; b++) {
+                    if (b < numBars) barStr.append("█");
+                    else barStr.append("░");
+                }
+                System.out.printf("\r[Progress] [%s] %d%% (%d/%d samples) - Processing: %s", 
+                                  barStr.toString(), percent, i, files.length, bamFile.getName());
+                System.out.flush();
+
                 String tempVcfPath = new File(tempDir, bamFile.getName() + ".vcf").getAbsolutePath();
                 try {
                     caller.callVariants(bamFile.getAbsolutePath(), referenceFile, ploidy, threads, preset, tempVcfPath);
                     tempVcfs.add(tempVcfPath);
                 } catch (Exception e) {
-                    System.out.println("⚠️ Warning: Failed to process " + bamFile.getName() + ": " + e.getMessage());
+                    System.out.println("\n⚠️ Warning: Failed to process " + bamFile.getName() + ": " + e.getMessage());
                 }
             }
 
+            // Print completed progress bar
+            StringBuilder compBar = new StringBuilder();
+            for (int b = 0; b < 30; b++) compBar.append("█");
+            System.out.printf("\r[Progress] [%s] 100%% (%d/%d samples) - Complete!\n", compBar.toString(), files.length, files.length);
+
             System.out.println("\n[Batch] Variant calling complete for all samples. Merging into unified Population VCF...");
-            org.cenicana.bio.core.VcfMerger merger = new org.cenicana.bio.core.VcfMerger(tempVcfs, outputFile);
+            org.cenicana.bio.core.VcfMerger merger = new org.cenicana.bio.core.VcfMerger(tempVcfs, outputFile, maf, minCallRate);
             merger.merge();
 
         } else {

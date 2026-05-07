@@ -12,10 +12,19 @@ public class VcfMerger {
 
     private List<String> inputFiles;
     private File outputFile;
+    private double maf = 0.0;
+    private double minCallRate = 0.0;
 
     public VcfMerger(List<String> inputFiles, String outputPath) {
         this.inputFiles = inputFiles;
         this.outputFile = new File(outputPath);
+    }
+
+    public VcfMerger(List<String> inputFiles, String outputPath, double maf, double minCallRate) {
+        this.inputFiles = inputFiles;
+        this.outputFile = new File(outputPath);
+        this.maf = maf;
+        this.minCallRate = minCallRate;
     }
 
     public void merge() throws IOException {
@@ -56,12 +65,27 @@ public class VcfMerger {
             if (firstLine != null) pq.add(firstLine);
         }
 
+        int totalSnpsBefore = 0;
+        int totalSnpsAfter = 0;
+        int tsCount = 0;
+        int tvCount = 0;
+
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)))) {
             // Write Header
             writer.println("##fileformat=VCFv4.2");
             writer.println("##source=BioJavaVcfMerger");
-            writer.println("##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples with Data\">");
+            writer.println("##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">");
+            writer.println("##INFO=<ID=AF,Number=A,Type=Float,Description=\"Alternative Allele Frequency\">");
+            writer.println("##INFO=<ID=AC,Number=A,Type=Integer,Description=\"Allele count in genotypes\">");
+            writer.println("##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total number of alleles in called genotypes\">");
+            writer.println("##INFO=<ID=MQ,Number=1,Type=Float,Description=\"RMS Mapping Quality\">");
             writer.println("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");
+            writer.println("##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Genotype Quality\">");
+            writer.println("##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allelic Depths\">");
+            writer.println("##FORMAT=<ID=ADF,Number=R,Type=Integer,Description=\"Allelic Depths on Forward Strand\">");
+            writer.println("##FORMAT=<ID=ADR,Number=R,Type=Integer,Description=\"Allelic Depths on Reverse Strand\">");
+            writer.println("##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">");
+            writer.println("##FORMAT=<ID=DS,Number=1,Type=Integer,Description=\"Dosage of the alternative allele\">");
             writer.print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT");
             for (String sample : allSamples) writer.print("\t" + sample);
             writer.println();
@@ -77,20 +101,16 @@ public class VcfMerger {
                     currentSites.add(pq.poll());
                 }
 
-                // Merge genotypes for this site
+                totalSnpsBefore++;
                 VcfLine lead = currentSites.get(0);
-                StringBuilder mergedLine = new StringBuilder();
-                mergedLine.append(lead.chr).append("\t")
-                          .append(lead.pos).append("\t")
-                          .append(lead.id).append("\t")
-                          .append(lead.ref).append("\t")
-                          .append(lead.alt).append("\t")
-                          .append(lead.qual).append("\t")
-                          .append(lead.filter).append("\t")
-                          .append(lead.info).append("\t")
-                          .append(lead.format);
 
                 // Fill genotypes for all samples
+                List<String> mergedGenotypes = new ArrayList<>();
+                int calledSamples = 0;
+                int altAlleles = 0;
+                int totalAlleles = 0;
+                int totalDP = 0;
+
                 for (String sample : allSamples) {
                     String genotype = "./.";
                     for (VcfLine site : currentSites) {
@@ -101,7 +121,68 @@ public class VcfMerger {
                             break; 
                         }
                     }
-                    mergedLine.append("\t").append(genotype);
+                    mergedGenotypes.add(genotype);
+
+                    if (!genotype.startsWith("./.")) {
+                        calledSamples++;
+                        String[] parts = genotype.split(":");
+                        String gt = parts[0];
+                        for (char c : gt.toCharArray()) {
+                            if (c == '0') totalAlleles++;
+                            else if (c == '1') {
+                                totalAlleles++;
+                                altAlleles++;
+                            }
+                        }
+                        if (parts.length > 5) {
+                            try {
+                                totalDP += Integer.parseInt(parts[5]);
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                }
+
+                double callRate = (double) calledSamples / allSamples.size();
+                double altFreq = totalAlleles > 0 ? (double) altAlleles / totalAlleles : 0.0;
+                double mafValue = Math.min(altFreq, 1.0 - altFreq);
+
+                // Apply Population Filters (MAF and Call Rate)
+                if (mafValue < maf || callRate < minCallRate) {
+                    // Refill PQ and continue
+                    for (VcfLine site : currentSites) {
+                        VcfLine next = readNextGenomicLine(readers.get(site.fileIndex), site.fileIndex);
+                        if (next != null) pq.add(next);
+                    }
+                    continue;
+                }
+
+                totalSnpsAfter++;
+
+                // Track Transitions/Transversions
+                char r = Character.toUpperCase(lead.ref.charAt(0));
+                char a = Character.toUpperCase(lead.alt.charAt(0));
+                if ((r == 'A' && a == 'G') || (r == 'G' && a == 'A') || (r == 'C' && a == 'T') || (r == 'T' && a == 'C')) {
+                    tsCount++;
+                } else {
+                    tvCount++;
+                }
+
+                // Update INFO field with population metrics
+                String populationInfo = String.format(Locale.US, "DP=%d;AF=%.4f;AC=%d;AN=%d;MQ=60", totalDP, altFreq, altAlleles, totalAlleles);
+
+                StringBuilder mergedLine = new StringBuilder();
+                mergedLine.append(lead.chr).append("\t")
+                          .append(lead.pos).append("\t")
+                          .append(lead.id).append("\t")
+                          .append(lead.ref).append("\t")
+                          .append(lead.alt).append("\t")
+                          .append(lead.qual).append("\t")
+                          .append(lead.filter).append("\t")
+                          .append(populationInfo).append("\t")
+                          .append(lead.format);
+
+                for (String gt : mergedGenotypes) {
+                    mergedLine.append("\t").append(gt);
                 }
                 writer.println(mergedLine.toString());
 
@@ -111,6 +192,21 @@ public class VcfMerger {
                     if (next != null) pq.add(next);
                 }
             }
+
+            // Print beautiful population genetics diagnostics
+            double tsTvRatio = tvCount > 0 ? (double) tsCount / tvCount : 0.0;
+            System.out.println("\n=================================================");
+            System.out.println("BioJava: Population Genetics Diagnostic Report");
+            System.out.println("=================================================");
+            System.out.printf("Total SNP Candidate Sites:  %d\n", totalSnpsBefore);
+            System.out.printf("Passed Quality Filters:     %d (%.1f%%)\n", totalSnpsAfter, (totalSnpsBefore > 0 ? (totalSnpsAfter * 100.0 / totalSnpsBefore) : 0.0));
+            System.out.printf("Filtered Out Sites:         %d\n", (totalSnpsBefore - totalSnpsAfter));
+            System.out.println("-------------------------------------------------");
+            System.out.printf("Transitions (Ts):           %d\n", tsCount);
+            System.out.printf("Transversions (Tv):         %d\n", tvCount);
+            System.out.printf("Ts/Tv Ratio:                %.2f %s\n", tsTvRatio, (tsTvRatio >= 1.5 && tsTvRatio <= 2.2 ? "✅ (Expected Genomic Range)" : "⚠️ (Sub-optimal, possible sequencing noise)"));
+            System.out.println("=================================================");
+
         } finally {
             for (BufferedReader br : readers) br.close();
         }

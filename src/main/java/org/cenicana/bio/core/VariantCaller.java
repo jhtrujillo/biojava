@@ -163,6 +163,11 @@ public class VariantCaller {
     private final int minMapQ;
     private final int minBaseQual;
     private final double minAltFreq;
+    private boolean autoPloidy = false;
+
+    public void setAutoPloidy(boolean autoPloidy) {
+        this.autoPloidy = autoPloidy;
+    }
 
     public VariantCaller(String samtoolsPath, int minDepth, int minMapQ, int minBaseQual, double minAltFreq) {
         this.samtoolsPath = samtoolsPath != null ? samtoolsPath : "samtools";
@@ -473,6 +478,11 @@ public class VariantCaller {
             avgDepth = countPositions > 0 ? (sumDepth / countPositions) : 1.0;
             System.out.printf(Locale.US, "[Caller] [%s] Calculated average local coverage: %.2fx\n", chrom, avgDepth);
         }
+        int activePloidy = ploidy;
+        if (autoPloidy) {
+            activePloidy = estimatePloidy(pileup.values());
+            System.out.println("[Caller] [" + chrom + "] Automatically estimated individual ploidy level: " + activePloidy + "x");
+        }
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(outFile))) {
             for (Map.Entry<Long, PileupPosition> entry : pileup.entrySet()) {
@@ -530,9 +540,9 @@ public class VariantCaller {
                     }
 
                     // Genotyping dosage estimation for polyploids
-                    int localPloidy = ploidy;
+                    int localPloidy = activePloidy;
                     if (dynamicPloidy) {
-                        localPloidy = (int) Math.round((double) p.depth * ploidy / avgDepth);
+                        localPloidy = (int) Math.round((double) p.depth * activePloidy / avgDepth);
                         localPloidy = Math.max(1, localPloidy);
                     }
                     int dosage = (int) Math.round(altFreq * localPloidy);
@@ -561,6 +571,42 @@ public class VariantCaller {
                 }
             }
         }
+    }
+
+    private int estimatePloidy(Collection<PileupPosition> positions) {
+        List<Double> altFreqs = new ArrayList<>();
+        for (PileupPosition p : positions) {
+            if (p.depth >= 10) {
+                char ref = p.getMajorAlt(' ');
+                int altCount = p.getAltCount(ref);
+                double altFreq = (double) altCount / p.depth;
+                if (altFreq >= 0.1 && altFreq <= 0.9) {
+                    altFreqs.add(altFreq);
+                }
+            }
+        }
+
+        if (altFreqs.isEmpty()) {
+            return 2; // Default to diploid if no data
+        }
+
+        int bestPloidy = 2;
+        double minResidual = Double.MAX_VALUE;
+
+        for (int pCand = 2; pCand <= 10; pCand++) {
+            double totalResidual = 0;
+            for (double af : altFreqs) {
+                double val = af * pCand;
+                double residual = Math.abs(val - Math.round(val));
+                totalResidual += residual;
+            }
+            double avgResidual = totalResidual / altFreqs.size();
+            if (avgResidual < minResidual) {
+                minResidual = avgResidual;
+                bestPloidy = pCand;
+            }
+        }
+        return bestPloidy;
     }
 
     /**

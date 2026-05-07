@@ -62,3 +62,22 @@ java -jar target/biojava.jar call-variants \
 
 echo -e "\n=== VCF RESULTANTE ==="
 cat results/final_population.vcf | grep -v "##"
+
+echo -e "\n\n🚀 TEST DE ESTIMACIÓN AUTOMÁTICA DE PLOIDÍA (--auto-ploidy)..."
+java -jar target/biojava.jar call-variants \
+  -i results/population_test \
+  -r results/simulated_ref.fasta \
+  -o results/final_population_autoploidy.vcf \
+  --auto-ploidy \
+  --preset freebayes \
+  -t 2
+
+echo -e "\n\n🚀 TEST DE FILTRADO POBLACIONAL (Call Rate > 80%): Esperamos 0 SNPs..."
+java -jar target/biojava.jar call-variants \
+  -i results/population_test \
+  -r results/simulated_ref.fasta \
+  -o results/final_population_filtered.vcf \
+  --min-call-rate 0.8 \
+  --preset freebayes \
+  -t 2
+
