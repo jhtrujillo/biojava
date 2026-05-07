@@ -489,7 +489,11 @@ public class VariantCaller {
             pw.println("##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allelic Depths\">");
             pw.println("##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">");
             pw.println("##FORMAT=<ID=DS,Number=1,Type=Integer,Description=\"Dosage of the alternative allele\">");
-            pw.println("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMPLE");
+            String sampleName = new java.io.File(sourceBam).getName();
+            if (sampleName.toLowerCase().endsWith(".bam") || sampleName.toLowerCase().endsWith(".sam")) {
+                sampleName = sampleName.substring(0, sampleName.length() - 4);
+            }
+            pw.println("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + sampleName);
 
             // Append chunk records
             for (File chunk : chunkFiles) {
