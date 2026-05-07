@@ -517,26 +517,28 @@ public class VariantCaller {
                     if (alt == 'N')
                         continue;
 
+                    boolean isFiltered = false;
+
                     // Strand-bias filter: require alternative allele to be observed in both forward
                     // and reverse reads
                     if (!p.hasStrandSupport(alt)) {
-                        continue;
+                        isFiltered = true;
                     }
 
                     // Preset-specific filters
-                    if (isFreebayes) {
+                    if (!isFiltered && isFreebayes) {
                         // Read Position Bias Filter: Discard if alt alleles are clustered at the very
                         // ends of reads
                         double avgPos = p.getAvgReadPos(alt);
                         if (avgPos < 5.0)
-                            continue;
+                            isFiltered = true;
                     }
 
-                    if (isGatk) {
+                    if (!isFiltered && isGatk) {
                         // Strict Base Quality Filter: Require high average base quality for the alt
                         // allele
                         if (p.getAvgBaseQual(alt) < minBaseQual + 10)
-                            continue;
+                            isFiltered = true;
                     }
 
                     // Genotyping dosage estimation for polyploids
@@ -547,7 +549,7 @@ public class VariantCaller {
                     }
                     int dosage = (int) Math.round(altFreq * localPloidy);
                     dosage = Math.max(0, Math.min(localPloidy, dosage));
-                    String gt = formatGenotype(dosage, localPloidy);
+                    String gt = isFiltered ? "./." : formatGenotype(dosage, localPloidy);
 
                     // Bayesian Genotype Quality (GQ) Approximation for FreeBayes/GATK
                     int gq = 30; // Default heuristic
