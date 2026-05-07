@@ -134,11 +134,13 @@ public class VcfMerger {
                                 altAlleles++;
                             }
                         }
-                        if (parts.length > 5) {
-                            try {
-                                totalDP += Integer.parseInt(parts[5]);
-                            } catch (Exception ignored) {}
-                        }
+                    }
+                    
+                    String[] parts = genotype.split(":");
+                    if (parts.length > 5) {
+                        try {
+                            totalDP += Integer.parseInt(parts[5]);
+                        } catch (Exception ignored) {}
                     }
                 }
 
