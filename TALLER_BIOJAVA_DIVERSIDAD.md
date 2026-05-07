@@ -30,6 +30,16 @@ El parámetro `--preset` es el "cerebro" matemático del llamado:
 *   `freebayes` *(Recomendado)*: Todo lo de `ngsep`, más filtros de sesgo de posición de lectura y cálculo bayesiano de la Calidad de Genotipo (`GQ`).
 *   `gatk`: Escrutinio extremo de calidad de bases para eliminar cualquier posible ruido.
 
+### Métricas de Calidad Avanzadas en el VCF Resultante
+Tu VCF unificado incluye métricas críticas para análisis de control de calidad:
+*   **Campos INFO (Sitio Global)**:
+    *   `AC` (*Allele Count*): Cuenta acumulada de alelos alternativos en los genotipos llamados.
+    *   `AN` (*Allele Number*): Número total de alelos del genotipo de la población.
+    *   `MQ` (*Mapping Quality*): Calidad de mapeo RMS global.
+*   **Campos FORMAT (Muestra Individual)**:
+    *   `ADF` y `ADR`: Desglose de profundidades de referencia y alternativa observadas en las hebras *Forward* y *Reverse* respectivamente (herramienta clave para auditar sesgos de hebra).
+    *   `GT` (Genotipo), `GQ` (Calidad de Genotipo), `AD` (Profundidades alélicas), `DP` (Profundidad total), y `DS` (Dosaje de alelo alternativo, crítico para GWASpoly).
+
 ---
 
 ## 2. Generación de la Matriz de Distancia Genética

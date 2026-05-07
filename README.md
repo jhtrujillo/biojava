@@ -51,6 +51,9 @@ java -jar target/biojava.jar call-variants -i my_bams_folder/ -r reference.fasta
     *   `ngsep`: Dynamic local ploidy scaling for aneuploids + over-saturation filtering.
     *   `freebayes`: Adds Read Position Bias filtering and Bayesian Genotype Quality (`GQ`) estimation.
     *   `gatk`: Adds strict base quality filtering and MNP heuristics.
+*   **Rich Advanced Metrics**: Generates standard-compliant VCF files populated with critical quality metrics:
+    *   `INFO`: `AC` (Allele Count), `AN` (Allele Number), `MQ` (RMS Mapping Quality), `DP` (Total Depth), and `AF` (Allele Frequency).
+    *   `FORMAT`: `GT` (Genotype), `GQ` (Genotype Quality), `AD` (Allelic Depth), `ADF` (Forward Allelic Depth), `ADR` (Reverse Allelic Depth), `DP` (Read Depth), and `DS` (Allele Dosage).
 
 ---
 
