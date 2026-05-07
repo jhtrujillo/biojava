@@ -35,7 +35,9 @@ public class VcfMerger {
         // 1. Initial Scan for Samples and Headers
         System.out.println("[Vcf-Merge] Collecting sample headers from " + inputFiles.size() + " files...");
         for (int i = 0; i < inputFiles.size(); i++) {
-            try (BufferedReader br = new BufferedReader(new FileReader(inputFiles.get(i)))) {
+            File f = new File(inputFiles.get(i));
+            System.out.println("[Vcf-Merge] Scanning file: " + f.getName() + " (exists: " + f.exists() + ", size: " + f.length() + " bytes)");
+            try (BufferedReader br = new BufferedReader(new FileReader(f))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.startsWith("#CHROM")) {
