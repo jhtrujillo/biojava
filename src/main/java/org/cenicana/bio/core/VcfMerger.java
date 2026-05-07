@@ -116,7 +116,7 @@ public class VcfMerger {
                     for (VcfLine site : currentSites) {
                         List<String> sourceSamples = fileToSamples.get(site.fileIndex);
                         int sampleIdx = sourceSamples.indexOf(sample);
-                        if (sampleIdx != -1) {
+                        if (sampleIdx != -1 && sampleIdx < site.genotypes.length) {
                             genotype = site.genotypes[sampleIdx];
                             break; 
                         }
