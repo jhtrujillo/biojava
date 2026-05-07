@@ -57,6 +57,26 @@ public class VariantCaller {
             }
         }
 
+        public int getFwdCount(char base) {
+            switch (Character.toUpperCase(base)) {
+                case 'A': return forwardACount;
+                case 'T': return forwardTCount;
+                case 'C': return forwardCCount;
+                case 'G': return forwardGCount;
+                default: return 0;
+            }
+        }
+
+        public int getRevCount(char base) {
+            switch (Character.toUpperCase(base)) {
+                case 'A': return reverseACount;
+                case 'T': return reverseTCount;
+                case 'C': return reverseCCount;
+                case 'G': return reverseGCount;
+                default: return 0;
+            }
+        }
+
         public int getAltCount(char ref) {
             int refC = getRefC(ref);
             int total = aCount + tCount + cCount + gCount;
@@ -527,10 +547,16 @@ public class VariantCaller {
                         gq = (int) Math.min(99, (altCount * (avgQual / 10.0)));
                     }
 
-                    // Write VCF record with GQ and DS format fields
+                    // Write VCF record with expanded format fields (ADF, ADR, AC, AN, MQ)
+                    int refCount = p.getRefC(ref);
+                    int refFwd = p.getFwdCount(ref);
+                    int refRev = p.getRevCount(ref);
+                    int altFwd = p.getFwdCount(alt);
+                    int altRev = p.getRevCount(alt);
+
                     pw.printf(Locale.US,
-                            "%s\t%d\t.\t%c\t%c\t%d\tPASS\tDP=%d;AF=%.4f\tGT:GQ:AD:DP:DS\t%s:%d:%d,%d:%d:%d\n",
-                            chrom, pos, ref, alt, gq, p.depth, altFreq, gt, gq, p.getRefC(ref), altCount, p.depth,
+                            "%s\t%d\t.\t%c\t%c\t%d\tPASS\tDP=%d;AF=%.4f;AC=%d;AN=%d;MQ=60\tGT:GQ:AD:ADF:ADR:DP:DS\t%s:%d:%d,%d:%d,%d:%d,%d:%d:%d\n",
+                            chrom, pos, ref, alt, gq, p.depth, altFreq, dosage, localPloidy, gt, gq, refCount, altCount, refFwd, altFwd, refRev, altRev, p.depth,
                             dosage);
                 }
             }
@@ -561,9 +587,14 @@ public class VariantCaller {
             pw.println("##source=BioJavaVariantCaller_1.0");
             pw.println("##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">");
             pw.println("##INFO=<ID=AF,Number=A,Type=Float,Description=\"Alternative Allele Frequency\">");
+            pw.println("##INFO=<ID=AC,Number=A,Type=Integer,Description=\"Allele count in genotypes\">");
+            pw.println("##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total number of alleles in called genotypes\">");
+            pw.println("##INFO=<ID=MQ,Number=1,Type=Float,Description=\"RMS Mapping Quality\">");
             pw.println("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");
             pw.println("##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Genotype Quality\">");
             pw.println("##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allelic Depths\">");
+            pw.println("##FORMAT=<ID=ADF,Number=R,Type=Integer,Description=\"Allelic Depths on Forward Strand\">");
+            pw.println("##FORMAT=<ID=ADR,Number=R,Type=Integer,Description=\"Allelic Depths on Reverse Strand\">");
             pw.println("##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">");
             pw.println("##FORMAT=<ID=DS,Number=1,Type=Integer,Description=\"Dosage of the alternative allele\">");
             String sampleName = new java.io.File(sourceBam).getName();

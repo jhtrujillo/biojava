@@ -84,7 +84,11 @@ public class VcfMerger {
                           .append(lead.pos).append("\t")
                           .append(lead.id).append("\t")
                           .append(lead.ref).append("\t")
-                          .append(lead.alt).append("\t.\t.\t.\tGT");
+                          .append(lead.alt).append("\t")
+                          .append(lead.qual).append("\t")
+                          .append(lead.filter).append("\t")
+                          .append(lead.info).append("\t")
+                          .append(lead.format);
 
                 // Fill genotypes for all samples
                 for (String sample : allSamples) {
@@ -127,7 +131,7 @@ public class VcfMerger {
     private static class VcfLine implements Comparable<VcfLine> {
         String chr;
         int pos;
-        String id, ref, alt;
+        String id, ref, alt, qual, filter, info, format;
         String[] genotypes;
         int fileIndex;
 
@@ -138,6 +142,10 @@ public class VcfMerger {
             this.id = cols[2];
             this.ref = cols[3];
             this.alt = cols[4];
+            this.qual = cols[5];
+            this.filter = cols[6];
+            this.info = cols[7];
+            this.format = cols[8];
             this.fileIndex = fileIndex;
             this.genotypes = new String[cols.length - 9];
             System.arraycopy(cols, 9, this.genotypes, 0, cols.length - 9);
