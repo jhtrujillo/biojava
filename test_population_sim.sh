@@ -1,43 +1,54 @@
 #!/bin/bash
+[ignoring loop detection]
 
-# Script para simular una población y probar el Variant Caller Conjunto
 mkdir -p results/population_test
 
-echo "Generando muestra 1 (Homocigoto Referencia - 0/0/0/0)..."
+# Definición de Secuencias Base (Longitud 100)
+# Ref: 'A' x 49 + 'C' + 'A' x 50
+ref_seq="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+# SNP All (G at 120, T at 150, G at 180)
+snp_all="AAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+
+# Calidad Phred (100 'I's)
+qual="IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+
+echo "Generando muestra 1 (Homocigoto Referencia)..."
 cat <<EOF > results/population_test/Sample1.sam
 @SQ	SN:chr1	LN:280
 @SQ	SN:chr2	LN:280
 EOF
 for i in {1..10}; do
-  echo -e "read${i}_s1\t0\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample1.sam
+  echo -e "read${i}_s1\t0\tchr1\t101\t60\t100M\t*\t0\t0\t${ref_seq}\t${qual}" >> results/population_test/Sample1.sam
 done
 
-echo "Generando muestra 2 (Heterocigoto - 0/0/1/1)..."
+echo "Generando muestra 2 (Mutaciones Variadas - Heterocigoto)..."
 cat <<EOF > results/population_test/Sample2.sam
 @SQ	SN:chr1	LN:280
 @SQ	SN:chr2	LN:280
 EOF
+# 5 lecturas de referencia
 for i in {1..5}; do
-  # Reads Reference (C)
-  echo -e "read${i}_ref_s2\t0\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample2.sam
+  echo -e "read${i}_ref_s2\t0\tchr1\t101\t60\t100M\t*\t0\t0\t${ref_seq}\t${qual}" >> results/population_test/Sample2.sam
 done
+# 3 lecturas forward con mutaciones
 for i in {6..8}; do
-  echo -e "read${i}_alt_fwd_s2\t0\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample2.sam
+  echo -e "read${i}_alt_fwd_s2\t0\tchr1\t101\t60\t100M\t*\t0\t0\t${snp_all}\t${qual}" >> results/population_test/Sample2.sam
 done
+# 2 lecturas reverse con mutaciones
 for i in {9..10}; do
-  echo -e "read${i}_alt_rev_s2\t16\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample2.sam
+  echo -e "read${i}_alt_rev_s2\t16\tchr1\t101\t60\t100M\t*\t0\t0\t${snp_all}\t${qual}" >> results/population_test/Sample2.sam
 done
 
-echo "Generando muestra 3 (Homocigoto Alternativo - 1/1/1/1)..."
+echo "Generando muestra 3 (Homocigoto Alternativo)..."
 cat <<EOF > results/population_test/Sample3.sam
 @SQ	SN:chr1	LN:280
 @SQ	SN:chr2	LN:280
 EOF
 for i in {1..5}; do
-  echo -e "read${i}_fwd_s3\t0\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample3.sam
+  echo -e "read${i}_fwd_s3\t0\tchr1\t101\t60\t100M\t*\t0\t0\t${snp_all}\t${qual}" >> results/population_test/Sample3.sam
 done
 for i in {6..10}; do
-  echo -e "read${i}_rev_s3\t16\tchr1\t101\t60\t100M\t*\t0\t0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\tIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" >> results/population_test/Sample3.sam
+  echo -e "read${i}_rev_s3\t16\tchr1\t101\t60\t100M\t*\t0\t0\t${snp_all}\t${qual}" >> results/population_test/Sample3.sam
 done
 
 echo "Ejecutando BioJava Population Variant Caller..."
