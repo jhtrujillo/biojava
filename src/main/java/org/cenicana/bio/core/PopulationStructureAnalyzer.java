@@ -31,6 +31,7 @@ public class PopulationStructureAnalyzer {
         public double[][] dapcMatrix; // Linear Discriminants (LDs)
         public double[][] ancestryProportions; // [numSamples][k] probabilities
         public double[][] kinshipMatrix; // Genomic Relationship Matrix (VanRaden)
+        public double[][] gwasPolyKinshipMatrix; // Genomic Relationship Matrix (GWASpoly)
     }
 
     /**
@@ -257,6 +258,10 @@ public class PopulationStructureAnalyzer {
         // Compute Kinship Matrix (VanRaden)
         System.out.println("[PCA] Computing Kinship matrix (VanRaden)...");
         result.kinshipMatrix = calculateVanRadenKinship(dosageMatrix, ploidy);
+
+        // Compute Kinship Matrix (GWASpoly)
+        System.out.println("[PCA] Computing Kinship matrix (GWASpoly)...");
+        result.gwasPolyKinshipMatrix = calculateGwasPolyKinship(dosageMatrix);
 
         return result;
     }
@@ -813,22 +818,30 @@ public class PopulationStructureAnalyzer {
         System.out.println("[PCA] Results exported to: " + outputPath);
     }
 
-    public void exportKinship(PcaResult result, String outputPath) throws IOException {
+    public void exportKinshipMatrix(String[] sampleNames, double[][] matrix, String outputPath) throws IOException {
         try (PrintWriter pw = new PrintWriter(new FileWriter(outputPath))) {
             // Header: Sample names
             pw.print("Sample");
-            for (String name : result.sampleNames) pw.print("," + name);
+            for (String name : sampleNames) pw.print("," + name);
             pw.println();
 
             // Rows
-            for (int i = 0; i < result.sampleNames.length; i++) {
-                pw.print(result.sampleNames[i]);
-                for (int j = 0; j < result.sampleNames.length; j++) {
-                    pw.printf(Locale.US, ",%.6f", result.kinshipMatrix[i][j]);
+            for (int i = 0; i < sampleNames.length; i++) {
+                pw.print(sampleNames[i]);
+                for (int j = 0; j < sampleNames.length; j++) {
+                    pw.printf(Locale.US, ",%.6f", matrix[i][j]);
                 }
                 pw.println();
             }
         }
         System.out.println("[PCA] Kinship matrix exported to: " + outputPath);
+    }
+
+    public void exportKinship(PcaResult result, String outputPath) throws IOException {
+        exportKinshipMatrix(result.sampleNames, result.kinshipMatrix, outputPath);
+    }
+
+    public void exportGwasPolyKinship(PcaResult result, String outputPath) throws IOException {
+        exportKinshipMatrix(result.sampleNames, result.gwasPolyKinshipMatrix, outputPath);
     }
 }

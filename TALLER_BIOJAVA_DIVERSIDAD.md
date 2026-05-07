@@ -7,7 +7,32 @@ BioJava permite calcular matrices de distancia genética de forma eficiente util
 
 ---
 
-## 1. Generación de la Matriz de Distancia Genética
+## 1. Llamado de Variantes de Alta Precisión (`call-variants`)
+
+El primer paso fundamental en cualquier flujo de trabajo es identificar los polimorfismos (SNPs e Indels) a partir de los datos de secuenciación alineados (archivos BAM). BioJava ofrece un llamador de variantes paralelizado diseñado para tolerar la aneuploidía y la alta cobertura de cultivos como la caña.
+
+### Procesamiento de un Archivo Único vs. Poblacional
+
+Puedes procesar un único individuo, o pasarle **una carpeta entera** con cientos de archivos BAM para que BioJava los procese y los unifique automáticamente en una gran matriz de genotipos.
+
+```bash
+# Opción A: Muestra Única
+java -jar target/biojava.jar call-variants -i benchmarks/sugarcane/cc-01-1940_aligned.bam -r genomas/saccharum.fasta -o cc-01-1940.vcf -p 10 --preset freebayes -t 8
+
+# Opción B: Lote Poblacional (Joint Calling optimizado)
+java -jar target/biojava.jar call-variants -i carpeta_bams/ -r genomas/saccharum.fasta -o matriz_poblacional.vcf -p 10 --preset freebayes -t 8
+```
+
+### Explicación de los Presets (`--preset`)
+El parámetro `--preset` es el "cerebro" matemático del llamado:
+*   `fast`: Velocidad máxima, filtros básicos.
+*   `ngsep`: Usa **Ploidía Dinámica**, ajustando el número de copias esperado en cada región según la profundidad local de cobertura (ideal para aneuploidías). Desactiva regiones hiper-repetitivas.
+*   `freebayes` *(Recomendado)*: Todo lo de `ngsep`, más filtros de sesgo de posición de lectura y cálculo bayesiano de la Calidad de Genotipo (`GQ`).
+*   `gatk`: Escrutinio extremo de calidad de bases para eliminar cualquier posible ruido.
+
+---
+
+## 2. Generación de la Matriz de Distancia Genética
 
 Para este ejercicio, utilizaremos el set de datos filtrado de la población **CC 01-1940**.
 

@@ -39,10 +39,25 @@ mvn clean package -DskipTests
 
 ---
 
-## Step 2: Initial Dataset Diagnostics (`vcf-stats`)
+## Step 2: High-Performance Variant Calling (`call-variants`)
+From raw alignments to a unified Population VCF with advanced mathematical models.
+```bash
+# Process a single BAM or an entire folder of BAMs automatically
+java -jar target/biojava.jar call-variants -i my_bams_folder/ -r reference.fasta -o population.vcf -p 10 --preset freebayes -t 8
+```
+*   **Batch/Population Mode**: Pass a folder to `-i` and BioJava will process all BAMs and automatically merge them into a multi-sample VCF.
+*   **Presets (`--preset`)**: 
+    *   `fast`: Standard heuristics.
+    *   `ngsep`: Dynamic local ploidy scaling for aneuploids + over-saturation filtering.
+    *   `freebayes`: Adds Read Position Bias filtering and Bayesian Genotype Quality (`GQ`) estimation.
+    *   `gatk`: Adds strict base quality filtering and MNP heuristics.
+
+---
+
+## Step 3: Initial Dataset Diagnostics (`vcf-stats`)
 Always start by understanding the raw state of your VCF.
 ```bash
-java -jar target/biojava.jar vcf-stats -v raw_data.vcf -o initial_stats -p 10
+java -jar target/biojava.jar vcf-stats -v population.vcf -o initial_stats -p 10
 ```
 *   **Result**: Creates an interactive dashboard (`initial_stats.html`) showing allele frequencies, depth distributions, and missingness.
 *   **Use this to**: Decide your filtering thresholds (MAF and missingness).
