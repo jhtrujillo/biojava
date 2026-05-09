@@ -463,6 +463,30 @@ java -jar target/biojava.jar gwas \
 ---
 
 
+## 12. Construcción de Mapas Genéticos de Precisión (`genetic-map`) (NUEVO)
+
+La construcción de mapas genéticos de ligamiento es indispensable para mapear QTLs y ensamblar genomas. En caña de azúcar, debido a la mezcla de ploidías y aneuploidías, calcular distancias genéticas en centimorgans (cM) es un desafío.
+
+BioJava integra un estimador de ligamiento basado en la correlación de dosajes alélicos continuos ($r = 0.5 \times (1 - |R|)$), agrupamiento jerárquico de enlace simple, y ordenamiento de marcadores mediante heurísticas 2-Opt para resolver el problema del viajante (TSP) genético de forma ultrarrápida.
+
+### Comando de ejecución
+```bash
+java -jar target/biojava.jar genetic-map \
+  -i benchmarks/sugarcane/cc-01-1940_flye_polishing_allhic_220_standarfiltered.vcf \
+  -o taller_bioinformatica/mapa_genetico.map \
+  --lod 3.0 \
+  --max-r 0.35 \
+  --mapping-function kosambi
+```
+
+### ¿Qué aprenderemos en este módulo?
+1. **Agrupamiento en Cromosomas**: El algoritmo agrupa dinámicamente tus miles de SNPs en grupos de ligamiento (Linkage Groups, LG) según el umbral `--lod` y `--max-r`.
+2. **Ordenamiento Lineal Robusto**: Utiliza optimización combinatoria (heurística 2-Opt) para encontrar el orden de marcadores que minimiza la distancia total recombinante de cada cromosoma.
+3. **Mapeo de Distancias en cM**: Aplica las funciones de Kosambi o Haldane para traducir frecuencias recombinantes a distancias genéticas reales.
+
+---
+
+
 ## Conclusión
 El uso de la Suite BioJava permite a los mejoradores capturar la verdadera variación genética en poliploides, facilitando decisiones más precisas desde la estructura poblacional hasta la validación de marcadores funcionales en el laboratorio.
 

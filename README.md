@@ -365,6 +365,34 @@ BioJava includes a dedicated engine for **GWASpoly** compatibility, ensuring tha
 | `--maf` | **(Optional)** Minimum Allele Frequency filter (Default: 0.05) |
 | `-o` / `--output` | **(Optional)** Path for the interactive HTML dashboard |
 
+## Step 14: Genetic Mapping Construction (`genetic-map`)
+Build highly precise genetic linkage maps directly from population-wide segregating VCF files or segregation matrices:
+
+```bash
+java -jar target/biojava.jar genetic-map \
+  -i population.vcf \
+  -o final_genetic_map.map \
+  --lod 3.0 \
+  --max-r 0.35 \
+  --mapping-function kosambi
+```
+
+### Advanced Analytical Features
+*   **Ploidy-Independent Linkage Analysis**: Calculates pairwise Pearson correlation coefficients ($R$) across all sample dosages. The recombination frequency ($r$) is estimated as: $r = 0.5 \times (1 - |R|)$. This works perfectly for diploids and highly complex polyploids (e.g. sugarcane).
+*   **LOD Estimation**: Computes the logarithm of odds: $\text{LOD} = -0.5 \times N \times \log_{10}(1 - R^2)$, providing a highly robust statistical threshold for linkage testing.
+*   **Single-Linkage Clustering**: Groups linked markers into Linkage Groups (chromosomes) dynamically based on the requested minimum LOD and maximum recombination frequency thresholds.
+*   **Marker Ordering (TSP 2-Opt)**: Solves the Traveling Salesperson Problem (TSP) on recombination frequencies to find the linear order of markers that minimizes the total chromosome length, optimized via a high-performance 2-Opt heuristic.
+*   **Mapping Functions**: Supports both **Kosambi** (accounts for chromosomal interference) and **Haldane** mapping functions to convert recombination frequencies to genetic distances in Centimorgans (cM).
+
+### Parameters
+| Flag | Description | Default |
+|---|---|---|
+| `-i` / `--input` | **(Required)** Input VCF file containing population genotypes | N/A |
+| `-o` / `--output` | **(Required)** Output path for the final `.map` file | N/A |
+| `--lod` | Minimum LOD threshold to group markers into chromosomes | `3.0` |
+| `--max-r` | Maximum recombination frequency (r) limit for linkage | `0.35` |
+| `--mapping-function` | Function to convert recombination to cM (`kosambi`, `haldane`) | `kosambi` |
+
 ---
 
 *This software is licensed under the MIT License. Developed for Advanced Genomic Breeding.*

@@ -29,7 +29,8 @@ import picocli.CommandLine.Command;
              RelationshipConsensusCommand.class,
              AnnotateMarkersCommand.class,
              GwasCommand.class,
-             VariantCallCommand.class
+             VariantCallCommand.class,
+             GeneticMapCommand.class
          })
 public class VcfToolkit {
 
