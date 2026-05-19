@@ -705,45 +705,6 @@ function renderPhase1Report() {
     document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
     document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
 
-    const totalPairs = allData.length;
-    const blocksMap = d3.group(allData, d => d.b);
-    const totalBlocks = blocksMap.size;
-    let invertedBlocks = 0;
-    blocksMap.forEach(genes => {
-        if (genes[0] && genes[0].o === 'minus') {
-            invertedBlocks++;
-        }
-    });
-
-    const avgGenesPerBlock = totalBlocks > 0 ? (totalPairs / totalBlocks).toFixed(1) : 0;
-    const pctInverted = totalBlocks > 0 ? ((invertedBlocks / totalBlocks) * 100).toFixed(1) : 0;
-
-    // Render Metrics Grid
-    const metricsGrid = document.getElementById('p1-metrics-grid');
-    metricsGrid.innerHTML = `
-        <div class="db-card">
-          <div class="db-card-val">${totalPairs.toLocaleString()}</div>
-          <div class="db-card-lbl">Parejas Sinténicas</div>
-          <div class="db-card-desc">Genes ortólogos emparejados con conservación estructural directa.</div>
-        </div>
-        <div class="db-card accent">
-          <div class="db-card-val">${totalBlocks.toLocaleString()}</div>
-          <div class="db-card-lbl">Bloques Sinténicos</div>
-          <div class="db-card-desc">Segmentos genómicos conservados que contienen múltiples parejas sinténicas.</div>
-        </div>
-        <div class="db-card success">
-          <div class="db-card-val">${avgGenesPerBlock}</div>
-          <div class="db-card-lbl">Promedio Genes / Bloque</div>
-          <div class="db-card-desc">Densidad media de ortólogos conservados por segmento sinténico.</div>
-        </div>
-        <div class="db-card danger">
-          <div class="db-card-val">${invertedBlocks} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${pctInverted}%)</span></div>
-          <div class="db-card-lbl">Bloques Invertidos</div>
-          <div class="db-card-desc">Bloques que muestran orientación opuesta (inversión de hebra) entre ambos genomas.</div>
-        </div>
-    `;
-
-    // Render Balance Table
     const g1Orphans = G1_TOTAL_GENES - G1_SYNTENIC_GENES;
     const g2Orphans = G2_TOTAL_GENES - G2_SYNTENIC_GENES;
     const g1SyntenicPct = ((G1_SYNTENIC_GENES / G1_TOTAL_GENES) * 100).toFixed(1);
@@ -751,6 +712,32 @@ function renderPhase1Report() {
     const g2SyntenicPct = ((G2_SYNTENIC_GENES / G2_TOTAL_GENES) * 100).toFixed(1);
     const g2OrphanPct = ((g2Orphans / G2_TOTAL_GENES) * 100).toFixed(1);
 
+    // Render Metrics Grid
+    const metricsGrid = document.getElementById('p1-metrics-grid');
+    metricsGrid.innerHTML = `
+        <div class="db-card">
+          <div class="db-card-val">${G1_SYNTENIC_GENES.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${g1SyntenicPct}%)</span></div>
+          <div class="db-card-lbl">Genes Sinténicos (${G1_NAME})</div>
+          <div class="db-card-desc">Genes conservados en orden sinténico de un total de ${G1_TOTAL_GENES.toLocaleString()}.</div>
+        </div>
+        <div class="db-card danger">
+          <div class="db-card-val">${g1Orphans.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${g1OrphanPct}%)</span></div>
+          <div class="db-card-lbl">Genes Huérfanos (${G1_NAME})</div>
+          <div class="db-card-desc">Genes específicos de ${G1_NAME} ausentes en el genoma de ${G2_NAME}.</div>
+        </div>
+        <div class="db-card accent">
+          <div class="db-card-val">${G2_SYNTENIC_GENES.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${g2SyntenicPct}%)</span></div>
+          <div class="db-card-lbl">Genes Sinténicos (${G2_NAME})</div>
+          <div class="db-card-desc">Genes conservados en orden sinténico de un total de ${G2_TOTAL_GENES.toLocaleString()}.</div>
+        </div>
+        <div class="db-card danger">
+          <div class="db-card-val">${g2Orphans.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${g2OrphanPct}%)</span></div>
+          <div class="db-card-lbl">Genes Huérfanos (${G2_NAME})</div>
+          <div class="db-card-desc">Genes específicos de ${G2_NAME} ausentes en el genoma de ${G1_NAME}.</div>
+        </div>
+    `;
+
+    // Render Balance Table
     const balanceTable = document.getElementById('p1-balance-table');
     balanceTable.innerHTML = `
         <thead>
