@@ -65,10 +65,28 @@ El escaneo sistemático identificó un total de **770 genes** relacionados con e
 | **Otros del metabolismo de azúcares** | 49 | 6 | 18 | 73 | 67.12% |
 | **TOTAL** | **513** | **91** | **166** | **770** | **66.62%** |
 
+#### Discusión Genómica y Biológica Detallada
+
 > [!IMPORTANT]
-> **Discusión Biológica de la Conservación Estructural (PAVs) en Familias de Azúcar:**
-> 1. **Divergencia Evolutiva por Clase Funcional:** Las familias metabólicas citosólicas centrales como **SPS** (80.49% sintenia) y **SuSy** (82.86% sintenia) muestran el nivel más alto de conservación sinténica. Esto refleja una fuerte restricción evolutiva (selección purificadora macroestructural): la maquinaria de biosíntesis y degradación primaria de sacarosa en el citoplasma es tan crítica que raramente sufre pérdidas o reordenamientos cromosómicos.
-> 2. **Plasticidad en Transportadores de Azúcar (SWEET):** Por el contrario, los transportadores **SWEET** presentan una alta tasa de orfandad (sólo 54.46% de sintenia; 92 genes huérfanos entre G1 y G2). Esta plasticidad indica que la expansión física y las Variaciones de Presencia/Ausencia (PAVs) en los transportadores de la membrana celular y vacuolar representan un mecanismo evolutivo activo en caña de azúcar, permitiendo la adaptación en la partición y el flujo de carbono hacia la vacuola de almacenamiento.
+> **El Contexto Genómico: Sintenia vs. Variaciones de Presencia/Ausencia (PAVs)**
+> La caña de azúcar comercial (*Saccharum* spp.) se caracteriza por un genoma altamente poliploide (usualmente $8x$ a $12x$), redundante y aneuploide. En este escenario, la presencia de un **66.62% de sintenia global** (513 parejas de genes estables de un total de 770) indica que la mayor parte de la maquinaria de acumulación de azúcar se mantiene conservada. Sin embargo, el **33.38% de genes huérfanos** (257 genes en total) revela un alto grado de Variaciones de Presencia/Ausencia (PAVs), lo que sugiere que la evolución adaptativa en caña de azúcar ocurre mediante la duplicación y pérdida diferencial de homólogos y homeólogos.
+
+##### 1. El Núcleo Metabólico Conservado (Selección Purificadora)
+* **Fructosyltransferase (100.00%):** Con 6 genes y cero orfandad, esta ruta de síntesis de fructanos (secundaria en caña de azúcar, que prioriza la acumulación de sacarosa libre) es pequeña y evolutivamente rígida; no tolera variaciones estructurales.
+* **SUT (86.54%):** Los transportadores activos SUT, responsables de la carga y descarga activa de sacarosa en el floema mediante gradientes de protones, muestran una conservación extrema. Esto refleja que cualquier alteración crítica en la translocación a larga distancia compromete severamente la viabilidad fisiológica.
+* **SuSy (82.86%) y SPS (80.49%):** Estas enzimas controlan el flujo de carbono citosólico (SPS en síntesis foliar y SuSy en la degradación/síntesis en sumideros como tallos y raíces). Al ser la maquinaria metabólica central, están bajo una fuerte selección purificadora que restringe la pérdida de eficiencia catalítica.
+
+##### 2. Zonas de Alta Variabilidad y Adaptabilidad Genómica
+* **La Plasticidad de los Transportadores SWEET (54.46%):** Representa el nivel más bajo de sintenia, con 92 genes huérfanos de 202 detectados. Los transportadores SWEET median la difusión facilitada (transporte pasivo) de azúcares y están sujetos a dos presiones clave:
+  1. *Co-evolución con Patógenos:* Las bacterias fitopatógenas (ej. *Xanthomonas*) suelen secuestrar la maquinaria de la planta para sobreexpresar transportadores SWEET en los sitios de infección. La alta tasa de PAVs en la familia SWEET sugiere un mecanismo de defensa activa donde la planta duplica o elimina copias para evadir el secuestro de nutrientes sin colapsar el transporte celular de azúcares.
+  2. *Eficiencia en la Partición de Carbono:* La expansión y pérdida diferencial de homólogos facilita la sintonización del flujo pasivo de azúcares hacia la vacuola de almacenamiento del tallo en respuesta al ambiente o desarrollo.
+* **Invertasas y Fuerza de Sumidero (67.33%):** La presencia de 33 invertasas huérfanas (ácidas y neutras) indica que CC-01-1940 y R570 difieren genéticamente en cómo hidrolizan la sacarosa en tejidos de crecimiento, afectando la tasa de maduración y los balances de hexosa/sacarosa.
+* **Galactosyltransferases y la Pared Celular (63.13%):** Involucradas en la biosíntesis de pectinas y hemicelulosas. Su alta tasa de orfandad (66 genes) sustenta variaciones estructurales en la fibra entre cultivares, impactando la partición de carbono entre biomasa insoluble (fibra) y jugo soluble (sacarosa).
+
+##### 3. Asimetría en la Tasa de Orfandad: R570 vs. CC-01-1940
+Se observa una marcada asimetría en el número de genes huérfanos totales: **166 en R570 (PAV G2)** frente a **91 en CC-01-1940 (PAV G1)**. Esto se asocia a:
+1. *Calidad del Ensamblaje:* El borrador genómico de R570 ha tenido mayor cantidad de rondas de curación y mapeo físico, permitiendo anotar genes en regiones heterocromáticas complejas que en CC-01-1940 pueden haber quedado sin resolver (gap-filling incompleto).
+2. *Expansión Específica:* R570 podría poseer duplicaciones génicas en tándem reales y específicas de su linaje (particularmente en SWEET, donde posee 70 huérfanos frente a 22 de CC-01-1940), confiriéndole su perfil característico de súper-acumulación de sacarosa y alta plasticidad adaptativa.
 
 ---
 

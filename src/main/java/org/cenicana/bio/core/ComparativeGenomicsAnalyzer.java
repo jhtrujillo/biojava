@@ -392,21 +392,113 @@ public class ComparativeGenomicsAnalyzer {
 
         dataJson.append("]");
 
-        // Load HTML template and D3 library from resources
+        // Compute syntenic and orphan counts for both genomes (using unique gene base IDs to avoid duplication)
+        Set<String> pairedG1 = new HashSet<>();
+        Set<String> pairedG2 = new HashSet<>();
+        for (SyntenicBlock block : blocks) {
+            for (SyntenicPair pair : block.getPairs()) {
+                Gene g1 = fastFind(pair.getGeneId1(), map1, base1);
+                Gene g2 = fastFind(pair.getGeneId2(), map2, base2);
+                if (g1 != null) pairedG1.add(g1.getId());
+                if (g2 != null) pairedG2.add(g2.getId());
+            }
+        }
+
+        Set<String> uniqueGenes1 = new HashSet<>();
+        for (Gene g : map1.values()) {
+            uniqueGenes1.add(getGeneBaseId(g.getId()));
+        }
+        int g1Total = uniqueGenes1.size();
+
+        Set<String> uniqueGenes2 = new HashSet<>();
+        for (Gene g : map2.values()) {
+            uniqueGenes2.add(getGeneBaseId(g.getId()));
+        }
+        int g2Total = uniqueGenes2.size();
+
+        Set<String> uniqueSyntenicG1 = new HashSet<>();
+        for (String id : pairedG1) {
+            uniqueSyntenicG1.add(getGeneBaseId(id));
+        }
+        int g1Syntenic = uniqueSyntenicG1.size();
+
+        Set<String> uniqueSyntenicG2 = new HashSet<>();
+        for (String id : pairedG2) {
+            uniqueSyntenicG2.add(getGeneBaseId(id));
+        }
+        int g2Syntenic = uniqueSyntenicG2.size();
+
+        // Count sugar families for G1 and G2
+        Map<String, int[]> familyCounts = new HashMap<>(); // key: family, value: {g1Total, g2Total, g1Syntenic, g2Syntenic}
+        String[] families = {"SPS", "SuSy", "SUT", "SWEET", "Invertasas", "Fructosyltransferase", "Galactosyltransferase", "Otros del metabolismo de azúcares"};
+        for (String f : families) {
+            familyCounts.put(f, new int[4]);
+        }
+
+        Set<String> countedG1Sugar = new HashSet<>();
+        for (Gene g : map1.values()) {
+            String baseId = getGeneBaseId(g.getId());
+            if (countedG1Sugar.contains(baseId)) continue;
+
+            String desc = annot1.getOrDefault(g.getId(), g.getDescription());
+            String fam = classifySugarFamily(desc);
+            if (fam != null) {
+                countedG1Sugar.add(baseId);
+                familyCounts.get(fam)[0]++;
+                if (pairedG1.contains(g.getId())) {
+                    familyCounts.get(fam)[2]++;
+                }
+            }
+        }
+
+        Set<String> countedG2Sugar = new HashSet<>();
+        for (Gene g : map2.values()) {
+            String baseId = getGeneBaseId(g.getId());
+            if (countedG2Sugar.contains(baseId)) continue;
+
+            String desc = annot2.getOrDefault(g.getId(), g.getDescription());
+            String fam = classifySugarFamily(desc);
+            if (fam != null) {
+                countedG2Sugar.add(baseId);
+                familyCounts.get(fam)[1]++;
+                if (pairedG2.contains(g.getId())) {
+                    familyCounts.get(fam)[3]++;
+                }
+            }
+        }
+        StringBuilder famJson = new StringBuilder("{");
+        boolean firstFam = true;
+        for (Map.Entry<String, int[]> entry : familyCounts.entrySet()) {
+            if (!firstFam) famJson.append(",");
+            int[] vals = entry.getValue();
+            famJson.append(String.format(java.util.Locale.US, "\"%s\":{\"g1t\":%d,\"g2t\":%d,\"g1s\":%d,\"g2s\":%d}",
+                    escapeJson(entry.getKey()), vals[0], vals[1], vals[2], vals[3]));
+            firstFam = false;
+        }
+        famJson.append("}");
+
+        // Load HTML template, D3 library, and Marked library from resources
         String template = ResourceUtils.loadResource("synteny_template.html");
         String d3Content = ResourceUtils.loadResource("d3.v7.min.js");
+        String markedContent = ResourceUtils.loadResource("marked.min.js");
         if (template.isEmpty()) {
             throw new IOException("Error loading visualization template: synteny_template.html");
         }
 
         String html = template.replace("/*DATA_JSON*/", dataJson.toString())
                               .replace("/*D3_JS_CONTENT*/", d3Content)
+                              .replace("/*MARKED_JS_CONTENT*/", markedContent)
                               .replace("/*G1_NAME*/", escapeJson(n1))
                               .replace("/*G2_NAME*/", escapeJson(n2))
                               .replace("/*G3_NAME*/", escapeJson(n3))
                               .replace("/*WGD_PEAKS_JSON*/", wgdPeaksJson)
                               .replace("/*TREE_NEWICK*/", escapeJson(treeNewick))
-                              .replace("/*SUBST_RATE*/", String.format(java.util.Locale.US, "%.2e", substitutionRate));
+                              .replace("/*SUBST_RATE*/", String.format(java.util.Locale.US, "%.2e", substitutionRate))
+                              .replace("/*G1_TOTAL_GENES*/", String.valueOf(g1Total))
+                              .replace("/*G2_TOTAL_GENES*/", String.valueOf(g2Total))
+                              .replace("/*G1_SYNTENIC_GENES*/", String.valueOf(g1Syntenic))
+                              .replace("/*G2_SYNTENIC_GENES*/", String.valueOf(g2Syntenic))
+                              .replace("/*SUGAR_FAMILY_JSON*/", famJson.toString());
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputPath))) {
             writer.print(html);
@@ -589,10 +681,38 @@ public class ComparativeGenomicsAnalyzer {
 
     private Map<String, Gene> loadGenes(List<Gene> list) {
         Map<String, Gene> map = new HashMap<>();
+        boolean hasMrna = false;
         for (Gene g : list) {
-            map.put(g.getId(), g);
+            if (g.getType().equalsIgnoreCase("mRNA")) {
+                hasMrna = true;
+                break;
+            }
+        }
+        for (Gene g : list) {
+            if (hasMrna) {
+                if (g.getType().equalsIgnoreCase("mRNA")) {
+                    map.put(g.getId(), g);
+                }
+            } else {
+                if (g.getType().equalsIgnoreCase("gene")) {
+                    map.put(g.getId(), g);
+                }
+            }
         }
         return map;
+    }
+
+    private String getGeneBaseId(String id) {
+        if (id == null) return "";
+        String stripped = id.replaceFirst("(?i)^(gene:|mrna:|transcript:)", "");
+        if (stripped.matches("(?i)^CC\\d+t\\d+.*")) {
+            stripped = stripped.replaceFirst("(?i)t", "g");
+        }
+        int lastDot = stripped.lastIndexOf('.');
+        if (lastDot > 0) {
+            stripped = stripped.substring(0, lastDot);
+        }
+        return stripped;
     }
 
     private Map<String, double[]> calculateKaksParallel(List<SyntenicBlock> blocks, Map<String, Gene> map1, Map<String, Gene> map2,
@@ -788,5 +908,28 @@ public class ComparativeGenomicsAnalyzer {
         VcfRegion(String id, long s, long e) {
             this.blockId = id; this.start = s; this.end = e; this.count = 0;
         }
+    }
+
+    private String classifySugarFamily(String desc) {
+        if (desc == null) return null;
+        String d = desc.toLowerCase();
+        if (d.contains("sucrose-phosphate synthase") || d.contains("sps")) {
+            return "SPS";
+        } else if (d.contains("sucrose synthase") || d.contains("susy")) {
+            return "SuSy";
+        } else if (d.contains("sucrose transporter") || d.contains("sucrose proton") || d.contains("sut")) {
+            return "SUT";
+        } else if (d.contains("sweet") || d.contains("bidirectional sugar transporter")) {
+            return "SWEET";
+        } else if (d.contains("invertase") || d.contains("beta-fructofuranosidase")) {
+            return "Invertasas";
+        } else if (d.contains("fructosyltransferase")) {
+            return "Fructosyltransferase";
+        } else if (d.contains("galactosyltransferase")) {
+            return "Galactosyltransferase";
+        } else if (d.contains("sugar transporter") || d.contains("hexose transporter") || d.contains("monosaccharide transporter") || d.contains("glucose transporter") || d.contains("fructose transporter") || d.contains("erd6")) {
+            return "Otros del metabolismo de azúcares";
+        }
+        return null;
     }
 }
