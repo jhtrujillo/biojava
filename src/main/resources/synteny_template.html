@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>BioJava | Advanced Synteny Explorer</title>
   <script>/*D3_JS_CONTENT*/</script>
+  <script>/*MARKED_JS_CONTENT*/</script>
   <style>
     :root {
       --primary: #2563eb;
@@ -238,11 +239,196 @@
     .legend-item { display: flex; align-items: center; gap: 10px; font-size: 11px; padding: 5px 0; color: var(--text-muted); }
     .legend-swatch { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
 
+    /* Tabs Navigation styling */
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      font-size: 12px;
+      padding: 6px 14px;
+    }
+    .tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .db-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .db-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .db-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--primary);
+    }
+    .db-card.accent::after {
+      background: var(--accent);
+    }
+    .db-card.success::after {
+      background: #10b981;
+    }
+    .db-card.danger::after {
+      background: #ef4444;
+    }
+    .db-card-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+    .db-card-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .db-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* Premium Tables */
+    .db-table-container {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 28px;
+      overflow-x: auto;
+    }
+    .db-table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .db-table-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .db-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .db-table th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.025em;
+    }
+    .db-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text-main);
+    }
+    .db-table tr:hover td {
+      background: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .badge-purifying { background: #d1fae5; color: #065f46; }
+    .badge-positive { background: #fee2e2; color: #991b1b; }
+    .badge-neutral { background: #f1f5f9; color: #475569; }
+    .badge-high { background: #dbeafe; color: #1e40af; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    .badge-low { background: #f3f4f6; color: #374151; }
+
+    /* Layout Sections */
+    .report-section {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .report-title-section {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+    .report-title-section h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .report-title-section p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Alert blocks */
+    .db-alert {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 0 12px 12px 0;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      color: #1e3a8a;
+    }
+    .db-alert h5 {
+      margin: 0 0 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
   </style>
 </head>
 <body>
 <div class="navbar">
   <h1>BioJava | <strong>Advanced Synteny Explorer</strong></h1>
+  <div class="tabs" style="display: flex; gap: 8px; margin-left: 24px; flex: 1;">
+    <button class="btn tab-btn active" id="tab-btn-explorer" onclick="switchTab('explorer')">🔍 Explorador Sintenia</button>
+    <button class="btn tab-btn" id="tab-btn-phase1" onclick="switchTab('phase1')">📊 Estructura y Orfandad</button>
+    <button class="btn tab-btn" id="tab-btn-phase2" onclick="switchTab('phase2')">🧬 Selección y Sacarosa</button>
+  </div>
   <div class="nav-actions">
     <button class="btn btn-primary btn-sm" onclick="exportSVG()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -258,7 +444,9 @@
   </div>
 </div>
 <div class="main-container">
-  <div class="viz-area">
+  <!-- EXPLORADOR TAB -->
+  <div id="explorer-content" style="display: flex; flex: 1; overflow: hidden; width: 100%;">
+    <div class="viz-area">
     <div class="global-stats" id="global-stats"></div>
     <div id="viz"></div>
   </div>
@@ -347,9 +535,113 @@
         </div>
       </div>
     </div>
-        <br>• <strong>&gt; 1 (Positive):</strong> Adaptation. Genes evolving fast to solve new challenges.
-      </p>
+  </div> <!-- end of sidebar -->
+</div> <!-- end of explorer-content -->
+
+  <!-- TAB FASE 1 CONTENT -->
+  <div id="phase1-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>Sintenia Macroestructural y Orfandad</h2>
+        <p>Análisis a nivel de genoma completo (Fase 1) entre <strong><span class="g1-name-placeholder"></span></strong> y <strong><span class="g2-name-placeholder"></span></strong></p>
+      </div>
+      
+      <div class="db-alert">
+        <h5>💡 Significado Biológico y Técnico de la Sintenia y PAVs</h5>
+        En genomas híbridos poliploides complejos como la caña de azúcar, la conservación del orden sinténico (sintenia) es un indicador del núcleo genómico ancestral conservado. Por otro lado, la presencia de genes huérfanos (variaciones de presencia/ausencia o PAVs) denota regiones de alta plasticidad evolutiva donde eventos de duplicación cromosómica o translocación generan diversidad adaptativa para lidiar con factores estresantes o expandir rutas específicas.
+      </div>
+
+      <div class="dashboard-container" id="p1-metrics-grid">
+        <!-- Dyn cards -->
+      </div>
+
+      <div class="db-table-container">
+        <div class="db-table-header">
+          <h3 class="db-table-title">⚖️ Balance Genómico Global</h3>
+        </div>
+        <table class="db-table" id="p1-balance-table">
+          <!-- Dyn table -->
+        </table>
+      </div>
+
+      <div class="db-table-container">
+        <div class="db-table-header">
+          <h3 class="db-table-title">🗺️ Conservación Sinténica Cromosómica</h3>
+          <input type="text" class="search-input" style="max-width:240px" placeholder="Filtrar cromosomas..." oninput="filterP1ChrTable(this.value)">
+        </div>
+        <table class="db-table" id="p1-chr-table">
+          <!-- Dyn table -->
+        </table>
+      </div>
     </div>
+  </div>
+
+  <!-- TAB FASE 2 CONTENT -->
+  <div id="phase2-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>Microevolución, Selección Ka/Ks y Genes del Azúcar</h2>
+        <p>Análisis de presiones evolutivas y modelado de sacarosa (Fase 2)</p>
+      </div>
+
+      <div class="db-alert">
+        <h5>⚖️ Entendiendo las Tasas de Sustitución Ka/Ks</h5>
+        La tasa <strong>Ka/Ks</strong> mide la presión de selección evolutiva a nivel de codón. Un valor de <strong>Ka/Ks &lt; 1</strong> denota selección purificadora (conservación funcional de la proteína). Un valor de <strong>Ka/Ks &gt; 1</strong> indica selección positiva / adaptativa (cambios rápidos favorables). Un valor de <strong>Ka/Ks ≈ 1</strong> indica evolución neutra.
+      </div>
+
+      <div class="dashboard-container" id="p2-metrics-grid">
+        <!-- Dyn cards -->
+      </div>
+
+      <div class="db-table-container">
+        <div class="db-table-header">
+          <h3 class="db-table-title">🔬 Consenso Evolutivo de la Ruta del Azúcar</h3>
+        </div>
+        <table class="db-table" id="p2-consensus-table">
+          <thead>
+            <tr>
+              <th>Familia Funcional</th>
+              <th>CC-01-1940 (Total/Sinténicos)</th>
+              <th>R570 (Total/Sinténicos)</th>
+              <th>Huérfanos CC</th>
+              <th>Huérfanos R570</th>
+              <th>Ka/Ks Promedio</th>
+              <th>Consenso y Presión Selectiva</th>
+            </tr>
+          </thead>
+          <tbody id="p2-consensus-body">
+            <!-- Dyn consensus -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="db-table-container">
+        <div class="db-table-header">
+          <h3 class="db-table-title">🧬 Censo e Inventario Detallado de Genes de Sacarosa</h3>
+          <input type="text" class="search-input" id="sugar-gene-search" style="max-width:280px" placeholder="Buscar gen (ej: SPS, SWEET)..." oninput="filterSugarTable(this.value)">
+        </div>
+        <div style="max-height: 500px; overflow-y: auto;">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th>Gen G1 (CC)</th>
+                <th>Chr G1</th>
+                <th>Gen G2 (R570)</th>
+                <th>Chr G2</th>
+                <th>Anotación Funcional</th>
+                <th>Ka</th>
+                <th>Ks</th>
+                <th>Ka/Ks</th>
+                <th>Presión Selectiva</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="p2-sugar-genes-body">
+              <!-- Dyn rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -369,6 +661,13 @@ const G3_NAME = "/*G3_NAME*/";
 const WGD_PEAKS = /*WGD_PEAKS_JSON*/;
 const TREE_NEWICK = "/*TREE_NEWICK*/";
 let SUBST_RATE = /*SUBST_RATE*/; // Substitutions/site/year
+
+// Injected global counts from Java backend
+const G1_TOTAL_GENES = /*G1_TOTAL_GENES*/;
+const G2_TOTAL_GENES = /*G2_TOTAL_GENES*/;
+const G1_SYNTENIC_GENES = /*G1_SYNTENIC_GENES*/;
+const G2_SYNTENIC_GENES = /*G2_SYNTENIC_GENES*/;
+const SUGAR_FAMILY_COUNTS = /*SUGAR_FAMILY_JSON*/;
 const PRESETS = {
     "Saccharum": 6.96e-9,
     "Arabidopsis": 7.0e-9,
@@ -379,6 +678,426 @@ const PRESETS = {
 };
 const W=1000,H=500,M=80,BH=25;
 let isFlipped = false;
+
+// --- Tab Navigation and Dynamic Dashboard Reports ---
+function switchTab(tabId) {
+    document.getElementById('explorer-content').style.display = 'none';
+    document.getElementById('phase1-content').style.display = 'none';
+    document.getElementById('phase2-content').style.display = 'none';
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    if (tabId === 'explorer') {
+        document.getElementById('explorer-content').style.display = 'flex';
+        document.getElementById('tab-btn-explorer').classList.add('active');
+    } else if (tabId === 'phase1') {
+        document.getElementById('phase1-content').style.display = 'block';
+        document.getElementById('tab-btn-phase1').classList.add('active');
+        renderPhase1Report();
+    } else if (tabId === 'phase2') {
+        document.getElementById('phase2-content').style.display = 'block';
+        document.getElementById('tab-btn-phase2').classList.add('active');
+        renderPhase2Report();
+    }
+}
+
+function renderPhase1Report() {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    const totalPairs = allData.length;
+    const blocksMap = d3.group(allData, d => d.b);
+    const totalBlocks = blocksMap.size;
+    let invertedBlocks = 0;
+    blocksMap.forEach(genes => {
+        if (genes[0] && genes[0].o === 'minus') {
+            invertedBlocks++;
+        }
+    });
+
+    const avgGenesPerBlock = totalBlocks > 0 ? (totalPairs / totalBlocks).toFixed(1) : 0;
+    const pctInverted = totalBlocks > 0 ? ((invertedBlocks / totalBlocks) * 100).toFixed(1) : 0;
+
+    // Render Metrics Grid
+    const metricsGrid = document.getElementById('p1-metrics-grid');
+    metricsGrid.innerHTML = `
+        <div class="db-card">
+          <div class="db-card-val">${totalPairs.toLocaleString()}</div>
+          <div class="db-card-lbl">Parejas Sinténicas</div>
+          <div class="db-card-desc">Genes ortólogos emparejados con conservación estructural directa.</div>
+        </div>
+        <div class="db-card accent">
+          <div class="db-card-val">${totalBlocks.toLocaleString()}</div>
+          <div class="db-card-lbl">Bloques Sinténicos</div>
+          <div class="db-card-desc">Segmentos genómicos conservados que contienen múltiples parejas sinténicas.</div>
+        </div>
+        <div class="db-card success">
+          <div class="db-card-val">${avgGenesPerBlock}</div>
+          <div class="db-card-lbl">Promedio Genes / Bloque</div>
+          <div class="db-card-desc">Densidad media de ortólogos conservados por segmento sinténico.</div>
+        </div>
+        <div class="db-card danger">
+          <div class="db-card-val">${invertedBlocks} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${pctInverted}%)</span></div>
+          <div class="db-card-lbl">Bloques Invertidos</div>
+          <div class="db-card-desc">Bloques que muestran orientación opuesta (inversión de hebra) entre ambos genomas.</div>
+        </div>
+    `;
+
+    // Render Balance Table
+    const g1Orphans = G1_TOTAL_GENES - G1_SYNTENIC_GENES;
+    const g2Orphans = G2_TOTAL_GENES - G2_SYNTENIC_GENES;
+    const g1SyntenicPct = ((G1_SYNTENIC_GENES / G1_TOTAL_GENES) * 100).toFixed(1);
+    const g1OrphanPct = ((g1Orphans / G1_TOTAL_GENES) * 100).toFixed(1);
+    const g2SyntenicPct = ((G2_SYNTENIC_GENES / G2_TOTAL_GENES) * 100).toFixed(1);
+    const g2OrphanPct = ((g2Orphans / G2_TOTAL_GENES) * 100).toFixed(1);
+
+    const balanceTable = document.getElementById('p1-balance-table');
+    balanceTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>Genoma</th>
+            <th>Total Genes</th>
+            <th>Genes en Sintenia (Núcleo)</th>
+            <th>Genes Huérfanos (PAVs)</th>
+            <th>Gráfico de Proporción (Sintenia / Orfandad)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>${G1_NAME} (CC-01-1940)</strong></td>
+            <td>${G1_TOTAL_GENES.toLocaleString()}</td>
+            <td>${G1_SYNTENIC_GENES.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g1SyntenicPct}%)</span></td>
+            <td>${g1Orphans.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g1OrphanPct}%)</span></td>
+            <td>
+              <div style="display:flex; width:200px; height:18px; border-radius:4px; overflow:hidden; border:1px solid #cbd5e1;">
+                <div style="width:${g1SyntenicPct}%; background:var(--primary);" title="Sintenia: ${g1SyntenicPct}%"></div>
+                <div style="width:${g1OrphanPct}%; background:#ef4444;" title="Huérfanos: ${g1OrphanPct}%"></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>${G2_NAME} (R570)</strong></td>
+            <td>${G2_TOTAL_GENES.toLocaleString()}</td>
+            <td>${G2_SYNTENIC_GENES.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g2SyntenicPct}%)</span></td>
+            <td>${g2Orphans.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g2OrphanPct}%)</span></td>
+            <td>
+              <div style="display:flex; width:200px; height:18px; border-radius:4px; overflow:hidden; border:1px solid #cbd5e1;">
+                <div style="width:${g2SyntenicPct}%; background:var(--primary);" title="Sintenia: ${g2SyntenicPct}%"></div>
+                <div style="width:${g2OrphanPct}%; background:#ef4444;" title="Huérfanos: ${g2OrphanPct}%"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+    `;
+
+    renderP1ChrTableUnfiltered();
+}
+
+function getChrConservationData() {
+    const blocksMap = d3.group(allData, d => d.b);
+    const chrMap = {};
+    blocksMap.forEach((genes, bId) => {
+        const c1 = genes[0].c1;
+        const c2 = genes[0].c2;
+        const isInv = genes[0].o === 'minus';
+        const key = `${c1} ↔ ${c2}`;
+        if (!chrMap[key]) {
+            chrMap[key] = {
+                chr1: c1,
+                chr2: c2,
+                pairs: 0,
+                blocks: 0,
+                inverted: 0
+            };
+        }
+        chrMap[key].pairs += genes.length;
+        chrMap[key].blocks += 1;
+        if (isInv) {
+            chrMap[key].inverted += 1;
+        }
+    });
+    return Object.values(chrMap).sort((a,b) => b.pairs - a.pairs);
+}
+
+let cachedChrData = null;
+
+function renderP1ChrTableUnfiltered() {
+    if (!cachedChrData) {
+        cachedChrData = getChrConservationData();
+    }
+    displayChrTable(cachedChrData);
+}
+
+function filterP1ChrTable(query) {
+    if (!cachedChrData) {
+        cachedChrData = getChrConservationData();
+    }
+    const q = query.toLowerCase();
+    const filtered = cachedChrData.filter(d => 
+        d.chr1.toLowerCase().includes(q) || 
+        d.chr2.toLowerCase().includes(q)
+    );
+    displayChrTable(filtered);
+}
+
+function displayChrTable(data) {
+    const table = document.getElementById('p1-chr-table');
+    if (data.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron interacciones cromosómicas.</td></tr>';
+        return;
+    }
+    let html = `
+        <thead>
+          <tr>
+            <th>Cromosoma ${G1_NAME}</th>
+            <th>Cromosoma ${G2_NAME}</th>
+            <th style="text-align:right;">Parejas Sinténicas</th>
+            <th style="text-align:right;">Bloques Totales</th>
+            <th style="text-align:right;">Bloques Invertidos</th>
+            <th style="text-align:center;">Nivel de Conservación</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    data.forEach(d => {
+        let level = '<span class="badge badge-low">Baja</span>';
+        if (d.pairs >= 100) level = '<span class="badge badge-high">Alta</span>';
+        else if (d.pairs >= 30) level = '<span class="badge badge-medium">Media</span>';
+
+        html += `
+          <tr>
+            <td><strong>${d.chr1}</strong></td>
+            <td><strong>${d.chr2}</strong></td>
+            <td style="text-align:right; font-weight:600;">${d.pairs.toLocaleString()}</td>
+            <td style="text-align:right;">${d.blocks}</td>
+            <td style="text-align:right; color:${d.inverted > 0 ? '#ef4444' : 'inherit'}; font-weight:${d.inverted > 0 ? '600' : 'normal'};">${d.inverted}</td>
+            <td style="text-align:center;">${level}</td>
+          </tr>
+        `;
+    });
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+
+function renderPhase2Report() {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    let totalKa = 0, totalKs = 0, totalRatio = 0;
+    let kaksCount = 0;
+    let purifying = 0, positive = 0;
+    
+    allData.forEach(p => {
+        if (p.kk && p.kk.ks > 0) {
+            totalKa += p.kk.ka;
+            totalKs += p.kk.ks;
+            totalRatio += p.kk.r;
+            kaksCount++;
+            if (p.kk.r < 1.0) purifying++;
+            else if (p.kk.r > 1.0) positive++;
+        }
+    });
+
+    const avgKa = kaksCount > 0 ? (totalKa / kaksCount).toFixed(4) : "0.0000";
+    const avgKs = kaksCount > 0 ? (totalKs / kaksCount).toFixed(4) : "0.0000";
+    const avgRatio = kaksCount > 0 ? (totalRatio / kaksCount).toFixed(3) : "0.000";
+    const purifyingPct = kaksCount > 0 ? ((purifying / kaksCount) * 100).toFixed(1) : "0.0";
+    const positivePct = kaksCount > 0 ? ((positive / kaksCount) * 100).toFixed(1) : "0.0";
+
+    const metricsGrid = document.getElementById('p2-metrics-grid');
+    metricsGrid.innerHTML = `
+        <div class="db-card">
+          <div class="db-card-val">${avgRatio}</div>
+          <div class="db-card-lbl">Ka/Ks Promedio</div>
+          <div class="db-card-desc">Relación media de mutaciones no sinónimas vs sinónimas. Refleja conservación global.</div>
+        </div>
+        <div class="db-card success">
+          <div class="db-card-val">${purifying.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${purifyingPct}%)</span></div>
+          <div class="db-card-lbl">Selección Purificadora (Ka/Ks &lt; 1.0)</div>
+          <div class="db-card-desc">Ortólogos bajo presión purificadora para conservar funciones críticas estables.</div>
+        </div>
+        <div class="db-card danger">
+          <div class="db-card-val">${positive.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${positivePct}%)</span></div>
+          <div class="db-card-lbl">Selección Positiva (Ka/Ks &gt; 1.0)</div>
+          <div class="db-card-desc">Ortólogos con tasas de cambio aceleradas, candidatos a adaptación funcional.</div>
+        </div>
+        <div class="db-card accent">
+          <div class="db-card-val">${avgKs}</div>
+          <div class="db-card-lbl">Ks Promedio</div>
+          <div class="db-card-desc">Sustituciones sinónimas medias, estimando la distancia divergente neutral.</div>
+        </div>
+    `;
+
+    renderSugarConsensus();
+    renderSugarGenesTableUnfiltered();
+}
+
+function classifySugarFamily(desc) {
+    if (!desc) return null;
+    const d = desc.toLowerCase();
+    if (d.includes("sucrose-phosphate synthase") || d.includes("sps")) {
+        return "SPS";
+    } else if (d.includes("sucrose synthase") || d.includes("susy")) {
+        return "SuSy";
+    } else if (d.includes("sucrose transporter") || d.includes("sucrose proton") || d.includes("sut")) {
+        return "SUT";
+    } else if (d.includes("sweet") || d.includes("bidirectional sugar transporter")) {
+        return "SWEET";
+    } else if (d.includes("invertase") || d.includes("beta-fructofuranosidase")) {
+        return "Invertasas";
+    } else if (d.includes("fructosyltransferase")) {
+        return "Fructosyltransferase";
+    } else if (d.includes("galactosyltransferase")) {
+        return "Galactosyltransferase";
+    } else if (d.includes("sugar transporter") || d.includes("hexose transporter") || d.includes("monosaccharide transporter") || d.includes("glucose transporter") || d.includes("fructose transporter") || d.includes("erd6")) {
+        return "Otros del metabolismo de azúcares";
+    }
+    return null;
+}
+
+function renderSugarConsensus() {
+    const familyKaks = {};
+    Object.keys(SUGAR_FAMILY_COUNTS).forEach(fam => {
+        familyKaks[fam] = { totalRatio: 0, count: 0 };
+    });
+
+    allData.forEach(p => {
+        const fam1 = classifySugarFamily(p.f1);
+        const fam2 = classifySugarFamily(p.f2);
+        const fam = fam1 || fam2;
+        if (fam && familyKaks[fam] && p.kk && p.kk.ks > 0) {
+            familyKaks[fam].totalRatio += p.kk.r;
+            familyKaks[fam].count++;
+        }
+    });
+
+    const tbody = document.getElementById('p2-consensus-body');
+    let html = "";
+    Object.keys(SUGAR_FAMILY_COUNTS).forEach(fam => {
+        const counts = SUGAR_FAMILY_COUNTS[fam];
+        const kaksData = familyKaks[fam];
+        const avgKaksVal = kaksData.count > 0 ? (kaksData.totalRatio / kaksData.count) : null;
+        const avgKaksText = avgKaksVal !== null ? avgKaksVal.toFixed(3) : "N/D";
+        
+        const g1Orphans = counts.g1t - counts.g1s;
+        const g2Orphans = counts.g2t - counts.g2s;
+
+        let consensusText = "Sin parejas ortólogas";
+        let consensusBadge = "badge-neutral";
+        if (avgKaksVal !== null) {
+            if (avgKaksVal < 0.2) {
+                consensusText = "Selección Purificadora Fuerte";
+                consensusBadge = "badge-purifying";
+            } else if (avgKaksVal < 0.5) {
+                consensusText = "Selección Purificadora Moderada";
+                consensusBadge = "badge-purifying";
+            } else if (avgKaksVal < 1.0) {
+                consensusText = "Selección Purificadora Débil";
+                consensusBadge = "badge-neutral";
+            } else {
+                consensusText = "Selección Positiva / Plástica";
+                consensusBadge = "badge-positive";
+            }
+        }
+
+        html += `
+          <tr>
+            <td><strong>${fam}</strong></td>
+            <td>${counts.g1t} <span style="color:var(--text-muted); font-size:10px;">(${counts.g1s} sinténicos)</span></td>
+            <td>${counts.g2t} <span style="color:var(--text-muted); font-size:10px;">(${counts.g2s} sinténicos)</span></td>
+            <td style="color:${g1Orphans > 0 ? '#ef4444' : 'inherit'}; font-weight:${g1Orphans > 0 ? '600' : 'normal'};">${g1Orphans}</td>
+            <td style="color:${g2Orphans > 0 ? '#ef4444' : 'inherit'}; font-weight:${g2Orphans > 0 ? '600' : 'normal'};">${g2Orphans}</td>
+            <td style="font-weight:600;">${avgKaksText}</td>
+            <td><span class="badge ${consensusBadge}">${consensusText}</span></td>
+          </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+let cachedSugarPairs = null;
+
+function getSugarPairs() {
+    return allData.filter(p => classifySugarFamily(p.f1) || classifySugarFamily(p.f2));
+}
+
+function renderSugarGenesTableUnfiltered() {
+    if (!cachedSugarPairs) {
+        cachedSugarPairs = getSugarPairs();
+    }
+    displaySugarTable(cachedSugarPairs);
+}
+
+function filterSugarTable(query) {
+    if (!cachedSugarPairs) {
+        cachedSugarPairs = getSugarPairs();
+    }
+    const q = query.toLowerCase();
+    const filtered = cachedSugarPairs.filter(p => 
+        p.g1.toLowerCase().includes(q) || 
+        p.g2.toLowerCase().includes(q) || 
+        (p.f1 && p.f1.toLowerCase().includes(q)) || 
+        (p.f2 && p.f2.toLowerCase().includes(q))
+    );
+    displaySugarTable(filtered);
+}
+
+function displaySugarTable(data) {
+    const tbody = document.getElementById('p2-sugar-genes-body');
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron genes de azúcar.</td></tr>';
+        return;
+    }
+    let html = "";
+    data.forEach(p => {
+        const kaVal = p.kk ? p.kk.ka.toFixed(4) : "N/D";
+        const ksVal = p.kk ? p.kk.ks.toFixed(4) : "N/D";
+        const kaksVal = p.kk && p.kk.ks > 0 ? p.kk.r.toFixed(3) : "N/D";
+        
+        let pressureBadge = "badge-neutral";
+        let pressureText = "Neutro / N/D";
+        if (p.kk && p.kk.ks > 0) {
+            if (p.kk.r < 1.0) {
+                pressureBadge = "badge-purifying";
+                pressureText = "Purificadora";
+            } else if (p.kk.r > 1.0) {
+                pressureBadge = "badge-positive";
+                pressureText = "Positiva";
+            }
+        }
+
+        const annotation = p.f1 || p.f2 || "Sin anotación";
+
+        html += `
+          <tr>
+            <td><strong>${p.g1}</strong></td>
+            <td>${p.c1}</td>
+            <td><strong>${p.g2}</strong></td>
+            <td>${p.c2}</td>
+            <td><small>${annotation}</small></td>
+            <td>${kaVal}</td>
+            <td>${ksVal}</td>
+            <td style="font-weight:600;">${kaksVal}</td>
+            <td><span class="badge ${pressureBadge}">${pressureText}</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="locateAndHighlightGene('${p.g1}')" style="padding:4px 8px;font-size:10px;">
+                🔎 Ver en Visor
+              </button>
+            </td>
+          </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+function locateAndHighlightGene(geneId) {
+    switchTab('explorer');
+    const searchInput = document.getElementById('gene-search');
+    if (searchInput) {
+        searchInput.value = geneId;
+        searchGene(geneId);
+    }
+}
 
 function flipGenomes() {
     isFlipped = !isFlipped;
