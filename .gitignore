@@ -78,3 +78,7 @@ taller_bioinformatica/
 m2_repo/
 scratch/
 *.vcf
+
+# Python cache
+**/__pycache__/
+*.pyc
