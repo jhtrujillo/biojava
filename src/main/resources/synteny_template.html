@@ -1038,9 +1038,9 @@
           <h3 class="db-table-title">📈 Distribución de Ks — Firma de WGD</h3>
           <div style="display:flex; gap: 4px; margin-left:auto; align-items:center;">
             <span style="font-size:11px;color:var(--text-muted);margin-right:8px;">Pico en Ks indica evento de duplicación genómica completa (WGD).</span>
-            <button class="btn btn-sm" onclick="exportSVG('#wgd-ks-histogram svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como SVG">SVG</button>
-            <button class="btn btn-sm" onclick="exportImage('png', '#wgd-ks-histogram svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como PNG">PNG</button>
-            <button class="btn btn-sm" onclick="exportImage('gif', '#wgd-ks-histogram svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como GIF">GIF</button>
+            <button class="btn btn-sm" onclick="exportSVG('#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como SVG">SVG</button>
+            <button class="btn btn-sm" onclick="exportImage('png', '#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como PNG">PNG</button>
+            <button class="btn btn-sm" onclick="exportImage('gif', '#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como GIF">GIF</button>
           </div>
         </div>
         <div id="wgd-ks-histogram" style="padding:8px 0;"></div>
@@ -2069,48 +2069,86 @@ function renderWgdReport() {
         <div class="db-card accent"><div class="db-card-val">${avgDepth}×</div><div class="db-card-lbl">Profundidad Poliploidía Media</div><div class="db-card-desc">Promedio de cromosomas G2 sinténicos por G1.</div></div>
         <div class="db-card" style="border-left:4px solid #8b5cf6;"><div class="db-card-val">${avgKs}</div><div class="db-card-lbl">Ks Promedio Global</div><div class="db-card-desc">Sustituciones sinónimas medias entre ortólogos sinténicos.</div></div>`;
 
-    // Ks histogram
+    // Ks histogram — rendered as SVG for exportability
     const maxBin = Math.max(...ksBins, 1);
     const hist = document.getElementById('wgd-ks-histogram');
     if (hist) {
-        const BAR_MAX_PX = 140;
-        const binLabels = ksBins.map((_, i) => (i * BIN_WIDTH).toFixed(1));
+        const W = hist.clientWidth || 860;
+        const H = 240;
+        const mL = 52, mR = 20, mT = 16, mB = 52;
+        const iW = W - mL - mR;
+        const iH = H - mT - mB;
+        const nBins = ksBins.length;
+        const barW = Math.max(1, iW / nBins - 1);
+        const xStep = iW / nBins;
 
-        // Build bars area
-        let barsHtml = `<div style="display:flex;align-items:flex-end;gap:3px;height:${BAR_MAX_PX}px;border-bottom:2px solid #e2e8f0;margin-bottom:0;padding:0 2px;">`;
+        // Y scale
+        const yScale = v => mT + iH - (v / maxBin) * iH;
+
+        let svgContent = `<svg id="wgd-ks-histogram-svg" width="${W}" height="${H}" style="display:block;font-family:inherit;" xmlns="http://www.w3.org/2000/svg">`;
+
+        // Background grid lines
+        [0.25, 0.5, 0.75, 1.0].forEach(frac => {
+            const y = mT + iH * (1 - frac);
+            const val = Math.round(maxBin * frac);
+            svgContent += `<line x1="${mL}" y1="${y}" x2="${mL+iW}" y2="${y}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3 3"/>`;
+            svgContent += `<text x="${mL-5}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${val >= 1000 ? (val/1000).toFixed(1)+'k' : val}</text>`;
+        });
+
+        // Bars
         ksBins.forEach((count, i) => {
-            const barPx  = count > 0 ? Math.max(Math.round((count / maxBin) * BAR_MAX_PX), 4) : 0;
-            const ksLow  = (i * BIN_WIDTH).toFixed(1);
+            if (count === 0) return;
+            const x = mL + i * xStep;
+            const barH = Math.max(2, (count / maxBin) * iH);
+            const y = mT + iH - barH;
             const isModal = i === modalIdx;
-            const col    = isModal ? '#2563eb' : (i < 5 ? '#10b981' : i < 15 ? '#f59e0b' : '#94a3b8');
-            barsHtml += `<div style="flex:1;min-width:4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:default;" title="Ks ${ksLow}–${(parseFloat(ksLow)+BIN_WIDTH).toFixed(1)}: ${count.toLocaleString()}">`;
-            if (count > 0) {
-                barsHtml += `<span style="font-size:8px;color:${isModal?'#2563eb':'#94a3b8'};font-weight:${isModal?700:400};margin-bottom:2px;white-space:nowrap;">${count >= 1000 ? (count/1000).toFixed(1)+'k' : count}</span>`;
-                barsHtml += `<div style="width:100%;height:${barPx}px;background:${col};border-radius:3px 3px 0 0;opacity:${isModal?1:0.78};transition:opacity .2s;${isModal?'box-shadow:0 -2px 8px rgba(37,99,235,0.4);':''}"></div>`;
-            } else {
-                barsHtml += `<div style="width:100%;height:2px;background:#e2e8f0;border-radius:2px;"></div>`;
+            const col = isModal ? '#2563eb' : (i < 5 ? '#10b981' : i < 15 ? '#f59e0b' : '#94a3b8');
+            const ksLow = (i * BIN_WIDTH).toFixed(1);
+            svgContent += `<rect x="${x+0.5}" y="${y}" width="${barW}" height="${barH}" fill="${col}" fill-opacity="${isModal ? 1 : 0.8}" rx="2">
+              <title>Ks ${ksLow}–${(parseFloat(ksLow)+BIN_WIDTH).toFixed(1)}: ${count.toLocaleString()}</title>
+            </rect>`;
+            // Count label on modal bar
+            if (isModal) {
+                svgContent += `<text x="${x + barW/2 + 0.5}" y="${y - 5}" text-anchor="middle" font-size="10" fill="#2563eb" font-weight="700">${count >= 1000 ? (count/1000).toFixed(1)+'k' : count}</text>`;
             }
-            barsHtml += `</div>`;
         });
-        barsHtml += `</div>`;
 
-        // X-axis labels (every 5 bins to avoid crowding)
-        let xLabels = `<div style="display:flex;gap:3px;padding:4px 2px 0;">`;
+        // WGD peak annotation arrow + label
+        if (modalIdx >= 0) {
+            const peakX = mL + modalIdx * xStep + barW/2;
+            const peakY = mT + iH - (ksBins[modalIdx] / maxBin) * iH - 14;
+            svgContent += `<line x1="${peakX}" y1="${peakY+2}" x2="${peakX}" y2="${peakY-12}" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow)"/>`;
+            svgContent += `<text x="${peakX}" y="${peakY-15}" text-anchor="middle" font-size="10" fill="#2563eb" font-weight="700">Pico WGD Ks≈${modalKs}</text>`;
+        }
+
+        // Axes
+        svgContent += `<line x1="${mL}" y1="${mT}" x2="${mL}" y2="${mT+iH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+        svgContent += `<line x1="${mL}" y1="${mT+iH}" x2="${mL+iW}" y2="${mT+iH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+
+        // X-axis labels (every 5 bins)
         ksBins.forEach((_, i) => {
-            xLabels += `<div style="flex:1;min-width:4px;text-align:center;font-size:8.5px;color:${i===modalIdx?'#2563eb':'#94a3b8'};font-weight:${i===modalIdx?700:400};">${i % 5 === 0 ? (i*BIN_WIDTH).toFixed(1) : ''}</div>`;
+            if (i % 5 !== 0) return;
+            const x = mL + i * xStep + barW/2;
+            svgContent += `<text x="${x}" y="${mT+iH+14}" text-anchor="middle" font-size="9" fill="${i===modalIdx?'#2563eb':'#94a3b8'}" font-weight="${i===modalIdx?700:400}">${(i*BIN_WIDTH).toFixed(1)}</text>`;
         });
-        xLabels += `</div><div style="text-align:center;font-size:10px;color:var(--text-muted);margin-top:2px;">Valor de Ks</div>`;
+
+        // Axis titles
+        svgContent += `<text x="${mL + iW/2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#64748b">Valor de Ks</text>`;
+        svgContent += `<text x="${14}" y="${mT + iH/2}" text-anchor="middle" font-size="11" fill="#64748b" transform="rotate(-90,14,${mT+iH/2})">Frecuencia</text>`;
 
         // Legend
-        const legend = `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding:12px 8px;background:#f8fafc;border-radius:10px;align-items:center;">
-            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;"></span><strong>Pico WGD: Ks ≈ ${modalKs}</strong> &nbsp;→&nbsp; T ≈ ${wgdTime}</span>
-            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#10b981;border-radius:3px;"></span>WGD reciente (Ks &lt; 0.5)</span>
-            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#f59e0b;border-radius:3px;"></span>WGD intermedio (0.5–1.5)</span>
-            <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">n = ${ksCount.toLocaleString()} pares con Ks válido</span>
-        </div>`;
+        svgContent += `<rect x="${mL}" y="${mT+iH+28}" width="12" height="12" fill="#2563eb" rx="2"/>`;
+        svgContent += `<text x="${mL+16}" y="${mT+iH+39}" font-size="10" fill="#1e40af" font-weight="600">Pico WGD: Ks ≈ ${modalKs}  →  T ≈ ${wgdTime}</text>`;
+        svgContent += `<rect x="${mL+200}" y="${mT+iH+28}" width="12" height="12" fill="#10b981" rx="2"/>`;
+        svgContent += `<text x="${mL+216}" y="${mT+iH+39}" font-size="10" fill="#065f46">WGD reciente (Ks &lt; 0.5)</text>`;
+        svgContent += `<rect x="${mL+350}" y="${mT+iH+28}" width="12" height="12" fill="#f59e0b" rx="2"/>`;
+        svgContent += `<text x="${mL+366}" y="${mT+iH+39}" font-size="10" fill="#78350f">WGD intermedio (0.5–1.5)</text>`;
+        svgContent += `<text x="${mL+iW}" y="${mT+iH+39}" text-anchor="end" font-size="10" fill="#94a3b8">n = ${ksCount.toLocaleString()} pares</text>`;
 
-        hist.innerHTML = barsHtml + xLabels + legend;
+        svgContent += `</svg>`;
+        hist.innerHTML = svgContent;
     }
+
 
     // Polyploidy depth table
     const rows = Object.entries(chrMap)
@@ -3150,7 +3188,14 @@ function zoomWGD() {
             : "<span style='color:#94a3b8;font-size:11px;'>No peaks detected automatically.</span>";
 
         d3.select("#modal-body").html(`
-            <h2 style="margin-top:0;">⏱ Distribución Ks — Análisis WGD</h2>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <h2 style="margin:0;">⏱ Distribución Ks — Análisis WGD</h2>
+              <div style="display:flex;gap:4px;">
+                <button onclick="exportSVG('#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar SVG">SVG</button>
+                <button onclick="exportImage('png','#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar PNG">PNG</button>
+                <button onclick="exportImage('gif','#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar GIF">GIF</button>
+              </div>
+            </div>
             <div id="wgd-zoom-chart" style="width:100%; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;"></div>
             <div style="margin-top:12px;padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;display:flex;flex-direction:column;gap:10px;">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
