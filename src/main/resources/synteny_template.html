@@ -426,7 +426,7 @@
   <h1>BioJava | <strong>Advanced Synteny Explorer</strong></h1>
   <div class="tabs" style="display: flex; gap: 8px; margin-left: 24px; flex: 1;">
     <button class="btn tab-btn active" id="tab-btn-explorer" onclick="switchTab('explorer')">🔍 Explorador Sintenia</button>
-    <button class="btn tab-btn" id="tab-btn-phase1" onclick="switchTab('phase1')">📊 Estructura y Orfandad</button>
+    <button class="btn tab-btn" id="tab-btn-phase1" onclick="switchTab('phase1')">📊 Cambios Estructurales</button>
     <button class="btn tab-btn" id="tab-btn-phase2" onclick="switchTab('phase2')">🧬 Selección y Sacarosa</button>
   </div>
   <div class="nav-actions">
@@ -542,7 +542,7 @@
   <div id="phase1-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
     <div class="report-section">
       <div class="report-title-section">
-        <h2>Sintenia Macroestructural y Orfandad</h2>
+        <h2>Cambios Estructurales y Sintenia</h2>
         <p>Análisis a nivel de genoma completo (Fase 1) entre <strong><span class="g1-name-placeholder"></span></strong> y <strong><span class="g2-name-placeholder"></span></strong></p>
       </div>
       
@@ -557,7 +557,13 @@
 
       <div class="db-table-container">
         <div class="db-table-header">
-          <h3 class="db-table-title">⚖️ Balance Genómico Global</h3>
+          <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
+            ⚖️ Balance Genómico Global
+            <button class="btn btn-sm" onclick="exportTableToCSV('p1-balance-table', 'balance_genomico_global.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
         </div>
         <table class="db-table" id="p1-balance-table">
           <!-- Dyn table -->
@@ -565,9 +571,34 @@
       </div>
 
       <div class="db-table-container">
-        <div class="db-table-header">
-          <h3 class="db-table-title">🗺️ Conservación Sinténica Cromosómica</h3>
-          <input type="text" class="search-input" style="max-width:240px" placeholder="Filtrar cromosomas..." oninput="filterP1ChrTable(this.value)">
+        <div class="db-table-header" style="flex-wrap: wrap; gap: 12px;">
+          <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
+            🗺️ Conservación Sinténica Cromosómica
+            <button class="btn btn-sm" onclick="exportTableToCSV('p1-chr-table', 'conservacion_cromosomica.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-left: auto;">
+            <select class="search-input" id="p1-filter-g1-chr" onchange="applyP1ChrFilters()" style="max-width:160px; padding: 4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background-color:white; cursor:pointer;">
+              <option value="">Cromosoma G1: Todos</option>
+            </select>
+            <select class="search-input" id="p1-filter-g2-chr" onchange="applyP1ChrFilters()" style="max-width:160px; padding: 4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background-color:white; cursor:pointer;">
+              <option value="">Cromosoma G2: Todos</option>
+            </select>
+            <select class="search-input" id="p1-filter-level" onchange="applyP1ChrFilters()" style="max-width:160px; padding: 4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background-color:white; cursor:pointer;">
+              <option value="">Conservación: Todas</option>
+              <option value="high">Alta (≥100 pares)</option>
+              <option value="medium">Media (30-99 pares)</option>
+              <option value="low">Baja (&lt;30 pares)</option>
+            </select>
+            <select class="search-input" id="p1-filter-limit" onchange="applyP1ChrFilters()" style="max-width:110px; padding: 4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background-color:white; cursor:pointer;">
+              <option value="10">Mostrar: 10</option>
+              <option value="20" selected>Mostrar: 20</option>
+              <option value="50">Mostrar: 50</option>
+              <option value="all">Mostrar: Todos</option>
+            </select>
+          </div>
         </div>
         <table class="db-table" id="p1-chr-table">
           <!-- Dyn table -->
@@ -595,7 +626,13 @@
 
       <div class="db-table-container">
         <div class="db-table-header">
-          <h3 class="db-table-title">🔬 Consenso Evolutivo de la Ruta del Azúcar</h3>
+          <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
+            🔬 Consenso Evolutivo de la Ruta del Azúcar
+            <button class="btn btn-sm" onclick="exportTableToCSV('p2-consensus-table', 'consenso_ruta_azucar.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
         </div>
         <table class="db-table" id="p2-consensus-table">
           <thead>
@@ -617,11 +654,17 @@
 
       <div class="db-table-container">
         <div class="db-table-header">
-          <h3 class="db-table-title">🧬 Censo e Inventario Detallado de Genes de Sacarosa</h3>
-          <input type="text" class="search-input" id="sugar-gene-search" style="max-width:280px" placeholder="Buscar gen (ej: SPS, SWEET)..." oninput="filterSugarTable(this.value)">
+          <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
+            🧬 Censo e Inventario Detallado de Genes de Sacarosa
+            <button class="btn btn-sm" onclick="exportTableToCSV('sugar-gene-table', 'inventario_genes_sacarosa.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <input type="text" class="search-input" id="sugar-gene-search" style="max-width:280px; margin-left:auto;" placeholder="Buscar gen (ej: SPS, SWEET)..." oninput="filterSugarTable(this.value)">
         </div>
         <div style="max-height: 500px; overflow-y: auto;">
-          <table class="db-table">
+          <table class="db-table" id="sugar-gene-table">
             <thead>
               <tr>
                 <th>Gen G1 (<span class="g1-name-placeholder"></span>)</th>
@@ -679,7 +722,46 @@ const PRESETS = {
 const W=1000,H=500,M=80,BH=25;
 let isFlipped = false;
 
-// --- Tab Navigation and Dynamic Dashboard Reports ---
+// --- Export Tables and Tab Navigation ---
+function exportTableToCSV(tableId, filename) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        // Skip rows that are hidden in the DOM
+        if (rows[i].style.display === 'none') continue;
+
+        const row = [];
+        const cols = rows[i].querySelectorAll('td, th');
+
+        for (let j = 0; j < cols.length; j++) {
+            let text = cols[j].textContent.trim();
+            // Clean up extra whitespaces/newlines
+            text = text.replace(/\s+/g, ' ');
+            // Escape double quotes
+            text = text.replace(/"/g, '""');
+            row.push('"' + text + '"');
+        }
+        csv.push(row.join(';'));
+    }
+
+    const csvContent = "\ufeff" + csv.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 function switchTab(tabId) {
     document.getElementById('explorer-content').style.display = 'none';
     document.getElementById('phase1-content').style.display = 'none';
@@ -712,7 +794,22 @@ function renderPhase1Report() {
     const g2SyntenicPct = ((G2_SYNTENIC_GENES / G2_TOTAL_GENES) * 100).toFixed(1);
     const g2OrphanPct = ((g2Orphans / G2_TOTAL_GENES) * 100).toFixed(1);
 
-    // Render Metrics Grid
+    // Calculate dynamic comparative metrics from allData
+    const blockIds = new Set(allData.map(d => d.b));
+    const totalBlocks = blockIds.size;
+
+    // Direct vs inverted blocks
+    const blocksMap = d3.group(allData, d => d.b);
+    let invertedBlocks = 0;
+    blocksMap.forEach(genes => {
+        if (genes[0] && genes[0].o === 'minus') {
+            invertedBlocks++;
+        }
+    });
+    const directBlocks = totalBlocks - invertedBlocks;
+    const avgGenesPerBlock = totalBlocks > 0 ? (allData.length / totalBlocks) : 0;
+
+    // Render Metrics Grid (6 beautiful cards)
     const metricsGrid = document.getElementById('p1-metrics-grid');
     metricsGrid.innerHTML = `
         <div class="db-card">
@@ -735,6 +832,16 @@ function renderPhase1Report() {
           <div class="db-card-lbl">Genes Huérfanos (${G2_NAME})</div>
           <div class="db-card-desc">Genes específicos de ${G2_NAME} ausentes en el genoma de ${G1_NAME}.</div>
         </div>
+        <div class="db-card" style="border-left: 4px solid #8b5cf6;">
+          <div class="db-card-val">${totalBlocks.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${avgGenesPerBlock.toFixed(1)} genes/bloque)</span></div>
+          <div class="db-card-lbl">Bloques Sinténicos Totales</div>
+          <div class="db-card-desc">Segmentos cromosómicos alineados de homología conservada con un total de ${allData.length.toLocaleString()} parejas.</div>
+        </div>
+        <div class="db-card" style="border-left: 4px solid #f59e0b;">
+          <div class="db-card-val">${invertedBlocks.toLocaleString()} <span style="font-size:13px; font-weight:500; opacity:0.8;">(${totalBlocks > 0 ? ((invertedBlocks/totalBlocks)*100).toFixed(1) : 0}%)</span></div>
+          <div class="db-card-lbl">Bloques Invertidos / Directos</div>
+          <div class="db-card-desc">Orientación: <strong>${directBlocks.toLocaleString()} directos (plus)</strong> y <strong>${invertedBlocks.toLocaleString()} invertidos (minus)</strong>.</div>
+        </div>
     `;
 
     // Render Balance Table
@@ -742,7 +849,7 @@ function renderPhase1Report() {
     balanceTable.innerHTML = `
         <thead>
           <tr>
-            <th>Genoma</th>
+            <th>Genoma / Métrica</th>
             <th>Total Genes</th>
             <th>Genes en Sintenia (Núcleo)</th>
             <th>Genes Huérfanos (PAVs)</th>
@@ -774,10 +881,34 @@ function renderPhase1Report() {
               </div>
             </td>
           </tr>
+          <tr style="background:#f8fafc; font-weight:600; border-top: 2px solid #cbd5e1;">
+            <td colspan="2"><strong>Métricas Comparativas del Alineamiento</strong></td>
+            <td colspan="3"><strong>Detalle Cuantificado</strong></td>
+          </tr>
+          <tr>
+            <td colspan="2">Parejas Sinténicas Totales (Ortólogos)</td>
+            <td colspan="3">${allData.length.toLocaleString()} parejas de genes colineales</td>
+          </tr>
+          <tr>
+            <td colspan="2">Bloques Sinténicos Totales</td>
+            <td colspan="3">${totalBlocks.toLocaleString()} bloques de colinealidad</td>
+          </tr>
+          <tr>
+            <td colspan="2">Bloques Invertidos (minus)</td>
+            <td colspan="3">${invertedBlocks.toLocaleString()} bloques (del tipo inversión cromosómica / sentido inverso)</td>
+          </tr>
+          <tr>
+            <td colspan="2">Bloques Directos (plus)</td>
+            <td colspan="3">${directBlocks.toLocaleString()} bloques (alineamiento en el mismo sentido)</td>
+          </tr>
+          <tr>
+            <td colspan="2">Promedio de Genes por Bloque</td>
+            <td colspan="3">${avgGenesPerBlock.toFixed(2)} genes por bloque sinténico</td>
+          </tr>
         </tbody>
     `;
 
-    renderP1ChrTableUnfiltered();
+    initP1Filters();
 }
 
 function getChrConservationData() {
@@ -807,23 +938,66 @@ function getChrConservationData() {
 }
 
 let cachedChrData = null;
+let p1FiltersInitialized = false;
 
-function renderP1ChrTableUnfiltered() {
+function initP1Filters() {
     if (!cachedChrData) {
         cachedChrData = getChrConservationData();
     }
-    displayChrTable(cachedChrData);
+    
+    if (!p1FiltersInitialized) {
+        // Populate G1 select options
+        const g1Chrs = [...new Set(cachedChrData.map(d => d.chr1))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+        const g1Select = document.getElementById('p1-filter-g1-chr');
+        if (g1Select) {
+            g1Select.innerHTML = '<option value="">Cromosoma G1: Todos</option>';
+            g1Chrs.forEach(chr => {
+                g1Select.innerHTML += `<option value="${chr}">${chr}</option>`;
+            });
+        }
+        
+        // Populate G2 select options
+        const g2Chrs = [...new Set(cachedChrData.map(d => d.chr2))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+        const g2Select = document.getElementById('p1-filter-g2-chr');
+        if (g2Select) {
+            g2Select.innerHTML = '<option value="">Cromosoma G2: Todos</option>';
+            g2Chrs.forEach(chr => {
+                g2Select.innerHTML += `<option value="${chr}">${chr}</option>`;
+            });
+        }
+        
+        p1FiltersInitialized = true;
+    }
+    
+    applyP1ChrFilters();
 }
 
-function filterP1ChrTable(query) {
+function applyP1ChrFilters() {
     if (!cachedChrData) {
         cachedChrData = getChrConservationData();
     }
-    const q = query.toLowerCase();
-    const filtered = cachedChrData.filter(d => 
-        d.chr1.toLowerCase().includes(q) || 
-        d.chr2.toLowerCase().includes(q)
-    );
+    
+    const g1Val = document.getElementById('p1-filter-g1-chr').value;
+    const g2Val = document.getElementById('p1-filter-g2-chr').value;
+    const levelVal = document.getElementById('p1-filter-level').value;
+    const limitVal = document.getElementById('p1-filter-limit').value;
+    
+    let filtered = cachedChrData.filter(d => {
+        if (g1Val && d.chr1 !== g1Val) return false;
+        if (g2Val && d.chr2 !== g2Val) return false;
+        if (levelVal) {
+            if (levelVal === 'high' && d.pairs < 100) return false;
+            if (levelVal === 'medium' && (d.pairs < 30 || d.pairs >= 100)) return false;
+            if (levelVal === 'low' && d.pairs >= 30) return false;
+        }
+        return true;
+    });
+    
+    if (limitVal !== 'all') {
+        const limit = parseInt(limitVal, 10);
+        filtered = filtered.slice(0, limit);
+    }
+    
     displayChrTable(filtered);
 }
 
