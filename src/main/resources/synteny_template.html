@@ -523,12 +523,12 @@
   <h1>BioJava | <strong>Advanced Synteny Explorer</strong></h1>
   <div class="nav-actions" style="display: flex; align-items: center; gap: 8px;">
     <div style="display:flex; gap: 4px; border-right: 1px solid #e2e8f0; padding-right: 4px;">
-      <button class="btn btn-primary btn-sm" onclick="exportSVG()" title="Exportar como SVG">
+      <button class="btn btn-primary btn-sm" onclick="exportSVG('#viz svg', 'synteny_plot.svg')" title="Exportar como SVG">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         SVG
       </button>
-      <button class="btn btn-primary btn-sm" onclick="exportImage('png')" title="Exportar como PNG">PNG</button>
-      <button class="btn btn-primary btn-sm" onclick="exportImage('gif')" title="Exportar como GIF">GIF</button>
+      <button class="btn btn-primary btn-sm" onclick="exportImage('png', '#viz svg', 'synteny_plot')" title="Exportar como PNG">PNG</button>
+      <button class="btn btn-primary btn-sm" onclick="exportImage('gif', '#viz svg', 'synteny_plot')" title="Exportar como GIF">GIF</button>
     </div>
     <button class="btn btn-sm" onclick="flipGenomes()" style="background:#0ea5e9; color:white; border:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
@@ -1038,9 +1038,9 @@
           <h3 class="db-table-title">📈 Distribución de Ks — Firma de WGD</h3>
           <div style="display:flex; gap: 4px; margin-left:auto; align-items:center;">
             <span style="font-size:11px;color:var(--text-muted);margin-right:8px;">Pico en Ks indica evento de duplicación genómica completa (WGD).</span>
-            <button class="btn btn-sm" onclick="exportSVG('#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como SVG">SVG</button>
-            <button class="btn btn-sm" onclick="exportImage('png', '#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como PNG">PNG</button>
-            <button class="btn btn-sm" onclick="exportImage('gif', '#wgd-ks-histogram-svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como GIF">GIF</button>
+            <button class="btn btn-sm" onclick="exportSVG('#wgd-ks-histogram-svg', 'wgd_ks_distribution.svg')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como SVG">SVG</button>
+            <button class="btn btn-sm" onclick="exportImage('png', '#wgd-ks-histogram-svg', 'wgd_ks_distribution')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como PNG">PNG</button>
+            <button class="btn btn-sm" onclick="exportImage('gif', '#wgd-ks-histogram-svg', 'wgd_ks_distribution')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px;" title="Descargar como GIF">GIF</button>
           </div>
         </div>
         <div id="wgd-ks-histogram" style="padding:8px 0;"></div>
@@ -1197,8 +1197,8 @@
           <h3 class="db-table-title">📍 Marcadores GWAS Sacarosa — CC-01-1940</h3>
           <div style="display:flex;gap:4px;margin-left:auto;align-items:center;">
             <span style="font-size:11px;color:var(--text-muted);margin-right:8px;">Marcadores significativos de GWAS para sacarosa. Hover para detalles.</span>
-            <button class="btn btn-sm" onclick="exportSVG('#gwas-manhattan-svg')" style="background:#8b5cf6;color:white;border:none;padding:4px 8px;font-size:11px;" title="Descargar SVG">SVG</button>
-            <button class="btn btn-sm" onclick="exportImage('png','#gwas-manhattan-svg')" style="background:#8b5cf6;color:white;border:none;padding:4px 8px;font-size:11px;" title="Descargar PNG">PNG</button>
+            <button class="btn btn-sm" onclick="exportSVG('#gwas-manhattan-svg', 'gwas_manhattan.svg')" style="background:#8b5cf6;color:white;border:none;padding:4px 8px;font-size:11px;" title="Descargar SVG">SVG</button>
+            <button class="btn btn-sm" onclick="exportImage('png','#gwas-manhattan-svg', 'gwas_manhattan')" style="background:#8b5cf6;color:white;border:none;padding:4px 8px;font-size:11px;" title="Descargar PNG">PNG</button>
           </div>
         </div>
         <div id="gwas-manhattan-container" style="padding:8px 0;"></div>
@@ -2056,16 +2056,23 @@ function renderWgdReport() {
 
     const avgKs = ksCount > 0 ? (ksSum / ksCount).toFixed(4) : '—';
     const modalIdx = ksBins.indexOf(Math.max(...ksBins));
-    const modalKs  = ((modalIdx + 0.5) * BIN_WIDTH).toFixed(2);
+    // Use WGD_PEAKS if available (more precise), otherwise fall back to histogram modal
+    const bestKs = (typeof WGD_PEAKS !== 'undefined' && WGD_PEAKS && WGD_PEAKS.length > 0)
+        ? WGD_PEAKS[0].ks
+        : (ksCount > 0 ? (modalIdx + 0.5) * BIN_WIDTH : null);
+    const modalKs  = bestKs !== null ? bestKs.toFixed(2) : '0.05';
     const ploidyDepths = Object.values(chrMap).map(d => d.g2Chrs.size);
     const avgDepth = ploidyDepths.length > 0 ? (ploidyDepths.reduce((a,b)=>a+b,0)/ploidyDepths.length).toFixed(1) : '—';
-    const wgdTime  = modalIdx > 0 ? ((parseFloat(modalKs) / (2 * 6.5e-9)) / 1e6).toFixed(1) + ' Ma' : '—';
+    const rate = (typeof SUBST_RATE !== 'undefined' && SUBST_RATE > 0) ? SUBST_RATE : 6.5e-9;
+    const wgdTime = bestKs !== null && bestKs > 0
+        ? ((bestKs / (2 * rate)) / 1e6).toFixed(1) + ' Ma'
+        : (ksCount > 0 ? (((modalIdx + 0.5) * BIN_WIDTH / (2 * rate)) / 1e6).toFixed(1) + ' Ma' : '—');
 
     // Metric cards
     const grid = document.getElementById('wgd-metrics-grid');
     if (grid) grid.innerHTML = `
         <div class="db-card"><div class="db-card-val">${modalKs}</div><div class="db-card-lbl">Ks Modal — Pico WGD</div><div class="db-card-desc">Bin de Ks más frecuente: indica el WGD más reciente detectado.</div></div>
-        <div class="db-card success"><div class="db-card-val">${wgdTime}</div><div class="db-card-lbl">Divergencia Estimada</div><div class="db-card-desc">T = Ks/(2r), r = 6.5×10⁻⁹ sub/sitio/año (gramíneas).</div></div>
+        <div class="db-card success"><div class="db-card-val">${wgdTime}</div><div class="db-card-lbl">Divergencia Estimada</div><div class="db-card-desc">T = Ks/(2r), r = ${rate.toExponential(2).replace('e-9', '×10⁻⁹')} sub/sitio/año.</div></div>
         <div class="db-card accent"><div class="db-card-val">${avgDepth}×</div><div class="db-card-lbl">Profundidad Poliploidía Media</div><div class="db-card-desc">Promedio de cromosomas G2 sinténicos por G1.</div></div>
         <div class="db-card" style="border-left:4px solid #8b5cf6;"><div class="db-card-val">${avgKs}</div><div class="db-card-lbl">Ks Promedio Global</div><div class="db-card-desc">Sustituciones sinónimas medias entre ortólogos sinténicos.</div></div>`;
 
@@ -3191,9 +3198,9 @@ function zoomWGD() {
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <h2 style="margin:0;">⏱ Distribución Ks — Análisis WGD</h2>
               <div style="display:flex;gap:4px;">
-                <button onclick="exportSVG('#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar SVG">SVG</button>
-                <button onclick="exportImage('png','#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar PNG">PNG</button>
-                <button onclick="exportImage('gif','#wgd-zoom-chart svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar GIF">GIF</button>
+                <button onclick="exportSVG('#wgd-zoom-chart svg', 'wgd_ks_distribution.svg')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar SVG">SVG</button>
+                <button onclick="exportImage('png','#wgd-zoom-chart svg', 'wgd_ks_distribution')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar PNG">PNG</button>
+                <button onclick="exportImage('gif','#wgd-zoom-chart svg', 'wgd_ks_distribution')" style="background:#10b981;color:white;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;" title="Descargar GIF">GIF</button>
               </div>
             </div>
             <div id="wgd-zoom-chart" style="width:100%; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;"></div>
@@ -3246,6 +3253,7 @@ function zoomWGD() {
 
         const svgEl = d3.select("#wgd-zoom-chart").append("svg")
             .attr("width", chartW).attr("height", chartH)
+            .attr("xmlns", "http://www.w3.org/2000/svg")
             .append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
         const x = d3.scaleLinear().domain([0, 3.0]).range([0, innerW]);
@@ -3487,14 +3495,14 @@ function searchGene(val){
 }
 
 // --- Export Graphics ---
-function exportSVG(selector = "#viz svg"){
+function exportSVG(selector = "#viz svg", filename = "grafico.svg"){
   const svgEl=document.querySelector(selector);
   if(!svgEl){alert("No chart to export.");return;}
   const blob=new Blob([svgEl.outerHTML],{type:"image/svg+xml"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="grafico.svg";a.click();
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
 }
 
-function exportImage(format, selector = "#viz svg") {
+function exportImage(format, selector = "#viz svg", filename = "synteny_plot") {
   const svgEl = document.querySelector(selector);
   if(!svgEl){alert("No chart to export.");return;}
   
@@ -3533,7 +3541,7 @@ function exportImage(format, selector = "#viz svg") {
     const imgURI = canvas.toDataURL(mimeType);
     const a = document.createElement("a");
     a.href = imgURI;
-    a.download = "synteny_plot." + format;
+    a.download = filename + "." + format;
     a.click();
   };
   img.src = url;
