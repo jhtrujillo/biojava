@@ -601,10 +601,10 @@
           <thead>
             <tr>
               <th>Familia Funcional</th>
-              <th>CC-01-1940 (Total/Sinténicos)</th>
-              <th>R570 (Total/Sinténicos)</th>
-              <th>Huérfanos CC</th>
-              <th>Huérfanos R570</th>
+              <th><span class="g1-name-placeholder"></span> (Total/Sinténicos)</th>
+              <th><span class="g2-name-placeholder"></span> (Total/Sinténicos)</th>
+              <th>Huérfanos <span class="g1-name-placeholder"></span></th>
+              <th>Huérfanos <span class="g2-name-placeholder"></span></th>
               <th>Ka/Ks Promedio</th>
               <th>Consenso y Presión Selectiva</th>
             </tr>
@@ -624,9 +624,9 @@
           <table class="db-table">
             <thead>
               <tr>
-                <th>Gen G1 (CC)</th>
+                <th>Gen G1 (<span class="g1-name-placeholder"></span>)</th>
                 <th>Chr G1</th>
-                <th>Gen G2 (R570)</th>
+                <th>Gen G2 (<span class="g2-name-placeholder"></span>)</th>
                 <th>Chr G2</th>
                 <th>Anotación Funcional</th>
                 <th>Ka</th>
@@ -751,7 +751,7 @@ function renderPhase1Report() {
         </thead>
         <tbody>
           <tr>
-            <td><strong>${G1_NAME} (CC-01-1940)</strong></td>
+            <td><strong>${G1_NAME}</strong></td>
             <td>${G1_TOTAL_GENES.toLocaleString()}</td>
             <td>${G1_SYNTENIC_GENES.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g1SyntenicPct}%)</span></td>
             <td>${g1Orphans.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g1OrphanPct}%)</span></td>
@@ -763,7 +763,7 @@ function renderPhase1Report() {
             </td>
           </tr>
           <tr>
-            <td><strong>${G2_NAME} (R570)</strong></td>
+            <td><strong>${G2_NAME}</strong></td>
             <td>${G2_TOTAL_GENES.toLocaleString()}</td>
             <td>${G2_SYNTENIC_GENES.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g2SyntenicPct}%)</span></td>
             <td>${g2Orphans.toLocaleString()} <span style="color:var(--text-muted);font-size:10px;">(${g2OrphanPct}%)</span></td>
