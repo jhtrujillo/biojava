@@ -239,27 +239,67 @@
     .legend-item { display: flex; align-items: center; gap: 10px; font-size: 11px; padding: 5px 0; color: var(--text-muted); }
     .legend-swatch { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
 
-    /* Tabs Navigation styling */
-    .tab-btn {
-      border: 1px solid var(--border);
-      background: #f8fafc;
-      color: var(--text-muted);
-      font-weight: 500;
-      transition: all 0.2s ease;
-      font-size: 12px;
-      padding: 6px 14px;
+    /* Sidebar Navigation */
+    .app-wrapper { display: flex; flex: 1; overflow: hidden; }
+    .nav-sidebar {
+      width: 220px; min-width: 220px;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 10px 0;
+      overflow-y: auto; overflow-x: hidden;
+      transition: width 0.22s ease, min-width 0.22s ease;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+      z-index: 50; position: relative; flex-shrink: 0;
     }
-    .tab-btn:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
+    .nav-sidebar.collapsed { width: 52px; min-width: 52px; }
+    .sidebar-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 8px;
+      border: 1px solid var(--border); background: #f8fafc;
+      color: var(--text-muted); cursor: pointer;
+      margin: 2px 12px 10px auto; flex-shrink: 0;
+      transition: all 0.2s;
     }
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-      font-weight: 600;
-      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    .sidebar-toggle:hover { background: #eff6ff; color: var(--primary); }
+    .nav-sidebar.collapsed .sidebar-toggle { margin: 2px auto 10px; }
+    .nav-group { margin-bottom: 4px; }
+    .nav-group + .nav-group { border-top: 1px solid var(--border); padding-top: 6px; margin-top: 2px; }
+    .nav-group-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 6px 16px 3px; white-space: nowrap;
+      overflow: hidden; transition: all 0.2s;
     }
+    .nav-sidebar.collapsed .nav-group-label { opacity: 0; height: 0; padding: 0; margin: 0; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 9px 14px;
+      border: none; background: transparent;
+      color: var(--text-muted); font-size: 12.5px; font-weight: 500;
+      font-family: inherit; cursor: pointer; text-align: left;
+      transition: all 0.15s ease;
+      white-space: nowrap; overflow: hidden; position: relative;
+    }
+    .nav-item:hover { background: #f1f5f9; color: var(--text-main); }
+    .nav-item.active {
+      background: #eff6ff; color: var(--primary);
+      font-weight: 700; border-right: 3px solid var(--primary);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute;
+      left: 0; top: 20%; height: 60%; width: 3px;
+      background: var(--primary); border-radius: 0 3px 3px 0;
+    }
+    .nav-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+    .nav-label { transition: opacity 0.18s; overflow: hidden; text-overflow: ellipsis; }
+    .nav-sidebar.collapsed .nav-label { opacity: 0; width: 0; }
+    .nav-sidebar.collapsed .nav-item { padding: 9px; justify-content: center; }
+    .nav-sidebar.collapsed .nav-item.active { border-right: none; }
+    .nav-sidebar.collapsed .nav-item.active::before { display: none; }
+    .nav-sidebar.collapsed .nav-item.active .nav-icon { color: var(--primary); filter: drop-shadow(0 0 4px rgba(37,99,235,0.4)); }
+    /* Keep old .tab-btn for any legacy refs */
+    .tab-btn { display: none; }
 
     /* Dashboard Layout */
     .dashboard-container {
@@ -419,30 +459,141 @@
       font-size: 13px;
     }
 
+    /* Category Selector Bar */
+    .category-selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+    }
+    .category-selector-bar label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .category-selector-bar select {
+      flex: 1;
+      min-width: 220px;
+      max-width: 340px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      outline: none;
+      background: #f8fafc;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    .category-selector-bar select:focus {
+      border-color: var(--primary);
+    }
+    .category-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .category-selector-bar .category-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
   </style>
 </head>
 <body>
 <div class="navbar">
   <h1>BioJava | <strong>Advanced Synteny Explorer</strong></h1>
-  <div class="tabs" style="display: flex; gap: 8px; margin-left: 24px; flex: 1;">
-    <button class="btn tab-btn active" id="tab-btn-explorer" onclick="switchTab('explorer')">🔍 Explorador Sintenia</button>
-    <button class="btn tab-btn" id="tab-btn-phase1" onclick="switchTab('phase1')">📊 Cambios Estructurales</button>
-    <button class="btn tab-btn" id="tab-btn-phase2" onclick="switchTab('phase2')">🧬 Selección y Sacarosa</button>
-  </div>
-  <div class="nav-actions">
-    <button class="btn btn-primary btn-sm" onclick="exportSVG()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      Export SVG Report
-    </button>
-    <button class="btn btn-sm" onclick="flipGenomes()" style="background:#0ea5e9; color:white; border:none; margin-left:8px;">
+  <div class="nav-actions" style="display: flex; align-items: center; gap: 8px;">
+    <div style="display:flex; gap: 4px; border-right: 1px solid #e2e8f0; padding-right: 4px;">
+      <button class="btn btn-primary btn-sm" onclick="exportSVG()" title="Exportar como SVG">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        SVG
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="exportImage('png')" title="Exportar como PNG">PNG</button>
+      <button class="btn btn-primary btn-sm" onclick="exportImage('gif')" title="Exportar como GIF">GIF</button>
+    </div>
+    <button class="btn btn-sm" onclick="flipGenomes()" style="background:#0ea5e9; color:white; border:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
       Flip Genomes
     </button>
-    <button class="btn btn-sm" onclick="askAI()" style="background:#8b5cf6; color:white; border:none; margin-left:8px; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);">
+    <button class="btn btn-sm" onclick="askAI()" style="background:#8b5cf6; color:white; border:none; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);">
       <span style="margin-right:4px;">✨</span> AI Insights
     </button>
   </div>
 </div>
+<div class="app-wrapper">
+  <!-- LEFT SIDEBAR NAVIGATION -->
+  <nav class="nav-sidebar" id="nav-sidebar">
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Colapsar menú">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Vista General</div>
+      <button class="nav-item active" id="tab-btn-explorer" onclick="switchTab('explorer')">
+        <span class="nav-icon">🔍</span><span class="nav-label">Explorador Sinténico</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Arquitectura Genómica</div>
+      <button class="nav-item" id="tab-btn-balance" onclick="switchTab('balance')">
+        <span class="nav-icon">⚖️</span><span class="nav-label">Balance Genómico</span>
+      </button>
+      <button class="nav-item" id="tab-btn-chr" onclick="switchTab('chr')">
+        <span class="nav-icon">🗺️</span><span class="nav-label">Conservación Cromosómica</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Análisis Funcional</div>
+      <button class="nav-item" id="tab-btn-consensus" onclick="switchTab('consensus')">
+        <span class="nav-icon">🔬</span><span class="nav-label">Consenso Funcional</span>
+      </button>
+      <button class="nav-item" id="tab-btn-inventory" onclick="switchTab('inventory')">
+        <span class="nav-icon">🧬</span><span class="nav-label">Inventario Funcional</span>
+      </button>
+      <button class="nav-item" id="tab-btn-molecular" onclick="switchTab('molecular')">
+        <span class="nav-icon">🔍</span><span class="nav-label">Identificación Molecular</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Evolución Molecular</div>
+      <button class="nav-item" id="tab-btn-kaks" onclick="switchTab('kaks')">
+        <span class="nav-icon">⚛️</span><span class="nav-label">Ka/Ks · Micro-Evolución</span>
+      </button>
+      <button class="nav-item" id="tab-btn-wgd" onclick="switchTab('wgd')">
+        <span class="nav-icon">🌳</span><span class="nav-label">Filogenia · WGD</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Genómica Aplicada</div>
+      <button class="nav-item" id="tab-btn-gwas" onclick="switchTab('gwas')">
+        <span class="nav-icon">🎯</span><span class="nav-label">GWAS · Validación QTL</span>
+      </button>
+    </div>
+  </nav>
+
 <div class="main-container">
   <!-- EXPLORADOR TAB -->
   <div id="explorer-content" style="display: flex; flex: 1; overflow: hidden; width: 100%;">
@@ -538,19 +689,14 @@
   </div> <!-- end of sidebar -->
 </div> <!-- end of explorer-content -->
 
-  <!-- TAB FASE 1 CONTENT -->
-  <div id="phase1-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+  <!-- TAB BALANCE CONTENT -->
+  <div id="balance-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
     <div class="report-section">
       <div class="report-title-section">
-        <h2>Cambios Estructurales y Sintenia</h2>
-        <p>Análisis a nivel de genoma completo (Fase 1) entre <strong><span class="g1-name-placeholder"></span></strong> y <strong><span class="g2-name-placeholder"></span></strong></p>
+        <h2>Balance Genómico Global</h2>
+        <p>Análisis de sintenia macroestructural a nivel de genoma completo entre <strong><span class="g1-name-placeholder"></span></strong> y <strong><span class="g2-name-placeholder"></span></strong></p>
       </div>
       
-      <div class="db-alert">
-        <h5>💡 Significado Biológico y Técnico de la Sintenia y PAVs</h5>
-        En genomas híbridos poliploides complejos como la caña de azúcar, la conservación del orden sinténico (sintenia) es un indicador del núcleo genómico ancestral conservado. Por otro lado, la presencia de genes huérfanos (variaciones de presencia/ausencia o PAVs) denota regiones de alta plasticidad evolutiva donde eventos de duplicación cromosómica o translocación generan diversidad adaptativa para lidiar con factores estresantes o expandir rutas específicas.
-      </div>
-
       <div class="dashboard-container" id="p1-metrics-grid">
         <!-- Dyn cards -->
       </div>
@@ -558,7 +704,7 @@
       <div class="db-table-container">
         <div class="db-table-header">
           <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
-            ⚖️ Balance Genómico Global
+            ⚖️ Balance de Sintenia y Orfandad
             <button class="btn btn-sm" onclick="exportTableToCSV('p1-balance-table', 'balance_genomico_global.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Excel
@@ -567,6 +713,69 @@
         </div>
         <table class="db-table" id="p1-balance-table">
           <!-- Dyn table -->
+        </table>
+      </div>
+
+      <div class="db-alert" style="margin-top:24px; background:#f0fdf4; border-left-color:#10b981; color:#14532d;">
+        <h5 style="color:#14532d; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">🧬 <span>Discusión y Análisis: El Núcleo Genómico vs. Genoma Dispensable</span></h5>
+        <p style="font-size:12.5px; line-height:1.6; margin:0;">
+          Los resultados del <strong>Balance Genómico Global</strong> revelan una marcada asimetría en la retención del orden de los genes (sintenia) entre <strong><span class="g1-name-placeholder"></span></strong> y <strong><span class="g2-name-placeholder"></span></strong>. En genomas poliploides complejos como el de la caña de azúcar (<em>Saccharum</em>), la fraction de genes sinténicos (aproximadamente del 19.5% al 22.2%) representa el <strong>núcleo genómico ancestral conservado (core genome)</strong>. Estos loci son evolutivamente estables y esenciales para las funciones fisiológicas básicas de la planta, y tienden a resistir procesos de fraccionamiento génico después de duplicaciones del genoma completo (WGD).
+        </p>
+        <p style="font-size:12.5px; line-height:1.6; margin-top:8px; margin-bottom:0;">
+          Por otro lado, la gran proporción de genes "huérfanos" (regiones PAV - Presencia/Ausencia de Variación) que supera el 75% en ambos genomas representa el <strong>genoma dispensable</strong>. Esta fracción, enriquecida por eventos repetitivos de translocación, inserción de elementos transponibles (TEs) y duplicaciones locales en tándem, provee una reserva de variabilidad genética de gran plasticidad evolutiva. Es en este genoma dispensable donde surgen innovaciones funcionales que permiten a las variedades de caña de azúcar aclimatarse a estreses abióticos específicos y patógenos locales. Esto resalta que la evolución de la caña no solo se basa en su núcleo estático, sino en una gran dinámica de adiciones y supresiones de genes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB CONSERVACION CROMOSOMICA CONTENT -->
+  <div id="chr-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>Conservación Cromosómica</h2>
+        <p>Análisis de colinealidad inter-cromosómica, orientación de bloques y homoeología entre genomas</p>
+      </div>
+
+      <!-- RANKING TABLE: Top Chromosomes by Syntenic Pairs -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap; gap:10px;">
+          <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
+            🏆 Ranking de Cromosomas por Pares Sinténicos
+            <button class="btn btn-sm" onclick="exportTableToCSV('chr-ranking-table', 'ranking_cromosomico.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-left:auto;">
+            <input type="text" class="search-input" id="ranking-search" placeholder="Buscar cromosoma..." oninput="applyRankingFilters()" style="max-width:160px; padding:4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none;">
+            <select id="ranking-filter-coverage" onchange="applyRankingFilters()" style="padding:4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background:white; cursor:pointer;">
+              <option value="">Cobertura: Todas</option>
+              <option value="high">Alta (≥40%)</option>
+              <option value="medium">Media (20-39%)</option>
+              <option value="low">Baja (&lt;20%)</option>
+            </select>
+            <select id="ranking-filter-limit" onchange="applyRankingFilters()" style="padding:4px 8px; font-size:12px; border-radius:4px; border:1px solid #cbd5e1; outline:none; background:white; cursor:pointer;">
+              <option value="10">Top 10</option>
+              <option value="20" selected>Top 20</option>
+              <option value="50">Top 50</option>
+              <option value="all">Todos</option>
+            </select>
+          </div>
+        </div>
+        <table class="db-table" id="chr-ranking-table">
+          <thead>
+            <tr>
+              <th style="text-align:center; width:60px;">Posición</th>
+              <th>Cromosoma <span class="g1-name-placeholder"></span> (G1)</th>
+              <th style="text-align:right;">Pares Sinténicos (G1 total)</th>
+              <th>Top Cromosoma <span class="g2-name-placeholder"></span> (G2)</th>
+              <th style="text-align:right;">Pares Sinténicos (par G1↔G2)</th>
+              <th style="text-align:center;">Cobertura G1</th>
+            </tr>
+          </thead>
+          <tbody id="chr-ranking-body">
+            <!-- Dyn ranking -->
+          </tbody>
         </table>
       </div>
 
@@ -604,20 +813,39 @@
           <!-- Dyn table -->
         </table>
       </div>
+
+      <div class="db-alert" style="margin-top:24px; background:#eff6ff; border-left-color:#3b82f6; color:#1e3a8a;">
+        <h5 style="color:#1e3a8a; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">🗺️ <span>Discusión y Análisis: Homoeología e Inversiones Cromosómicas</span></h5>
+        <p style="font-size:12.5px; line-height:1.6; margin:0;">
+          La distribución de colinealidad en la tabla de <strong>Conservación Sinténica Cromosómica</strong> ilustra la compleja arquitectura de homoeología (paralogía por duplicación cromosómica) entre los subgenomas de la caña. Los pares cromosómicos que acumulan altas densidades de parejas sinténicas revelan relaciones ortólogas directas de cromosomas homólogos o homoeólogos derivados de eventos de poliploidización antiguos.
+        </p>
+        <p style="font-size:12.5px; line-height:1.6; margin-top:8px; margin-bottom:0;">
+          Por el contrario, la existencia de una elevada tasa de **bloques invertidos (orientación "minus")** que supera el 42% del total de bloques colineales, representa evidencia física directa de inversiones cromosómicas a gran escala (paracéntricas e intracromosómicas) ocurridas desde la divergencia de los genomas parentales de <em>Saccharum</em>. Estas inversiones juegan un papel evolutivo central al suprimir la recombinación homóloga local durante la meiosis, actuando como barreras que conservan bloques de genes co-adaptados ("supergenes"). A su vez, los hotspots con baja densidad sinténica representan regiones de intensa fragmentación y rearreglos cromosómicos rápidos que promueven la diversidad funcional.
+        </p>
+      </div>
     </div>
   </div>
 
-  <!-- TAB FASE 2 CONTENT -->
-  <div id="phase2-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+  <!-- TAB CONSENSO AZUCAR CONTENT -->
+  <div id="consensus-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
     <div class="report-section">
       <div class="report-title-section">
-        <h2>Microevolución, Selección Ka/Ks y Genes del Azúcar</h2>
-        <p>Análisis de presiones evolutivas y modelado de sacarosa (Fase 2)</p>
+        <h2 id="consensus-tab-title">Consenso Funcional Evolutivo</h2>
+        <p id="consensus-tab-subtitle">Análisis de presiones de selección (ratios Ka/Ks) por familia funcional</p>
       </div>
 
-      <div class="db-alert">
-        <h5>⚖️ Entendiendo las Tasas de Sustitución Ka/Ks</h5>
-        La tasa <strong>Ka/Ks</strong> mide la presión de selección evolutiva a nivel de codón. Un valor de <strong>Ka/Ks &lt; 1</strong> denota selección purificadora (conservación funcional de la proteína). Un valor de <strong>Ka/Ks &gt; 1</strong> indica selección positiva / adaptativa (cambios rápidos favorables). Un valor de <strong>Ka/Ks ≈ 1</strong> indica evolución neutra.
+      <!-- Category Selector -->
+      <div class="category-selector-bar">
+        <label>📂 Categoría:</label>
+        <select id="functional-category-select-consensus" onchange="onCategoryChange(this.value)">
+          <option value="sugar">🔬 Metabolismo del Azúcar</option>
+          <option value="disease">🛡️ Resistencia a Enfermedades</option>
+          <option value="tf">🎛️ Factores de Transcripción</option>
+          <option value="abiotic">🌡️ Respuesta a Estrés Abiótico</option>
+          <option value="secondary">🧪 Metabolismo Secundario</option>
+        </select>
+        <span id="consensus-gene-count" class="category-count-badge">— parejas sinténicas</span>
+        <span class="category-desc" id="consensus-category-desc"></span>
       </div>
 
       <div class="dashboard-container" id="p2-metrics-grid">
@@ -627,19 +855,19 @@
       <div class="db-table-container">
         <div class="db-table-header">
           <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
-            🔬 Consenso Evolutivo de la Ruta del Azúcar
-            <button class="btn btn-sm" onclick="exportTableToCSV('p2-consensus-table', 'consenso_ruta_azucar.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+            <span id="consensus-table-title">🔬 Consenso Evolutivo por Familia Funcional</span>
+            <button class="btn btn-sm" onclick="exportTableToCSV('p2-consensus-table', 'consenso_funcional.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Excel
             </button>
           </h3>
         </div>
         <table class="db-table" id="p2-consensus-table">
-          <thead>
+          <thead id="p2-consensus-thead">
             <tr>
               <th>Familia Funcional</th>
-              <th><span class="g1-name-placeholder"></span> (Total/Sinténicos)</th>
-              <th><span class="g2-name-placeholder"></span> (Total/Sinténicos)</th>
+              <th><span class="g1-name-placeholder"></span> Sinténicos</th>
+              <th><span class="g2-name-placeholder"></span> Sinténicos</th>
               <th>Huérfanos <span class="g1-name-placeholder"></span></th>
               <th>Huérfanos <span class="g2-name-placeholder"></span></th>
               <th>Ka/Ks Promedio</th>
@@ -652,26 +880,54 @@
         </table>
       </div>
 
+      <div id="consensus-discussion" class="db-alert" style="margin-top:24px;">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB INVENTARIO FUNCIONAL CONTENT -->
+  <div id="inventory-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2 id="inventory-tab-title">Inventario Funcional Detallado</h2>
+        <p id="inventory-tab-subtitle">Censo individual de parejas sinténicas por categoría funcional y sus presiones de selección</p>
+      </div>
+
+      <!-- Category Selector (synced with consensus tab) -->
+      <div class="category-selector-bar">
+        <label>📂 Categoría:</label>
+        <select id="functional-category-select-inventory" onchange="onCategoryChange(this.value)">
+          <option value="sugar">🔬 Metabolismo del Azúcar</option>
+          <option value="disease">🛡️ Resistencia a Enfermedades</option>
+          <option value="tf">🎛️ Factores de Transcripción</option>
+          <option value="abiotic">🌡️ Respuesta a Estrés Abiótico</option>
+          <option value="secondary">🧪 Metabolismo Secundario</option>
+        </select>
+        <span id="inventory-gene-count" class="category-count-badge">— parejas sinténicas</span>
+        <span class="category-desc" id="inventory-category-desc"></span>
+      </div>
+
       <div class="db-table-container">
         <div class="db-table-header">
           <h3 class="db-table-title" style="display: flex; align-items: center; gap: 8px;">
-            🧬 Censo e Inventario Detallado de Genes de Sacarosa
-            <button class="btn btn-sm" onclick="exportTableToCSV('sugar-gene-table', 'inventario_genes_sacarosa.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
+            <span id="inventory-table-title">🧬 Inventario Detallado de Genes Funcionales</span>
+            <button class="btn btn-sm" onclick="exportTableToCSV('functional-gene-table', 'inventario_funcional.csv')" style="background:#10b981; color:white; border:none; padding:4px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Descargar tabla en formato Excel CSV">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Excel
             </button>
           </h3>
-          <input type="text" class="search-input" id="sugar-gene-search" style="max-width:280px; margin-left:auto;" placeholder="Buscar gen (ej: SPS, SWEET)..." oninput="filterSugarTable(this.value)">
+          <input type="text" class="search-input" id="functional-gene-search" style="max-width:280px; margin-left:auto;" placeholder="Buscar gen o familia funcional..." oninput="filterFunctionalTable(this.value)">
         </div>
         <div style="max-height: 500px; overflow-y: auto;">
-          <table class="db-table" id="sugar-gene-table">
+          <table class="db-table" id="functional-gene-table">
             <thead>
               <tr>
                 <th>Gen G1 (<span class="g1-name-placeholder"></span>)</th>
                 <th>Chr G1</th>
                 <th>Gen G2 (<span class="g2-name-placeholder"></span>)</th>
                 <th>Chr G2</th>
-                <th>Anotación Funcional</th>
+                <th>Familia / Anotación</th>
                 <th>Ka</th>
                 <th>Ks</th>
                 <th>Ka/Ks</th>
@@ -685,9 +941,336 @@
           </table>
         </div>
       </div>
+
+      <div id="inventory-discussion" class="db-alert" style="margin-top:24px;">
+        <!-- Populated dynamically by JS -->
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- TAB KA/KS MICRO-EVOLUCION -->
+  <div id="kaks-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>⛛️ Micro-Evolución y Presión de Selección (Ka/Ks)</h2>
+        <p>Análisis de tasas de sustitución sinoníma (Ks) y no-sinoníma (Ka) en parejas sinténicas ortólogas — estimación de fuerzas evolutivas a escala genómica</p>
+      </div>
+
+      <!-- Global metrics -->
+      <div class="dashboard-container" id="kaks-metrics-grid">
+        <!-- Dyn cards -->
+      </div>
+
+      <!-- Ka/Ks Distribution Histogram -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header">
+          <h3 class="db-table-title">📊 Distribución de Ka/Ks en Pares Sinténicos</h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">▒▒▒ Purificadora (&lt;1) &nbsp; ░░░ Neutral (~1) &nbsp; ███ Positiva (&gt;1)</span>
+        </div>
+        <div id="kaks-histogram" style="padding:8px 0;"></div>
+      </div>
+
+      <!-- Ka/Ks by chromosome pair -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap; gap:10px;">
+          <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
+            🧱 Ka/Ks Promedio por Par Cromosomico
+            <button class="btn btn-sm" onclick="exportTableToCSV('kaks-chr-table', 'kaks_por_cromosoma.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+            <select id="kaks-filter-selection" onchange="applyKaksTableFilters()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="">Selección: Todas</option>
+              <option value="purifying">Purificadora (Ka/Ks &lt; 0.5)</option>
+              <option value="neutral">Neutral (0.5 – 1.0)</option>
+              <option value="positive">Positiva (Ka/Ks &gt; 1.0)</option>
+            </select>
+            <select id="kaks-filter-limit" onchange="applyKaksTableFilters()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="20" selected>Mostrar: 20</option>
+              <option value="50">Mostrar: 50</option>
+              <option value="all">Mostrar: Todos</option>
+            </select>
+          </div>
+        </div>
+        <table class="db-table" id="kaks-chr-table">
+          <thead>
+            <tr>
+              <th>Cromosoma G1</th>
+              <th>Cromosoma G2</th>
+              <th style="text-align:right;">Nº Parejas</th>
+              <th style="text-align:right;">Ka Promedio</th>
+              <th style="text-align:right;">Ks Promedio</th>
+              <th style="text-align:right;">Ka/Ks Promedio</th>
+              <th style="text-align:center;">Presión Selectiva</th>
+              <th>Visualización</th>
+            </tr>
+          </thead>
+          <tbody id="kaks-chr-body">
+            <!-- Dyn rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Scientific Discussion -->
+      <div class="db-alert" style="margin-top:24px; background:#f0f9ff; border-left-color:#0ea5e9; color:#0c4a6e;">
+        <h5 style="font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">⛛️ <span>Discusión y Análisis: Micro-Evolución y Fuerzas Selectivas en el Genoma Sinténico</span></h5>
+        <p style="font-size:12.5px; line-height:1.7; margin:0;">
+          El ratio <strong>Ka/Ks</strong> (también expresado como d<sub>N</sub>/d<sub>S</sub> o ω) es el estimador clásico de la presión de selección operando sobre genes ortológos. Compara la tasa de sustitución de aminoácidos (<em>Ka</em>, no-sinónimas) con la tasa de sustitución silenciosa evolutivamente neutral (<em>Ks</em>, sinónimas). La dominancia absoluta de valores Ka/Ks &lt; 1.0 en el genoma sinténico de <strong><span class="g1-name-placeholder"></span></strong> frente a <strong><span class="g2-name-placeholder"></span></strong> constituye la evidencia molecular más directa de que la <strong>selección purificadora negativa</strong> es la fuerza evolutiva predominante, eliminando activamente mutaciones no-sinónimas deletreas y conservando la estructura proteica de los ortológos sinténicos.
+        </p>
+        <p style="font-size:12.5px; line-height:1.7; margin-top:10px; margin-bottom:0;">
+          Los pares con Ka/Ks cercano a 1.0 o superior son los de mayor interés biotecnológico: indican que las restricciones funcionales se han relajado o que mutaciones ventajosas están siendo fijadas por <strong>selección positiva direccional</strong>. Este patrón es especialmente relevante en genes de membrana (transportadores SWEET, acuaporinas) y en familias de defensa (NBS-LRR), donde la diversificación rápida es esperada. Los valores de <em>Ks</em> promedio permiten además estimar la <strong>divergencia temporal</strong> entre los genomas parentales usando una tasa de sustitución de reloj molecular calibrada, tipicamente entre 6.5 – 7.0 &times; 10<sup>&minus;9</sup> sustituciones/sitio/año para gramíneas.
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- TAB FILOGENIA Y WGD -->
+  <div id="wgd-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>🌳 Inferencia Filogenética Cromosómica y WGD</h2>
+        <p>Distribución de Ks, firmas de duplicación genómica completa (WGD) y profundidad de poliploidía inter-cromosómica</p>
+      </div>
+      <div class="dashboard-container" id="wgd-metrics-grid"></div>
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header">
+          <h3 class="db-table-title">📈 Distribución de Ks — Firma de WGD</h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Pico en Ks indica evento de duplicación genómica completa (WGD). Resaltado en azul.</span>
+        </div>
+        <div id="wgd-ks-histogram" style="padding:8px 0;"></div>
+      </div>
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
+          <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
+            🔢 Profundidad de Poliploidía por Cromosoma G1
+            <button class="btn btn-sm" onclick="exportTableToCSV('wgd-ploidy-table','profundidad_poliploidy.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Número de cromosomas G2 con sintenia por G1 — indicador directo de nivel de poliploidía.</span>
+        </div>
+        <table class="db-table" id="wgd-ploidy-table">
+          <thead>
+            <tr>
+              <th>Cromosoma G1 (<span class="g1-name-placeholder"></span>)</th>
+              <th style="text-align:right;">Pares Sinténicos</th>
+              <th style="text-align:right;">Nº Cromosomas G2</th>
+              <th style="text-align:right;">Ks Promedio</th>
+              <th style="text-align:center;">Nivel Poliploidía</th>
+              <th>Cromosomas G2 Sinténicos</th>
+            </tr>
+          </thead>
+          <tbody id="wgd-ploidy-body"></tbody>
+        </table>
+      </div>
+      <div class="db-alert" style="margin-top:24px;background:#f0fdf4;border-left-color:#10b981;color:#14532d;">
+        <h5 style="font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:6px;">🌳 <span>Discusión: WGD, Poliploidía y Evolución Cromosómica en <em>Saccharum</em></span></h5>
+        <p style="font-size:12.5px;line-height:1.7;margin:0;">La distribución de <strong>Ks</strong> entre pares sinténicos es la herramienta estándar para inferir eventos de <strong>WGD</strong>. Cada pico modal representa un evento de poliploidización: el tiempo se estima como <em>T = Ks / (2r)</em>, donde <em>r</em> ≈ 6.5–7.0 × 10⁻⁹ sub/sitio/año (gramíneas). Un pico en Ks ≈ 0.05–0.15 corresponde a la autopoliploidización reciente de <em>S. spontaneum</em>, mientras que picos en Ks &gt; 0.8 reflejan WGDs más antiguos compartidos con Poaceae (eventos σ y ρ).</p>
+        <p style="font-size:12.5px;line-height:1.7;margin-top:10px;margin-bottom:0;">La tabla de <strong>Profundidad de Poliploidía</strong> cuantifica la redundancia genómica: un cromosoma G1 de CC-01-1940 con sintenia en 5+ cromosomas G2 de R570 confirma la naturaleza <strong>poliplo-alopoliploide</strong> de R570. El análisis conjunto permite estimar el número de rondas de WGD y reconstruir la historia evolutiva del genoma de <em>Saccharum</em>.</p>
+      </div>
+    </div>
+  </div>
+  <!-- TAB IDENTIFICACION MOLECULAR -->
+  <div id="molecular-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>🔍 Identificación y Alineamiento Molecular de Genes de Interés</h2>
+        <p>Análisis de presencia/ausencia, orfandad funcional y señales de mutación adaptativa por categoría funcional</p>
+      </div>
+
+      <!-- Category selector (synced) -->
+      <div class="category-selector-bar">
+        <label>📂 Categoría:</label>
+        <select id="functional-category-select-molecular" onchange="onCategoryChange(this.value)">
+          <option value="sugar">🔬 Metabolismo del Azúcar</option>
+          <option value="disease">🛡️ Resistencia a Enfermedades</option>
+          <option value="tf">🎛️ Factores de Transcripción</option>
+          <option value="abiotic">🌡️ Respuesta a Estrés Abiótico</option>
+          <option value="secondary">🧪 Metabolismo Secundario</option>
+        </select>
+        <span id="molecular-gene-count" class="category-count-badge">— genes identificados</span>
+        <span class="category-desc" id="molecular-category-desc"></span>
+      </div>
+
+      <!-- Metric cards -->
+      <div class="dashboard-container" id="molecular-metrics-grid"></div>
+
+      <!-- Orphan analysis table -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
+          <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
+            🧩 Distribución por Grupo Funcional y Genoma
+            <button class="btn btn-sm" onclick="exportTableToCSV('mol-orphan-table','orfandad_funcional.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Clasifica pares sinténicos según si AMBOS, solo G1 o solo G2 expresan la función seleccionada.</span>
+        </div>
+        <table class="db-table" id="mol-orphan-table">
+          <thead>
+            <tr>
+              <th>Categoría de Sintenia</th>
+              <th style="text-align:right;">N° Pares</th>
+              <th style="text-align:right;">Genes G1 únicos</th>
+              <th style="text-align:right;">Genes G2 únicos</th>
+              <th style="text-align:right;">Ka/Ks Promedio</th>
+              <th style="text-align:center;">Presión Selectiva</th>
+              <th>Interpretación</th>
+            </tr>
+          </thead>
+          <tbody id="mol-orphan-body"></tbody>
+        </table>
+      </div>
+
+      <!-- CDS Alignment / Mutation Detection -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
+          <h3 class="db-table-title">🔬 Alineamiento de CDS y Detección de Mutaciones Adaptativas</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+            <select id="mol-cds-filter" onchange="applyMolCdsFilter()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="all">Todos los genes</option>
+              <option value="positive">Selección Positiva (Ka/Ks &gt; 1)</option>
+              <option value="purifying">Selección Purificadora (Ka/Ks &lt; 0.3)</option>
+              <option value="neutral">Evolución Neutral (0.3–1.0)</option>
+            </select>
+            <select id="mol-cds-limit" onchange="applyMolCdsFilter()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="20" selected>Top 20</option>
+              <option value="50">Top 50</option>
+              <option value="all">Todos</option>
+            </select>
+            <button class="btn btn-sm" onclick="exportTableToCSV('mol-cds-table','alineamiento_cds.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </div>
+        </div>
+        <div style="max-height:420px;overflow-y:auto;">
+          <table class="db-table" id="mol-cds-table">
+            <thead>
+              <tr>
+                <th>Gen G1 (<span class="g1-name-placeholder"></span>)</th>
+                <th>Chr G1</th>
+                <th>Gen G2 (<span class="g2-name-placeholder"></span>)</th>
+                <th>Chr G2</th>
+                <th>Familia / Función</th>
+                <th style="text-align:right;">Ka</th>
+                <th style="text-align:right;">Ks</th>
+                <th style="text-align:right;">Ka/Ks</th>
+                <th style="text-align:center;">Tipo Mutación</th>
+                <th>Señal</th>
+              </tr>
+            </thead>
+            <tbody id="mol-cds-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dynamic Discussion -->
+      <div id="molecular-discussion" class="db-alert" style="margin-top:24px;background:#faf5ff;border-left-color:#8b5cf6;color:#4c1d95;">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB GWAS / QTL -->
+  <div id="gwas-content" style="display:none; flex:1; padding:28px 40px; overflow-y:auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>🎯 Vinculación con GWAS y Validación de QTLs</h2>
+        <p>Asociación de genes sinténicos con regiones genómicas de interés agronómico — integración de datos GWAS publicados y región QTL en <em>Saccharum</em></p>
+      </div>
+
+      <!-- Metric cards -->
+      <div class="dashboard-container" id="gwas-metrics-grid"></div>
+
+      <!-- Trait filter + QTL reference table -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
+          <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
+            📊 Base de Datos de QTLs Publicados en <em>Saccharum</em>
+            <button class="btn btn-sm" onclick="exportTableToCSV('gwas-qtl-table','qtl_database.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+            <select id="gwas-trait-filter" onchange="applyGwasFilters()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="">Rasgo: Todos</option>
+              <option value="Contenido de Sacarosa">Contenido de Sacarosa</option>
+              <option value="Resistencia a Enfermedades">Resistencia a Enfermedades</option>
+              <option value="Biomasa y Rendimiento">Biomasa y Rendimiento</option>
+              <option value="Tol. Abiotico">Tolerancia Abíotica</option>
+              <option value="Calidad Industrial">Calidad Industrial</option>
+            </select>
+            <select id="gwas-chr-filter" onchange="applyGwasFilters()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="">Cromosoma G1: Todos</option>
+            </select>
+          </div>
+        </div>
+        <table class="db-table" id="gwas-qtl-table">
+          <thead>
+            <tr>
+              <th>Rasgo Agronómico</th>
+              <th>Cromosoma G1</th>
+              <th>Cromosoma G2 Sinténico</th>
+              <th style="text-align:right;">Pares Sinténicos en Región</th>
+              <th style="text-align:right;">Ka/Ks Promedio</th>
+              <th style="text-align:center;">Selección</th>
+              <th>Genes Candidatos (top 3)</th>
+              <th>Fuente QTL</th>
+            </tr>
+          </thead>
+          <tbody id="gwas-qtl-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Gene candidates for top QTL -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
+          <h3 class="db-table-title" id="gwas-candidates-title">🧬 Genes Candidatos Sinténicos en Regiones QTL</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+            <select id="gwas-sel-filter" onchange="applyGwasCandFilter()" style="padding:4px 8px;font-size:12px;border-radius:4px;border:1px solid #cbd5e1;outline:none;background:white;cursor:pointer;">
+              <option value="">Selección: Todas</option>
+              <option value="positive">Selección Positiva (Ka/Ks &gt; 1)</option>
+              <option value="purifying">Selección Purificadora (Ka/Ks &lt; 0.5)</option>
+            </select>
+            <button class="btn btn-sm" onclick="exportTableToCSV('gwas-cand-table','genes_candidatos_qtl.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Excel
+            </button>
+          </div>
+        </div>
+        <div style="max-height:400px;overflow-y:auto;">
+          <table class="db-table" id="gwas-cand-table">
+            <thead>
+              <tr>
+                <th>Gen G1 (<span class="g1-name-placeholder"></span>)</th>
+                <th>Chr G1</th>
+                <th>Gen G2 (<span class="g2-name-placeholder"></span>)</th>
+                <th>Chr G2</th>
+                <th>Función / Anotación</th>
+                <th style="text-align:right;">Ka/Ks</th>
+                <th style="text-align:center;">Presión</th>
+                <th>Rasgo QTL asociado</th>
+              </tr>
+            </thead>
+            <tbody id="gwas-cand-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Discussion -->
+      <div id="gwas-discussion" class="db-alert" style="margin-top:24px;background:#fff7ed;border-left-color:#f97316;color:#7c2d12;"></div>
+    </div>
+  </div>
+</div><!-- end main-container -->
+</div><!-- end app-wrapper -->
+
+
+
 <div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; backdrop-filter:blur(4px); align-items:center; justify-content:center;">
   <div id="modal-content" style="background:white; width:90%; max-width:600px; border-radius:16px; padding:30px; box-shadow:var(--shadow-lg); position:relative; max-height:80vh; overflow-y:auto;">
     <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:24px; cursor:pointer; color:#94a3b8;">&times;</button>
@@ -763,24 +1346,796 @@ function exportTableToCSV(tableId, filename) {
 }
 
 function switchTab(tabId) {
-    document.getElementById('explorer-content').style.display = 'none';
-    document.getElementById('phase1-content').style.display = 'none';
-    document.getElementById('phase2-content').style.display = 'none';
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
+    // Hide all tab content panels
+    ['explorer-content', 'balance-content', 'chr-content', 'consensus-content', 'inventory-content', 'kaks-content', 'wgd-content', 'molecular-content', 'gwas-content']
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
     if (tabId === 'explorer') {
         document.getElementById('explorer-content').style.display = 'flex';
         document.getElementById('tab-btn-explorer').classList.add('active');
-    } else if (tabId === 'phase1') {
-        document.getElementById('phase1-content').style.display = 'block';
-        document.getElementById('tab-btn-phase1').classList.add('active');
-        renderPhase1Report();
-    } else if (tabId === 'phase2') {
-        document.getElementById('phase2-content').style.display = 'block';
-        document.getElementById('tab-btn-phase2').classList.add('active');
-        renderPhase2Report();
+    } else if (tabId === 'balance') {
+        document.getElementById('balance-content').style.display = 'block';
+        document.getElementById('tab-btn-balance').classList.add('active');
+        renderBalanceReport();
+    } else if (tabId === 'chr') {
+        document.getElementById('chr-content').style.display = 'block';
+        document.getElementById('tab-btn-chr').classList.add('active');
+        renderChrReport();
+    } else if (tabId === 'consensus') {
+        document.getElementById('consensus-content').style.display = 'block';
+        document.getElementById('tab-btn-consensus').classList.add('active');
+        renderConsensusReport();
+    } else if (tabId === 'inventory') {
+        document.getElementById('inventory-content').style.display = 'block';
+        document.getElementById('tab-btn-inventory').classList.add('active');
+        renderInventoryReport();
+    } else if (tabId === 'kaks') {
+        document.getElementById('kaks-content').style.display = 'block';
+        document.getElementById('tab-btn-kaks').classList.add('active');
+        renderKaksTab();
+    } else if (tabId === 'wgd') {
+        document.getElementById('wgd-content').style.display = 'block';
+        document.getElementById('tab-btn-wgd').classList.add('active');
+        renderWgdTab();
+    } else if (tabId === 'molecular') {
+        document.getElementById('molecular-content').style.display = 'block';
+        document.getElementById('tab-btn-molecular').classList.add('active');
+        renderMolecularTab();
+    } else if (tabId === 'gwas') {
+        document.getElementById('gwas-content').style.display = 'block';
+        document.getElementById('tab-btn-gwas').classList.add('active');
+        renderGwasTab();
     }
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('nav-sidebar');
+    const toggle  = document.getElementById('sidebar-toggle');
+    sidebar.classList.toggle('collapsed');
+    const collapsed = sidebar.classList.contains('collapsed');
+    toggle.innerHTML = collapsed
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+    toggle.title = collapsed ? 'Expandir menú' : 'Colapsar menú';
+}
+
+// --- Modular Tab Renderers ---
+let _balanceRendered = false;
+let _chrRendered = false;
+let _consensusRendered = false;
+let _inventoryRendered = false;
+let _kaksRendered = false;
+let _wgdRendered = false;
+let _molecularRendered = false;
+let _gwasRendered = false;
+
+function renderBalanceReport() {
+    if (!_balanceRendered) {
+        renderPhase1Report();
+        _balanceRendered = true;
+    }
+}
+
+function renderChrReport() {
+    if (!_chrRendered) {
+        renderPhase1Report();
+        _chrRendered = true;
+    }
+}
+
+function renderConsensusReport() {
+    if (!_consensusRendered) {
+        renderPhase2Report();
+        _consensusRendered = true;
+    }
+}
+
+function renderInventoryReport() {
+    if (!_inventoryRendered) {
+        renderPhase2Report();
+        _inventoryRendered = true;
+    }
+}
+
+// ============================================================
+// MOLECULAR IDENTIFICATION TAB
+// ============================================================
+let _molCdsData = null; // cache for CDS table filter
+
+// ============================================================
+// GWAS / QTL VALIDATION TAB
+// ============================================================
+
+// Reference QTL database for Saccharum (literature-based)
+const SUGARCANE_QTLS = [
+    // ── Contenido de Sacarosa / Brix / Pol ──────────────────────
+    { trait:'Contenido de Sacarosa', group:'Contenido de Sacarosa', chr1:'chr01', keywords:['sucrose','invertase','sweet','sugar','vacuolar','phosphate synthase','galactosyl'], ref:'Piperidis et al. 2008; Ming et al. 2001', priority:1 },
+    { trait:'Brix / Pol / Pureza', group:'Contenido de Sacarosa', chr1:'chr03', keywords:['sucrose','invertase','hexokinase','fructose','glucose','transport'], ref:'Hoarau et al. 2002; Aitken et al. 2006', priority:1 },
+    { trait:'Sacarosa — QTL mayor', group:'Contenido de Sacarosa', chr1:'chr02', keywords:['sucrose','synthase','phosphate synthase','galactinol'], ref:'Reffay et al. 2005', priority:1 },
+    { trait:'Almacenamiento de Sacarosa', group:'Contenido de Sacarosa', chr1:'chr04', keywords:['sucrose','vacuolar','transporter','sweet','storage'], ref:'Grivet et al. 1996', priority:2 },
+    { trait:'Contenido de Sacarosa', group:'Contenido de Sacarosa', chr1:'chr06', keywords:['sucrose','synthase','phosphate','sugar'], ref:'Raboin et al. 2006', priority:2 },
+    // ── Resistencia a Enfermedades ───────────────────────────────
+    { trait:'Resistencia a Carbón (smut)', group:'Resistencia a Enfermedades', chr1:'chr01', keywords:['nbs','lrr','nlr','resistance','rlk','kinase','receptor','cc-nbs','coiled-coil'], ref:'Asnaghi et al. 2004; McIntyre et al. 2005', priority:1 },
+    { trait:'Resistencia a Roya Naranja', group:'Resistencia a Enfermedades', chr1:'chr08', keywords:['nbs','lrr','disease','rust','resistance','pr-protein'], ref:'Costet et al. 2012; Daugrois et al. 1996', priority:1 },
+    { trait:'Resistencia a Mosaico (SCMV)', group:'Resistencia a Enfermedades', chr1:'chr06', keywords:['virus','resistance','nlr','nbs','kinase','defense'], ref:'Bonde & Frencel 2001; McIntyre et al. 2010', priority:1 },
+    { trait:'Resistencia a YLS / Amarillamiento', group:'Resistencia a Enfermedades', chr1:'chr09', keywords:['nbs','lrr','resistance','defense','pr-protein','leucine'], ref:'Alwala et al. 2009', priority:2 },
+    { trait:'Resistencia a Enfermedades (múltiple)', group:'Resistencia a Enfermedades', chr1:'chr10', keywords:['nbs','resistance','kinase','lrr','nlr'], ref:'Jordan et al. 2004', priority:2 },
+    // ── Biomasa y Rendimiento ────────────────────────────────────
+    { trait:'Rendimiento de Caña', group:'Biomasa y Rendimiento', chr1:'chr03', keywords:['cellulose','cell wall','expansin','growth','xyloglucan','cytoskeleton'], ref:'Reffay et al. 2005; Aitken et al. 2008', priority:1 },
+    { trait:'Altura de Tallo', group:'Biomasa y Rendimiento', chr1:'chr05', keywords:['gibberellin','elongation','gid','growth','auxin','cell wall'], ref:'McIntyre et al. 2006', priority:1 },
+    { trait:'Diámetro de Tallo', group:'Biomasa y Rendimiento', chr1:'chr07', keywords:['cell wall','lignin','laccase','peroxidase','extensin','xylan'], ref:'Pinto et al. 2010', priority:2 },
+    { trait:'Biomasa Total (Fibra)', group:'Biomasa y Rendimiento', chr1:'chr02', keywords:['cellulose','hemicellulose','lignin','cell wall','comt','c4h','4cl'], ref:'Hoarau et al. 2002', priority:2 },
+    { trait:'Número de Tallos', group:'Biomasa y Rendimiento', chr1:'chr04', keywords:['tiller','branching','cytokinin','strigolactone','branching inhibitor'], ref:'Aitken et al. 2008', priority:2 },
+    // ── Tolerancia Abiótica ──────────────────────────────────────
+    { trait:'Tolerancia a Sequía', group:'Tol. Abiotico', chr1:'chr01', keywords:['dehydrin','erd','dreb','lea','aquaporin','pip','stress','abiotic','drought'], ref:'Hemaprabha et al. 2013', priority:1 },
+    { trait:'Tolerancia a Salinidad', group:'Tol. Abiotico', chr1:'chr02', keywords:['hkt','sos','salt','ion','transporter','sodium','vacuolar','stress'], ref:'Sahi et al. 2006', priority:1 },
+    { trait:'Tolerancia a Frío', group:'Tol. Abiotico', chr1:'chr03', keywords:['cold','chilling','cbf','ice','dehydrin','antifreeze','stress'], ref:'Gilbert et al. 2012', priority:2 },
+    { trait:'Estrés Oxidativo', group:'Tol. Abiotico', chr1:'chr07', keywords:['catalase','superoxide','peroxidase','sod','apx','glutathione','oxidative','ascorbate'], ref:'Guimarães et al. 2011', priority:2 },
+    // ── Calidad Industrial ───────────────────────────────────────
+    { trait:'Contenido de Fibra (Industrial)', group:'Calidad Industrial', chr1:'chr04', keywords:['cellulose','lignin','comt','c4h','laccase','fiber','hemicellulose'], ref:'Aitken et al. 2006', priority:1 },
+    { trait:'Contenido de Ceniza', group:'Calidad Industrial', chr1:'chr05', keywords:['mineral','transport','ion','potassium','phosphate','mineral'], ref:'Reffay et al. 2005', priority:2 },
+    { trait:'Color del Jugo', group:'Calidad Industrial', chr1:'chr06', keywords:['flavonoid','anthocyanin','chalcone','f3h','color','pigment','phenylpropanoid'], ref:'Hoarau et al. 2002', priority:2 },
+];
+
+let _gwasQtlData = null;  // enriched QTL rows computed from allData
+let _gwasCandData = null; // all candidate genes
+
+function renderGwasTab() {
+    if (!_gwasRendered) {
+        renderGwasReport();
+        _gwasRendered = true;
+    }
+}
+
+function renderGwasReport() {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    // Build index: c1 → list of pairs
+    const chrIndex = {};
+    allData.forEach(p => {
+        if (!chrIndex[p.c1]) chrIndex[p.c1] = [];
+        chrIndex[p.c1].push(p);
+    });
+
+    // Populate chromosome filter
+    const chrSel = document.getElementById('gwas-chr-filter');
+    if (chrSel && chrSel.options.length <= 1) {
+        Object.keys(chrIndex).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'}))
+            .forEach(c => { const o = document.createElement('option'); o.value=c; o.textContent=c; chrSel.appendChild(o); });
+    }
+
+    // Enrich each QTL entry with live data
+    _gwasQtlData = SUGARCANE_QTLS.map(qtl => {
+        const pairs = (chrIndex[qtl.chr1] || []).filter(p => {
+            const desc = ((p.f1||'') + ' ' + (p.f2||'')).toLowerCase();
+            return qtl.keywords.some(kw => desc.includes(kw));
+        });
+        const kaksPairs = pairs.filter(p => p.kk && p.kk.ks > 0);
+        const avgKaKs = kaksPairs.length > 0 ? kaksPairs.reduce((s,p)=>s+p.kk.r,0)/kaksPairs.length : null;
+        const topG2Chrs = [...new Set(pairs.map(p=>p.c2))].slice(0,3).join(', ') || '—';
+        const topGenes = [...new Set(pairs.slice(0,3).map(p=>p.g1))].join(', ') || '—';
+        return { ...qtl, pairs, pairCount: pairs.length, avgKaKs, topG2Chrs, topGenes };
+    });
+
+    // Summary metrics
+    const totalQtls = SUGARCANE_QTLS.length;
+    const coveredQtls = _gwasQtlData.filter(q => q.pairCount > 0).length;
+    const totalCandGenes = new Set(_gwasQtlData.flatMap(q => q.pairs.map(p=>p.g1))).size;
+    const posSelQtls = _gwasQtlData.filter(q => q.avgKaKs !== null && q.avgKaKs > 1.0).length;
+    const covPct = ((coveredQtls/totalQtls)*100).toFixed(0);
+
+    const grid = document.getElementById('gwas-metrics-grid');
+    if (grid) grid.innerHTML = `
+        <div class="db-card"><div class="db-card-val">${totalQtls}</div><div class="db-card-lbl">QTLs Referenciados</div><div class="db-card-desc">Regiones QTL de literatura en 5 categorías agronómicas de <em>Saccharum</em>.</div></div>
+        <div class="db-card success"><div class="db-card-val">${coveredQtls} <span style="font-size:14px;font-weight:500;">(${covPct}%)</span></div><div class="db-card-lbl">QTLs con Genes Sinténicos</div><div class="db-card-desc">QTLs validados por presencia de al menos un par sinténico en el cromosoma.</div></div>
+        <div class="db-card accent"><div class="db-card-val">${totalCandGenes.toLocaleString()}</div><div class="db-card-lbl">Genes Candidatos G1</div><div class="db-card-desc">Genes únicos de ${G1_NAME} en cromosomas con QTLs publicados.</div></div>
+        <div class="db-card" style="border-left:4px solid #ef4444;"><div class="db-card-val">${posSelQtls}</div><div class="db-card-lbl">QTLs con Sel. Positiva</div><div class="db-card-desc">Regiones QTL donde genes sinténicos muestran Ka/Ks > 1 — adaptación activa.</div></div>`;
+
+    // Build candidate genes list (all pairs across all QTL regions)
+    _gwasCandData = [];
+    _gwasQtlData.forEach(qtl => {
+        qtl.pairs.forEach(p => {
+            _gwasCandData.push({ ...p, qtlTrait: qtl.trait, qtlGroup: qtl.group });
+        });
+    });
+    // Deduplicate by g1+g2
+    const seen = new Set();
+    _gwasCandData = _gwasCandData.filter(p => {
+        const k = p.g1+'__'+p.g2;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+    }).sort((a,b) => (b.kk?.r||0) - (a.kk?.r||0));
+
+    applyGwasFilters();
+    applyGwasCandFilter();
+
+    // Discussion
+    const topTrait = _gwasQtlData.sort((a,b)=>b.pairCount-a.pairCount)[0];
+    const disc = document.getElementById('gwas-discussion');
+    if (disc) disc.innerHTML = `
+        <h5 style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px;">🎯 <span>Interpretación: Sintenia como Herramienta de Validación de QTLs en <em>Saccharum</em></span></h5>
+        <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>1. Validación Sinténica de Regiones QTL.</strong> De los ${totalQtls} QTLs referenciados en la literatura de <em>Saccharum</em>, <strong>${coveredQtls} (${covPct}%)</strong> presentan al menos un par sinténico con anotación funcional compatible en el genoma de ${G1_NAME}. Esto valida la conservación estructural de estas regiones entre genotipos y confirma que el análisis de sintenia puede emplearse como herramienta complementaria a los estudios de asociación genómica (GWAS) para la priorización de genes candidatos.</p>
+        <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>2. Integración GWAS–Sintenia para Descubrimiento de Genes.</strong> La combinación de datos GWAS (asociación estadística SNP–fenotipo) con análisis de sintenia permite reducir los intervalos de confianza de los QTLs y priorizar genes candidatos con evidencia estructural. Los <strong>${totalCandGenes.toLocaleString()} genes candidatos</strong> identificados en esta integración representan el subconjunto de genes en regiones QTL que además muestran conservación de orden y función en el genoma sinténico — lo que aumenta la confianza de que son los genes causales subyacentes a los QTLs. El rasgo con mayor representación sinténica es <strong>${topTrait ? topTrait.trait : '—'}</strong> (${topTrait ? topTrait.pairCount : 0} pares).</p>
+        <p style="font-size:12.5px;line-height:1.7;margin:0;"><strong>3. Genes con Selección Positiva en QTLs — Candidatos a Variantes Causales.</strong> Los <strong>${posSelQtls}</strong> QTLs con Ka/Ks promedio > 1.0 revelan regiones donde la presión selectiva ha acelerado la tasa de cambio aminoacídico. Esto es particularmente relevante para QTLs de resistencia a enfermedades (genes NBS-LRR) y adaptación abiótica, donde la diversificación rápida de genes de reconocimiento es esperada y biológicamente ventajosa. Estos genes son los candidatos prioritarios para validación funcional mediante edición genómica (CRISPR-Cas9) o sobreexpresión transgénica.</p>`;
+}
+
+function applyGwasFilters() {
+    if (!_gwasQtlData) return;
+    const traitF = (document.getElementById('gwas-trait-filter')||{}).value || '';
+    const chrF   = (document.getElementById('gwas-chr-filter')  ||{}).value || '';
+
+    let data = _gwasQtlData.filter(q =>
+        (!traitF || q.group === traitF) &&
+        (!chrF   || q.chr1 === chrF)
+    ).sort((a,b) => b.pairCount - a.pairCount || a.priority - b.priority);
+
+    let html = '';
+    data.forEach(q => {
+        const kk = q.avgKaKs;
+        const kkText = kk !== null ? kk.toFixed(4) : 'N/D';
+        let badge, blabel;
+        if (kk === null)   { badge='badge-neutral';    blabel='Sin datos'; }
+        else if (kk > 1.0) { badge='badge-positive';   blabel='Positiva'; }
+        else if (kk < 0.5) { badge='badge-purifying';  blabel='Purificadora'; }
+        else               { badge='badge-neutral';    blabel='Neutral'; }
+        const traitIcon = q.group==='Contenido de Sacarosa'?'🍬':q.group==='Resistencia a Enfermedades'?'🛡️':q.group==='Biomasa y Rendimiento'?'🌾':q.group==='Tol. Abiotico'?'🌡️':'🏭';
+        const pairBg = q.pairCount > 50 ? '#dcfce7' : q.pairCount > 10 ? '#fef9c3' : '#fee2e2';
+        html += `<tr>
+          <td><span style="font-size:15px;">${traitIcon}</span> <strong>${q.trait}</strong><br><span style="font-size:9px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">${q.group}</span></td>
+          <td><span style="display:inline-block;background:#eff6ff;color:#1e40af;border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700;">${q.chr1}</span></td>
+          <td style="font-size:11px;color:var(--text-muted);">${q.topG2Chrs}</td>
+          <td style="text-align:right;"><span style="display:inline-block;padding:2px 10px;border-radius:20px;font-weight:800;font-size:13px;background:${pairBg};">${q.pairCount.toLocaleString()}</span></td>
+          <td style="text-align:right;font-weight:600;">${kkText}</td>
+          <td style="text-align:center;"><span class="badge ${badge}">${blabel}</span></td>
+          <td style="font-size:10px;font-family:monospace;max-width:160px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${q.topGenes}">${q.topGenes}</td>
+          <td style="font-size:10px;color:var(--text-muted);">${q.ref}</td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('gwas-qtl-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Sin datos con los filtros seleccionados.</td></tr>';
+}
+
+function applyGwasCandFilter() {
+    if (!_gwasCandData) return;
+    const selF = (document.getElementById('gwas-sel-filter')||{}).value || '';
+
+    let data = _gwasCandData.filter(p => {
+        if (!p.kk || p.kk.ks <= 0) return selF === '';
+        if (selF === 'positive')  return p.kk.r > 1.0;
+        if (selF === 'purifying') return p.kk.r < 0.5;
+        return true;
+    }).slice(0, 100); // cap at 100 rows
+
+    let html = '';
+    data.forEach(p => {
+        const r = p.kk?.r;
+        const kkText = r !== undefined ? r.toFixed(4) : 'N/D';
+        const col = r === undefined ? '#94a3b8' : r > 1.0 ? '#ef4444' : r < 0.5 ? '#10b981' : '#f59e0b';
+        let badge, blabel;
+        if (r === undefined)  { badge='badge-neutral';   blabel='Sin datos'; }
+        else if (r > 1.0)     { badge='badge-positive';  blabel='Positiva'; }
+        else if (r < 0.3)     { badge='badge-purifying'; blabel='Purific. fuerte'; }
+        else if (r < 0.5)     { badge='badge-purifying'; blabel='Purificadora'; }
+        else                  { badge='badge-neutral';   blabel='Neutral'; }
+        const fn = (p.f1 || p.f2 || '—').substring(0,50) + ((p.f1||'').length>50?'…':'');
+        html += `<tr>
+          <td style="font-size:11px;font-family:monospace;color:var(--primary);">${p.g1}</td>
+          <td><span style="display:inline-block;background:#eff6ff;color:#1e40af;border-radius:4px;padding:1px 6px;font-size:10px;">${p.c1}</span></td>
+          <td style="font-size:11px;font-family:monospace;">${p.g2}</td>
+          <td><span style="display:inline-block;background:#f0fdf4;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;">${p.c2}</span></td>
+          <td style="font-size:11px;" title="${p.f1||p.f2||''}">${fn}</td>
+          <td style="text-align:right;font-weight:800;color:${col};">${kkText}</td>
+          <td style="text-align:center;"><span class="badge ${badge}" style="font-size:9px;">${blabel}</span></td>
+          <td style="font-size:11px;"><span style="display:inline-block;background:#fff7ed;color:#9a3412;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600;">${p.qtlTrait}</span></td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('gwas-cand-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Sin genes candidatos con los filtros seleccionados.</td></tr>';
+}
+
+function renderMolecularTab() {
+    if (!_molecularRendered) {
+        renderMolecularReport(currentFunctionalCategory || 'sugar');
+        _molecularRendered = true;
+    }
+}
+
+function renderMolecularReport(catKey) {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    const cat = FUNCTIONAL_CATEGORIES[catKey] || {};
+    const catLabel = cat.label || catKey;
+
+    // Classify each pair
+    const bothMatch = [], g1Only = [], g2Only = [], neither = [];
+    allData.forEach(p => {
+        const m1 = classifyGeneFamily(p.f1, catKey);
+        const m2 = classifyGeneFamily(p.f2, catKey);
+        if (m1 && m2)       bothMatch.push(p);
+        else if (m1 && !m2) g1Only.push(p);
+        else if (!m1 && m2) g2Only.push(p);
+        else                neither.push(p);
+    });
+
+    const totalCat = bothMatch.length + g1Only.length + g2Only.length;
+    const totalKaKs = (arr) => { const v = arr.filter(p => p.kk && p.kk.ks > 0); return v.length > 0 ? v.reduce((s,p)=>s+p.kk.r,0)/v.length : null; };
+    const uniqueG1 = (arr) => new Set(arr.map(p=>p.g1)).size;
+    const uniqueG2 = (arr) => new Set(arr.map(p=>p.g2)).size;
+    const synProp = allData.length > 0 ? ((totalCat / allData.length) * 100).toFixed(1) : 0;
+
+    // Metric cards
+    const grid = document.getElementById('molecular-metrics-grid');
+    if (grid) grid.innerHTML = `
+        <div class="db-card"><div class="db-card-val">${totalCat.toLocaleString()}</div><div class="db-card-lbl">Total Pares Funcionales</div><div class="db-card-desc">Pares sinténicos con al menos un gen de ${catLabel}.</div></div>
+        <div class="db-card success"><div class="db-card-val">${bothMatch.length.toLocaleString()}</div><div class="db-card-lbl">Sintenia Funcional Directa</div><div class="db-card-desc">AMBOS genes del par pertenecen a ${catLabel} — núcleo conservado.</div></div>
+        <div class="db-card" style="border-left:4px solid #f59e0b;"><div class="db-card-val">${g1Only.length.toLocaleString()}</div><div class="db-card-lbl">Huérfanos Funcionales G1</div><div class="db-card-desc">Gen G1 de ${catLabel} sin homeólogo funcional equivalente en G2.</div></div>
+        <div class="db-card" style="border-left:4px solid #ef4444;"><div class="db-card-val">${g2Only.length.toLocaleString()}</div><div class="db-card-lbl">Huérfanos Funcionales G2</div><div class="db-card-desc">Gen G2 de ${catLabel} sin homeólogo funcional equivalente en G1.</div></div>
+        <div class="db-card accent"><div class="db-card-val">${synProp}%</div><div class="db-card-lbl">Proporción de Sintenia</div><div class="db-card-desc">${catLabel} representa el ${synProp}% de todos los pares sinténicos del genoma.</div></div>
+        <div class="db-card" style="border-left:4px solid #8b5cf6;"><div class="db-card-val">${uniqueG1(bothMatch).toLocaleString()} / ${uniqueG2(bothMatch).toLocaleString()}</div><div class="db-card-lbl">Genes Únicos G1 / G2 (directos)</div><div class="db-card-desc">Genes únicos en pares con sintenia funcional estricta.</div></div>`;
+
+    // Count badge
+    const cnt = document.getElementById('molecular-gene-count');
+    if (cnt) cnt.textContent = `${totalCat.toLocaleString()} genes identificados`;
+
+    // Orphan table
+    const groups = [
+        { label: '✅ Sintenia Funcional Directa', desc: 'Ambos genes expresan ' + catLabel, arr: bothMatch, color: '#10b981', interp: 'Núcleo metabólico conservado bajo selección purificadora fuerte.' },
+        { label: '🔶 Huérfano Funcional G1', desc: 'Solo G1 expresa ' + catLabel, arr: g1Only, color: '#f59e0b', interp: 'Posible neofuncionalización o pérdida de función en G2 (Asimetría G1).' },
+        { label: '🔴 Huérfano Funcional G2', desc: 'Solo G2 expresa ' + catLabel, arr: g2Only, color: '#ef4444', interp: 'Posible ganancia de función en G2 o pérdida en G1 (Asimetría G2).' },
+    ];
+
+    let orphanHtml = '';
+    groups.forEach(g => {
+        const kk = totalKaKs(g.arr);
+        const kkText = kk !== null ? kk.toFixed(4) : 'N/D';
+        let selBadge, selLabel;
+        if (kk === null) { selBadge = 'badge-neutral'; selLabel = 'Sin datos'; }
+        else if (kk < 0.5) { selBadge = 'badge-purifying'; selLabel = 'Purificadora'; }
+        else if (kk > 1.0) { selBadge = 'badge-positive'; selLabel = 'Positiva'; }
+        else               { selBadge = 'badge-neutral';   selLabel = 'Neutral'; }
+        orphanHtml += `<tr>
+          <td><strong style="color:${g.color}">${g.label}</strong><br><span style="font-size:10px;color:var(--text-muted);">${g.desc}</span></td>
+          <td style="text-align:right;font-weight:700;">${g.arr.length.toLocaleString()}</td>
+          <td style="text-align:right;">${uniqueG1(g.arr).toLocaleString()}</td>
+          <td style="text-align:right;">${uniqueG2(g.arr).toLocaleString()}</td>
+          <td style="text-align:right;font-weight:600;">${kkText}</td>
+          <td style="text-align:center;"><span class="badge ${selBadge}">${selLabel}</span></td>
+          <td style="font-size:11px;color:var(--text-muted);">${g.interp}</td>
+        </tr>`;
+    });
+    const ob = document.getElementById('mol-orphan-body');
+    if (ob) ob.innerHTML = orphanHtml;
+
+    // CDS data cache (sorted by Ka/Ks desc for positive selection view)
+    _molCdsData = (bothMatch.concat(g1Only).concat(g2Only))
+        .filter(p => p.kk && p.kk.ks > 0)
+        .sort((a, b) => b.kk.r - a.kk.r);
+
+    applyMolCdsFilter();
+
+    // Dynamic discussion
+    const bothKk = totalKaKs(bothMatch);
+    const g1Kk   = totalKaKs(g1Only);
+    const g2Kk   = totalKaKs(g2Only);
+    const g1OrphanPct = totalCat > 0 ? ((g1Only.length / totalCat)*100).toFixed(1) : 0;
+    const g2OrphanPct = totalCat > 0 ? ((g2Only.length / totalCat)*100).toFixed(1) : 0;
+    const asymLabel = parseFloat(g1OrphanPct) > parseFloat(g2OrphanPct)
+        ? `<strong>${G1_NAME}</strong> presenta mayor tasa de orfandad funcional (${g1OrphanPct}% vs ${g2OrphanPct}%), indicando que genes de ${catLabel} en G1 han perdido su homeólogo funcional en G2 con mayor frecuencia.`
+        : parseFloat(g2OrphanPct) > parseFloat(g1OrphanPct)
+        ? `<strong>${G2_NAME}</strong> presenta mayor tasa de orfandad funcional (${g2OrphanPct}% vs ${g1OrphanPct}%), sugiriendo una expansión neofuncional de ${catLabel} en G2 sin equivalente directo en G1.`
+        : `La tasa de orfandad funcional es simétrica entre genomas (G1: ${g1OrphanPct}%, G2: ${g2OrphanPct}%).`;
+
+    const posCount = _molCdsData.filter(p => p.kk.r > 1.0).length;
+    const purCount = _molCdsData.filter(p => p.kk.r < 0.3).length;
+
+    const disc = document.getElementById('molecular-discussion');
+    if (disc) disc.innerHTML = `
+        <h5 style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px;">🔍 <span>Interpretación y Discusión: ${catLabel} en el Contexto Evolutivo</span></h5>
+        <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>1. El Núcleo Metabólico Conservado (Selección Purificadora).</strong> Los ${bothMatch.length.toLocaleString()} pares con <em>sintenia funcional directa</em> representan el núcleo conservado de ${catLabel} en el genoma sinténico. Con un Ka/Ks promedio de <strong>${bothKk !== null ? bothKk.toFixed(4) : 'N/D'}</strong>, estos genes están bajo selección purificadora estricta: las mutaciones no-sinónimas son eliminadas porque cualquier cambio aminoacídico compromete la actividad enzimática o regulatoria esencial para el ${catLabel.toLowerCase()} en ambos genomas.</p>
+        <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>2. Zonas de Alta Variabilidad y Adaptabilidad Genómica.</strong> Se detectaron <strong>${posCount.toLocaleString()}</strong> pares con Ka/Ks > 1.0 (selección positiva) y <strong>${purCount.toLocaleString()}</strong> con Ka/Ks < 0.3 (purificadora fuerte). Los genes con selección positiva son los candidatos prioritarios a variantes adaptativas específicas de cada genotipo: representan sitios donde las diferencias aminoacídicas entre ${G1_NAME} y ${G2_NAME} son ventajosas y han sido fijadas por selección natural direccional.</p>
+        <p style="font-size:12.5px;line-height:1.7;margin:0;"><strong>3. Asimetría en la Tasa de Orfandad: G1 vs. G2.</strong> ${asymLabel} Esta asimetría puede reflejar diferencias en la historia de poliploidización, tasa de pérdida génica post-WGD (fractionation), o divergencia funcional entre los subgenomas de <em>Saccharum</em>. Los huérfanos funcionales son objetivos de interés para programas de mejoramiento: si un gen clave de ${catLabel} existe en un genoma pero no en el otro, representa una oportunidad de transferencia génica o de edición genómica dirigida.</p>`;
+}
+
+function applyMolCdsFilter() {
+    if (!_molCdsData) return;
+    const filterVal = (document.getElementById('mol-cds-filter') || {}).value || 'all';
+    const limitVal  = (document.getElementById('mol-cds-limit')  || {}).value || '20';
+
+    let data = _molCdsData.filter(p => {
+        if (filterVal === 'positive')  return p.kk.r > 1.0;
+        if (filterVal === 'purifying') return p.kk.r < 0.3;
+        if (filterVal === 'neutral')   return p.kk.r >= 0.3 && p.kk.r <= 1.0;
+        return true;
+    });
+    if (limitVal !== 'all') data = data.slice(0, parseInt(limitVal));
+
+    const catKey = currentFunctionalCategory || 'sugar';
+    let html = '';
+    data.forEach(p => {
+        const r = p.kk.r;
+        let mutType, mutBadge, signal;
+        if (r > 2.0)      { mutType = 'Aceleración Extrema'; mutBadge = 'badge-positive'; signal = '🔴 Adaptación fuerte'; }
+        else if (r > 1.0) { mutType = 'No-sinónimas > sinónimas'; mutBadge = 'badge-positive'; signal = '🟠 Selección positiva'; }
+        else if (r > 0.5) { mutType = 'Tasa equilibrada'; mutBadge = 'badge-neutral'; signal = '🟡 Neutral/relajada'; }
+        else if (r > 0.1) { mutType = 'Sinónimas dominan'; mutBadge = 'badge-purifying'; signal = '🟢 Purificadora'; }
+        else              { mutType = 'Restricción total'; mutBadge = 'badge-purifying'; signal = '🔵 Purificadora fuerte'; }
+        const fam = classifyGeneFamily(p.f1, catKey) || classifyGeneFamily(p.f2, catKey) || '—';
+        const fn  = (p.f1 || p.f2 || '—').substring(0, 55) + ((p.f1 || '').length > 55 ? '…' : '');
+        html += `<tr>
+          <td style="font-size:11px;font-family:monospace;color:var(--primary);">${p.g1}</td>
+          <td><span style="display:inline-block;background:#eff6ff;color:#1e40af;border-radius:4px;padding:1px 6px;font-size:10px;">${p.c1}</span></td>
+          <td style="font-size:11px;font-family:monospace;">${p.g2}</td>
+          <td><span style="display:inline-block;background:#f0fdf4;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;">${p.c2}</span></td>
+          <td style="font-size:11px;" title="${p.f1 || p.f2 || ''}">${fn}<br><span style="font-size:9px;color:var(--text-muted);font-weight:600;">${fam}</span></td>
+          <td style="text-align:right;font-size:11px;">${p.kk.ka.toFixed(4)}</td>
+          <td style="text-align:right;font-size:11px;">${p.kk.ks.toFixed(4)}</td>
+          <td style="text-align:right;font-weight:800;color:${r>1?'#ef4444':r<0.3?'#10b981':'#f59e0b'};">${r.toFixed(4)}</td>
+          <td style="text-align:center;"><span class="badge ${mutBadge}" style="font-size:9px;">${mutType}</span></td>
+          <td style="font-size:11px;white-space:nowrap;">${signal}</td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('mol-cds-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px;">No hay datos con los filtros seleccionados.</td></tr>';
+}
+
+function renderWgdTab() {
+    if (!_wgdRendered) {
+        renderWgdReport();
+        _wgdRendered = true;
+    }
+}
+
+// ============================================================
+// WGD / PHYLOGENETICS TAB
+// ============================================================
+function renderWgdReport() {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    const BIN_WIDTH = 0.1, N_BINS = 30; // Ks 0–3.0
+    const ksBins = new Array(N_BINS).fill(0);
+    let ksSum = 0, ksCount = 0;
+    const chrMap = {}; // c1 → { total, ksSum, ksCount, g2Chrs:Set }
+
+    allData.forEach(p => {
+        // Ks histogram
+        if (p.kk && p.kk.ks > 0 && p.kk.ks < N_BINS * BIN_WIDTH) {
+            ksBins[Math.min(Math.floor(p.kk.ks / BIN_WIDTH), N_BINS - 1)]++;
+            ksSum += p.kk.ks; ksCount++;
+        }
+        // Polyploidy depth
+        if (!chrMap[p.c1]) chrMap[p.c1] = { total: 0, ksSum: 0, ksN: 0, g2Chrs: new Set() };
+        chrMap[p.c1].total++;
+        chrMap[p.c1].g2Chrs.add(p.c2);
+        if (p.kk && p.kk.ks > 0) { chrMap[p.c1].ksSum += p.kk.ks; chrMap[p.c1].ksN++; }
+    });
+
+    const avgKs = ksCount > 0 ? (ksSum / ksCount).toFixed(4) : '—';
+    const modalIdx = ksBins.indexOf(Math.max(...ksBins));
+    const modalKs  = ((modalIdx + 0.5) * BIN_WIDTH).toFixed(2);
+    const ploidyDepths = Object.values(chrMap).map(d => d.g2Chrs.size);
+    const avgDepth = ploidyDepths.length > 0 ? (ploidyDepths.reduce((a,b)=>a+b,0)/ploidyDepths.length).toFixed(1) : '—';
+    const wgdTime  = modalIdx > 0 ? ((parseFloat(modalKs) / (2 * 6.5e-9)) / 1e6).toFixed(1) + ' Ma' : '—';
+
+    // Metric cards
+    const grid = document.getElementById('wgd-metrics-grid');
+    if (grid) grid.innerHTML = `
+        <div class="db-card"><div class="db-card-val">${modalKs}</div><div class="db-card-lbl">Ks Modal — Pico WGD</div><div class="db-card-desc">Bin de Ks más frecuente: indica el WGD más reciente detectado.</div></div>
+        <div class="db-card success"><div class="db-card-val">${wgdTime}</div><div class="db-card-lbl">Divergencia Estimada</div><div class="db-card-desc">T = Ks/(2r), r = 6.5×10⁻⁹ sub/sitio/año (gramíneas).</div></div>
+        <div class="db-card accent"><div class="db-card-val">${avgDepth}×</div><div class="db-card-lbl">Profundidad Poliploidía Media</div><div class="db-card-desc">Promedio de cromosomas G2 sinténicos por G1.</div></div>
+        <div class="db-card" style="border-left:4px solid #8b5cf6;"><div class="db-card-val">${avgKs}</div><div class="db-card-lbl">Ks Promedio Global</div><div class="db-card-desc">Sustituciones sinónimas medias entre ortólogos sinténicos.</div></div>`;
+
+    // Ks histogram
+    const maxBin = Math.max(...ksBins, 1);
+    const hist = document.getElementById('wgd-ks-histogram');
+    if (hist) {
+        const BAR_MAX_PX = 140;
+        const binLabels = ksBins.map((_, i) => (i * BIN_WIDTH).toFixed(1));
+
+        // Build bars area
+        let barsHtml = `<div style="display:flex;align-items:flex-end;gap:3px;height:${BAR_MAX_PX}px;border-bottom:2px solid #e2e8f0;margin-bottom:0;padding:0 2px;">`;
+        ksBins.forEach((count, i) => {
+            const barPx  = count > 0 ? Math.max(Math.round((count / maxBin) * BAR_MAX_PX), 4) : 0;
+            const ksLow  = (i * BIN_WIDTH).toFixed(1);
+            const isModal = i === modalIdx;
+            const col    = isModal ? '#2563eb' : (i < 5 ? '#10b981' : i < 15 ? '#f59e0b' : '#94a3b8');
+            barsHtml += `<div style="flex:1;min-width:4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:default;" title="Ks ${ksLow}–${(parseFloat(ksLow)+BIN_WIDTH).toFixed(1)}: ${count.toLocaleString()}">`;
+            if (count > 0) {
+                barsHtml += `<span style="font-size:8px;color:${isModal?'#2563eb':'#94a3b8'};font-weight:${isModal?700:400};margin-bottom:2px;white-space:nowrap;">${count >= 1000 ? (count/1000).toFixed(1)+'k' : count}</span>`;
+                barsHtml += `<div style="width:100%;height:${barPx}px;background:${col};border-radius:3px 3px 0 0;opacity:${isModal?1:0.78};transition:opacity .2s;${isModal?'box-shadow:0 -2px 8px rgba(37,99,235,0.4);':''}"></div>`;
+            } else {
+                barsHtml += `<div style="width:100%;height:2px;background:#e2e8f0;border-radius:2px;"></div>`;
+            }
+            barsHtml += `</div>`;
+        });
+        barsHtml += `</div>`;
+
+        // X-axis labels (every 5 bins to avoid crowding)
+        let xLabels = `<div style="display:flex;gap:3px;padding:4px 2px 0;">`;
+        ksBins.forEach((_, i) => {
+            xLabels += `<div style="flex:1;min-width:4px;text-align:center;font-size:8.5px;color:${i===modalIdx?'#2563eb':'#94a3b8'};font-weight:${i===modalIdx?700:400};">${i % 5 === 0 ? (i*BIN_WIDTH).toFixed(1) : ''}</div>`;
+        });
+        xLabels += `</div><div style="text-align:center;font-size:10px;color:var(--text-muted);margin-top:2px;">Valor de Ks</div>`;
+
+        // Legend
+        const legend = `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding:12px 8px;background:#f8fafc;border-radius:10px;align-items:center;">
+            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;"></span><strong>Pico WGD: Ks ≈ ${modalKs}</strong> &nbsp;→&nbsp; T ≈ ${wgdTime}</span>
+            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#10b981;border-radius:3px;"></span>WGD reciente (Ks &lt; 0.5)</span>
+            <span style="font-size:11px;display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:14px;height:14px;background:#f59e0b;border-radius:3px;"></span>WGD intermedio (0.5–1.5)</span>
+            <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">n = ${ksCount.toLocaleString()} pares con Ks válido</span>
+        </div>`;
+
+        hist.innerHTML = barsHtml + xLabels + legend;
+    }
+
+    // Polyploidy depth table
+    const rows = Object.entries(chrMap)
+        .map(([c1, d]) => ({ c1, total: d.total, g2n: d.g2Chrs.size, avgKs: d.ksN > 0 ? d.ksSum/d.ksN : null, g2list: [...d.g2Chrs].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'})) }))
+        .sort((a,b) => b.g2n - a.g2n || b.total - a.total);
+
+    let html = '';
+    rows.forEach(r => {
+        const ksT = r.avgKs !== null ? r.avgKs.toFixed(4) : 'N/D';
+        let badge, blabel;
+        if      (r.g2n >= 8) { badge = 'badge-positive'; blabel = `Alta (${r.g2n}×)`; }
+        else if (r.g2n >= 4) { badge = 'badge-medium';   blabel = `Media (${r.g2n}×)`; }
+        else if (r.g2n >= 2) { badge = 'badge-high';     blabel = `Baja (${r.g2n}×)`; }
+        else                  { badge = 'badge-neutral';  blabel = 'Diploide (1×)'; }
+        const tags = r.g2list.slice(0,10).map(c=>`<span style="display:inline-block;background:#eff6ff;color:#1e40af;border-radius:4px;padding:1px 6px;font-size:10px;margin:1px;">${c}</span>`).join('')
+            + (r.g2list.length>10 ? `<span style="font-size:10px;color:var(--text-muted);">+${r.g2list.length-10} más</span>` : '');
+        html += `<tr>
+          <td><strong style="color:var(--primary);">${r.c1}</strong></td>
+          <td style="text-align:right;font-weight:600;">${r.total.toLocaleString()}</td>
+          <td style="text-align:right;font-weight:800;font-size:16px;">${r.g2n}</td>
+          <td style="text-align:right;">${ksT}</td>
+          <td style="text-align:center;"><span class="badge ${badge}">${blabel}</span></td>
+          <td style="max-width:300px;">${tags}</td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('wgd-ploidy-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No hay datos disponibles.</td></tr>';
+}
+
+function renderKaksTab() {
+    if (!_kaksRendered) {
+        renderKaksReport();
+        _kaksRendered = true;
+    }
+}
+
+// ============================================================
+// KA/KS MICRO-EVOLUTION TAB RENDERER
+// ============================================================
+let _kaksRawData = null; // cache for chr-pair table
+
+function renderKaksReport() {
+    document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
+    document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
+
+    // -- Global stats --
+    let totalKa = 0, totalKs = 0, totalRatio = 0, kaksCount = 0;
+    let purifying = 0, neutral = 0, positive = 0;
+    const binBounds = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.5, 2.0, Infinity];
+    const bins = new Array(binBounds.length - 1).fill(0);
+
+    allData.forEach(p => {
+        if (p.kk && p.kk.ks > 0) {
+            totalKa += p.kk.ka;
+            totalKs += p.kk.ks;
+            totalRatio += p.kk.r;
+            kaksCount++;
+            const r = p.kk.r;
+            if (r < 0.5) purifying++;
+            else if (r <= 1.0) neutral++;
+            else positive++;
+            for (let i = 0; i < binBounds.length - 1; i++) {
+                if (r >= binBounds[i] && r < binBounds[i + 1]) { bins[i]++; break; }
+            }
+        }
+    });
+
+    const avgKa  = kaksCount > 0 ? (totalKa  / kaksCount).toFixed(4) : '—';
+    const avgKs  = kaksCount > 0 ? (totalKs  / kaksCount).toFixed(4) : '—';
+    const avgR   = kaksCount > 0 ? (totalRatio / kaksCount).toFixed(4) : '—';
+    const purPct = kaksCount > 0 ? ((purifying / kaksCount) * 100).toFixed(1) : '0.0';
+    const neuPct = kaksCount > 0 ? ((neutral   / kaksCount) * 100).toFixed(1) : '0.0';
+    const posPct = kaksCount > 0 ? ((positive  / kaksCount) * 100).toFixed(1) : '0.0';
+
+    // Metric cards
+    const grid = document.getElementById('kaks-metrics-grid');
+    if (grid) grid.innerHTML = `
+        <div class="db-card">
+          <div class="db-card-val">${avgR}</div>
+          <div class="db-card-lbl">Ka/Ks Promedio Global</div>
+          <div class="db-card-desc">Ratio medio de sustituciones no-sinónimas vs sinónimas.</div>
+        </div>
+        <div class="db-card success">
+          <div class="db-card-val">${purifying.toLocaleString()} <span style="font-size:13px;font-weight:500;opacity:.8;">(${purPct}%)</span></div>
+          <div class="db-card-lbl">Sel. Purificadora (Ka/Ks &lt; 0.5)</div>
+          <div class="db-card-desc">Genes bajo restricción funcional fuerte.</div>
+        </div>
+        <div class="db-card" style="border-left:4px solid #f59e0b;">
+          <div class="db-card-val">${neutral.toLocaleString()} <span style="font-size:13px;font-weight:500;opacity:.8;">(${neuPct}%)</span></div>
+          <div class="db-card-lbl">Evolución Neutral (0.5 – 1.0)</div>
+          <div class="db-card-desc">Sin presión selectiva dominante.</div>
+        </div>
+        <div class="db-card danger">
+          <div class="db-card-val">${positive.toLocaleString()} <span style="font-size:13px;font-weight:500;opacity:.8;">(${posPct}%)</span></div>
+          <div class="db-card-lbl">Sel. Positiva (Ka/Ks &gt; 1.0)</div>
+          <div class="db-card-desc">Candidatos a adaptación funcional.</div>
+        </div>
+        <div class="db-card accent">
+          <div class="db-card-val">${avgKa}</div>
+          <div class="db-card-lbl">Ka Promedio</div>
+          <div class="db-card-desc">Sustituciones no-sinónimas medias por sitio.</div>
+        </div>
+        <div class="db-card" style="border-left:4px solid #06b6d4;">
+          <div class="db-card-val">${avgKs}</div>
+          <div class="db-card-lbl">Ks Promedio</div>
+          <div class="db-card-desc">Reloj molecular neutral — estima la divergencia temporal.</div>
+        </div>`;
+
+    // CSS Histogram
+    const maxBin = Math.max(...bins, 1);
+    const binLabels = ['0–0.1','0.1–0.2','0.2–0.3','0.3–0.4','0.4–0.5','0.5–0.6','0.6–0.7','0.7–0.8','0.8–0.9','0.9–1.0','1.0–1.5','1.5–2.0','>2.0'];
+    const hist = document.getElementById('kaks-histogram');
+    if (hist) {
+        const BAR_MAX_PX = 160;
+        const maxBinLocal = Math.max(...bins, 1);
+
+        // Build bars area
+        let barsHtml = `<div style="display:flex;align-items:flex-end;gap:4px;height:${BAR_MAX_PX}px;border-bottom:2px solid #e2e8f0;padding:0 2px;">`;
+        bins.forEach((count, i) => {
+            const barPx  = count > 0 ? Math.max(Math.round((count / maxBinLocal) * BAR_MAX_PX), 4) : 0;
+            const isPur  = i < 5;
+            const isPos  = i >= 10;
+            const color  = isPos ? '#ef4444' : isPur ? '#10b981' : '#f59e0b';
+            const isHighlight = count === maxBinLocal;
+            barsHtml += `<div style="flex:1;min-width:4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:default;" title="${binLabels[i]}: ${count.toLocaleString()}">`;
+            if (count > 0) {
+                barsHtml += `<span style="font-size:8px;color:${isHighlight?color:'#94a3b8'};font-weight:${isHighlight?700:400};margin-bottom:2px;white-space:nowrap;">${count >= 1000 ? (count/1000).toFixed(1)+'k' : count}</span>`;
+                barsHtml += `<div style="width:100%;height:${barPx}px;background:${color};border-radius:3px 3px 0 0;opacity:${isHighlight?1:0.78};"></div>`;
+            } else {
+                barsHtml += `<div style="width:100%;height:2px;background:#e2e8f0;border-radius:2px;"></div>`;
+            }
+            barsHtml += `</div>`;
+        });
+        barsHtml += `</div>`;
+
+        // X-axis labels
+        const shortBinLabels = ['0–0.1','0.1–0.2','0.2–0.3','0.3–0.4','0.4–0.5','0.5–0.6','0.6–0.7','0.7–0.8','0.8–0.9','0.9–1.0','1.0–1.5','1.5–2.0','>2.0'];
+        let xLabels = `<div style="display:flex;gap:4px;padding:4px 2px 0;">`;
+        bins.forEach((_, i) => {
+            const isPur = i < 5, isPos = i >= 10;
+            const col = isPos ? '#ef4444' : isPur ? '#10b981' : '#f59e0b';
+            xLabels += `<div style="flex:1;min-width:4px;text-align:center;font-size:8px;color:${col};font-weight:500;overflow:hidden;">${i % 2 === 0 ? shortBinLabels[i] : ''}</div>`;
+        });
+        xLabels += `</div><div style="text-align:center;font-size:10px;color:var(--text-muted);margin-top:3px;">Valor de Ka/Ks</div>`;
+
+        // Legend with % breakdown
+        const legend = `<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;padding:12px 16px;background:#f8fafc;border-radius:10px;align-items:center;">
+            <span style="font-size:12px;display:flex;align-items:center;gap:7px;"><span style="display:inline-block;width:14px;height:14px;background:#10b981;border-radius:3px;"></span><strong style="color:#065f46;">${purPct}%</strong> &nbsp;Purificadora (Ka/Ks &lt; 0.5) &mdash; ${purifying.toLocaleString()} pares</span>
+            <span style="font-size:12px;display:flex;align-items:center;gap:7px;"><span style="display:inline-block;width:14px;height:14px;background:#f59e0b;border-radius:3px;"></span><strong style="color:#92400e;">${neuPct}%</strong> &nbsp;Neutral (0.5–1.0) &mdash; ${neutral.toLocaleString()} pares</span>
+            <span style="font-size:12px;display:flex;align-items:center;gap:7px;"><span style="display:inline-block;width:14px;height:14px;background:#ef4444;border-radius:3px;"></span><strong style="color:#991b1b;">${posPct}%</strong> &nbsp;Positiva (&gt;1.0) &mdash; ${positive.toLocaleString()} pares</span>
+        </div>`;
+
+        hist.innerHTML = barsHtml + xLabels + legend;
+    }
+
+    // Build chr-pair Ka/Ks data
+    const chrPairMap = {};
+    allData.forEach(p => {
+        if (!p.kk || p.kk.ks <= 0) return;
+        const key = `${p.c1}__${p.c2}`;
+        if (!chrPairMap[key]) chrPairMap[key] = { c1: p.c1, c2: p.c2, ka: 0, ks: 0, r: 0, n: 0 };
+        chrPairMap[key].ka += p.kk.ka;
+        chrPairMap[key].ks += p.kk.ks;
+        chrPairMap[key].r  += p.kk.r;
+        chrPairMap[key].n++;
+    });
+    _kaksRawData = Object.values(chrPairMap)
+        .map(d => ({ ...d, avgKa: d.ka/d.n, avgKs: d.ks/d.n, avgR: d.r/d.n }))
+        .sort((a, b) => b.n - a.n);
+
+    applyKaksTableFilters();
+}
+
+function applyKaksTableFilters() {
+    if (!_kaksRawData) return;
+    const selFilter = (document.getElementById('kaks-filter-selection') || {}).value || '';
+    const limitVal  = (document.getElementById('kaks-filter-limit')    || {}).value || '20';
+
+    let data = _kaksRawData.filter(d => {
+        if (selFilter === 'purifying') return d.avgR < 0.5;
+        if (selFilter === 'neutral')   return d.avgR >= 0.5 && d.avgR <= 1.0;
+        if (selFilter === 'positive')  return d.avgR > 1.0;
+        return true;
+    });
+    if (limitVal !== 'all') data = data.slice(0, parseInt(limitVal));
+
+    const maxR = Math.max(...data.map(d => d.avgR), 0.01);
+    let html = '';
+    data.forEach(d => {
+        const rFixed = d.avgR.toFixed(4);
+        let badge = 'badge-neutral'; let label = 'Neutral';
+        if (d.avgR < 0.5)  { badge = 'badge-purifying'; label = 'Purificadora'; }
+        else if (d.avgR > 1.0) { badge = 'badge-positive'; label = 'Positiva'; }
+        const barW = Math.min((d.avgR / maxR) * 100, 100).toFixed(1);
+        const barColor = d.avgR < 0.5 ? '#10b981' : d.avgR > 1.0 ? '#ef4444' : '#f59e0b';
+        html += `<tr>
+          <td><strong style="color:var(--primary);">${d.c1}</strong></td>
+          <td><strong>${d.c2}</strong></td>
+          <td style="text-align:right;">${d.n.toLocaleString()}</td>
+          <td style="text-align:right;">${d.avgKa.toFixed(4)}</td>
+          <td style="text-align:right;">${d.avgKs.toFixed(4)}</td>
+          <td style="text-align:right;font-weight:700;">${rFixed}</td>
+          <td style="text-align:center;"><span class="badge ${badge}">${label}</span></td>
+          <td style="min-width:100px;">
+            <div style="height:8px;background:#e2e8f0;border-radius:4px;">
+              <div style="height:100%;width:${barW}%;background:${barColor};border-radius:4px;"></div>
+            </div>
+          </td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('kaks-chr-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron datos.</td></tr>';
+}
+
+// ============================================================
+// RANKING TABLE FILTERS
+// ============================================================
+let _rankingRawData = null; // set by renderChrRankingTable
+
+function applyRankingFilters() {
+    if (!_rankingRawData) return;
+    const query    = ((document.getElementById('ranking-search')          || {}).value || '').toLowerCase();
+    const coverage = (document.getElementById('ranking-filter-coverage')   || {}).value || '';
+    const limitVal = (document.getElementById('ranking-filter-limit')      || {}).value || '20';
+
+    let data = _rankingRawData.filter(row => {
+        if (query && !row.chr1.toLowerCase().includes(query) && !row.topG2Chr.toLowerCase().includes(query)) return false;
+        const pct = (row.topG2Pairs / row.totalPairs) * 100;
+        if (coverage === 'high'   && pct < 40)  return false;
+        if (coverage === 'medium' && (pct < 20 || pct >= 40)) return false;
+        if (coverage === 'low'    && pct >= 20) return false;
+        return true;
+    });
+
+    const maxPairs = data.length > 0 ? data[0].totalPairs : 1;
+    if (limitVal !== 'all') data = data.slice(0, parseInt(limitVal));
+
+    let html = '';
+    data.forEach((row, idx) => {
+        const coveragePct = ((row.topG2Pairs / row.totalPairs) * 100).toFixed(1);
+        const barPct = ((row.totalPairs / maxPairs) * 100).toFixed(1);
+        const isTop3 = idx < 3;
+        const medalIcon = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `<span style="color:var(--text-muted);font-weight:600;">${idx + 1}</span>`;
+        html += `<tr style="${isTop3 ? 'background:#f8fafc;' : ''}">
+          <td style="text-align:center;font-size:15px;">${medalIcon}</td>
+          <td><strong style="color:var(--primary);">${row.chr1}</strong></td>
+          <td style="text-align:right;">
+            <span style="font-weight:700;font-size:13px;">${row.totalPairs.toLocaleString()}</span>
+            <div style="margin-top:4px;height:6px;width:120px;background:#e2e8f0;border-radius:3px;margin-left:auto;">
+              <div style="height:100%;width:${barPct}%;background:var(--primary);border-radius:3px;"></div>
+            </div>
+          </td>
+          <td><strong>${row.topG2Chr}</strong></td>
+          <td style="text-align:right;font-weight:600;">${row.topG2Pairs.toLocaleString()}</td>
+          <td style="text-align:center;">
+            <span class="badge ${parseFloat(coveragePct) >= 40 ? 'badge-high' : parseFloat(coveragePct) >= 20 ? 'badge-medium' : 'badge-low'}">${coveragePct}%</span>
+          </td>
+        </tr>`;
+    });
+    const tbody = document.getElementById('chr-ranking-body');
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No hay datos que coincidan con los filtros.</td></tr>';
 }
 
 function renderPhase1Report() {
@@ -970,6 +2325,33 @@ function initP1Filters() {
     }
     
     applyP1ChrFilters();
+    renderChrRankingTable();
+}
+
+function renderChrRankingTable() {
+    if (!cachedChrData) {
+        cachedChrData = getChrConservationData();
+    }
+
+    // Group all chr-pairs by G1 chromosome to compute totals
+    const g1TotalsMap = {};
+    cachedChrData.forEach(d => {
+        if (!g1TotalsMap[d.chr1]) {
+            g1TotalsMap[d.chr1] = { totalPairs: 0, topG2Chr: null, topG2Pairs: 0 };
+        }
+        g1TotalsMap[d.chr1].totalPairs += d.pairs;
+        if (d.pairs > g1TotalsMap[d.chr1].topG2Pairs) {
+            g1TotalsMap[d.chr1].topG2Pairs = d.pairs;
+            g1TotalsMap[d.chr1].topG2Chr = d.chr2;
+        }
+    });
+
+    // Sort by total G1 pairs descending and cache for filter reuse
+    _rankingRawData = Object.entries(g1TotalsMap)
+        .map(([chr1, data]) => ({ chr1, ...data }))
+        .sort((a, b) => b.totalPairs - a.totalPairs);
+
+    applyRankingFilters();
 }
 
 function applyP1ChrFilters() {
@@ -1040,6 +2422,345 @@ function displayChrTable(data) {
     table.innerHTML = html;
 }
 
+// ============================================================
+// FUNCTIONAL CATEGORIES — General Gene Family Analysis System
+// ============================================================
+let currentFunctionalCategory = 'sugar';
+const cachedCategoryPairs = {};
+
+const FUNCTIONAL_CATEGORIES = {
+    sugar: {
+        label: "Metabolismo del Azúcar", icon: "🔬", color: "#f97316",
+        alertStyle: "background:#fff7ed; border-left-color:#f97316; color:#7c2d12;",
+        hasFamilyCounts: true,
+        families: {
+            "SPS":                          ["sucrose-phosphate synthase", "sucrose phosphate synthase"],
+            "SuSy":                         ["sucrose synthase", "susy"],
+            "SUT":                          ["sucrose transporter", "sucrose proton symporter"],
+            "SWEET":                        ["sweet", "bidirectional sugar transporter"],
+            "Invertasas":                   ["invertase", "beta-fructofuranosidase", "cell wall invertase", "vacuolar invertase"],
+            "Fructosyltransferasa":         ["fructosyltransferase"],
+            "Galactosyltransferasa":        ["galactosyltransferase", "galactinol"],
+            "Otros Transportadores":        ["sugar transporter", "hexose transporter", "monosaccharide transporter", "glucose transporter", "fructose transporter", "erd6"]
+        },
+        discussions: {
+            consensus: { title: "Restricción y Plasticidad en la Síntesis y Transporte", text: `El <strong>Consenso Evolutivo de la Ruta del Azúcar</strong> resalta cómo la selección natural actúa diferencialmente en las enzimas solubles frente a los transportadores de membrana. Las enzimas citoplasmáticas clave (SPS, SuSy) están bajo <strong>selección purificadora fuerte</strong> (Ka/Ks &lt; 0.20), mientras que los transportadores SWEET y de hexosas exhiben mayor plasticidad evolutiva, diversificándose para optimizar el flujo de fotoasimilados fuente-sumidero bajo condiciones variables.` },
+            inventory: { title: "Divergencia Adaptativa Locus por Locus y Variaciones PAV", text: `El <strong>Censo Detallado de Genes de Sacarosa</strong> mapea la divergencia microevolutiva a nivel de locus individual. Los genes con Ka/Ks &gt; 1.0 revelan selección positiva, siendo dianas biotecnológicas para mejoramiento de acumulación de sacarosa. Las variaciones PAV (genes huérfanos de azúcar) en R570 demuestran que duplicaciones segmentarias son un mecanismo primario de amplificación de dosis génica.` }
+        }
+    },
+    disease: {
+        label: "Resistencia a Enfermedades", icon: "🛡️", color: "#ef4444",
+        alertStyle: "background:#fef2f2; border-left-color:#ef4444; color:#7f1d1d;",
+        hasFamilyCounts: false,
+        families: {
+            "NBS-LRR":          ["nbs-lrr", "disease resistance protein", "tir-nbs", "coiled-coil nbs", "cc-nbs-lrr", "tnl", "cnl"],
+            "Proteínas PR":     ["pathogenesis-related", "pr protein", "pr-protein"],
+            "WAK (Wall Kinase)":["wall-associated kinase", "wak"],
+            "LRR-RK":           ["lrr receptor kinase", "leucine-rich repeat receptor", "lrr receptor-like kinase"],
+            "Chitinasa":        ["chitinase", "chitin-binding", "chia"],
+            "Glucanasa":        ["glucanase", "beta-1,3-glucanase", "1,3-beta-glucanase"]
+        },
+        discussions: {
+            consensus: { title: "Dinámica Evolutiva del Inmunoma Vegetal", text: `La familia <strong>NBS-LRR</strong> es uno de los repertorios génicos más dinámicos del genoma vegetal. Los dominios NBS/TIR están bajo fuerte selección purificadora, mientras que los dominios LRR muestran selección positiva intensa, impulsada por la co-evolución con patógenos (<em>arms race</em>). Este patrón dual es la huella molecular de la adaptación inmune específica a presiones patogénicas locales.` },
+            inventory: { title: "Loci de Resistencia como Candidatos de Mejoramiento", text: `Los loci NBS-LRR con Ka/Ks &gt; 1.0 en el dominio LRR son candidatos directos para mejoramiento genético de resistencia a patógenos como <em>Fusarium</em>, <em>Puccinia</em> y <em>Xanthomonas</em>. Los genes de resistencia exclusivos de una variedad (variación PAV) sugieren adquisiciones recientes de novedad inmune o pérdidas evolutivas por falta de presión selectiva del patógeno correspondiente.` }
+        }
+    },
+    tf: {
+        label: "Factores de Transcripción", icon: "🎛️", color: "#8b5cf6",
+        alertStyle: "background:#f5f3ff; border-left-color:#8b5cf6; color:#4c1d95;",
+        hasFamilyCounts: false,
+        families: {
+            "MYB":      ["myb domain", "myb-related", "r2r3-myb", "myb transcription"],
+            "WRKY":     ["wrky", "wrky domain"],
+            "ERF/AP2":  ["ethylene response factor", "ap2", "apetala2", "dreb", " erf "],
+            "bZIP":     ["bzip", "basic leucine zipper"],
+            "NAC":      ["nac domain", "nac transcription", "no apical meristem"],
+            "MADS-box": ["mads-box", "mads box", "agamous", "sepallata"]
+        },
+        discussions: {
+            consensus: { title: "Diversificación y Conservación de Reguladores Maestros", text: `Los <strong>factores de transcripción</strong> orquestan la expresión génica a nivel global. Los dominios de unión al ADN (MYB/WRKY box) están bajo fuerte selección purificadora, mientras que los dominios de activación transcripcional muestran mayor plasticidad. Los ERF/AP2 son particularmente relevantes en respuesta a etileno y estrés, y su divergencia puede explicar diferencias en tolerancia y maduración entre variedades.` },
+            inventory: { title: "Factores de Transcripción Divergentes como Reguladores de Rendimiento", text: `Los factores de transcripción bajo selección positiva o con variación PAV son candidatos prometedores para regular diferencialmente procesos agronómicos clave. Un factor MYB divergente puede controlar la lignificación, la respuesta al déficit hídrico o la pigmentación de manera específica de variedad, abriendo oportunidades para ingeniería de rutas regulatorias.` }
+        }
+    },
+    abiotic: {
+        label: "Respuesta a Estrés Abiótico", icon: "🌡️", color: "#0ea5e9",
+        alertStyle: "background:#f0f9ff; border-left-color:#0ea5e9; color:#0c4a6e;",
+        hasFamilyCounts: false,
+        families: {
+            "HSP (Chaperonas)":     ["heat shock protein", "hsp", "small heat shock", "hsp70", "hsp90", "hsp101"],
+            "Deshidrinas / LEA":    ["dehydrin", "late embryogenesis abundant", "lea protein", "group 3 lea"],
+            "Acuaporinas":          ["aquaporin", "water channel", " pip", " tip", " nip", "tonoplast intrinsic"],
+            "Superóxido Dismut.":   ["superoxide dismutase", " sod"],
+            "Catalasa / APX":       ["catalase", "ascorbate peroxidase", " apx"],
+            "DREB / CBF":           ["dreb", " cbf", "c-repeat binding factor"]
+        },
+        discussions: {
+            consensus: { title: "Conservación de la Maquinaria de Tolerancia al Estrés", text: `Los genes de respuesta a estrés abiótico representan la interfaz química de la planta con su entorno. Las <strong>HSP (chaperonas)</strong> y las enzimas de detoxificación de ROS (SOD, CAT, APX) son las más conservadas, mientras que las <strong>deshidrinas y proteínas LEA</strong> muestran mayor divergencia, sugiriendo adaptaciones específicas a los regímenes hídricos de cada variedad y con gran potencial para mejoramiento climático.` },
+            inventory: { title: "Variantes de Tolerancia como Recursos para Mejoramiento Climático", text: `En un contexto de cambio climático, los genes de estrés abiótico bajo selección positiva o con variación PAV son recursos genéticos estratégicos. Las <strong>acuaporinas</strong> divergentes son candidatas para modular la eficiencia del uso del agua, mientras que las variaciones en genes de tolerancia al calor pueden correlacionarse con el desempeño diferencial de las variedades bajo condiciones de estrés en campo.` }
+        }
+    },
+    secondary: {
+        label: "Metabolismo Secundario", icon: "🧪", color: "#10b981",
+        alertStyle: "background:#f0fdf4; border-left-color:#10b981; color:#14532d;",
+        hasFamilyCounts: false,
+        families: {
+            "Flavonoides / CHS":    ["chalcone synthase", "chalcone isomerase", "flavonoid", " chs"],
+            "PAL / Fenilprop.":     ["phenylalanine ammonia-lyase", " pal ", "phenylpropanoid", "4-coumarate"],
+            "Terpeno Sintasas":     ["terpene synthase", " tps", "sesquiterpene", "monoterpene", "diterpene synthase"],
+            "Lignificación":        ["laccase", "cinnamoyl-coa reductase", " ccr", " comt", "caffeic acid"],
+            "Glucósidos / GT (UGT)":["glucosyltransferase", " ugt", "udp-glucose"]
+        },
+        discussions: {
+            consensus: { title: "La Quimio-diversidad del Metabolismo Secundario", text: `Los <strong>fenilpropanoides</strong> (PAL, 4CL) hacia lignina son los más conservados (Ka/Ks bajo), por su función estructural en la pared celular. Las <strong>terpeno sintasas</strong> y glucosiltransferasas (UGTs) muestran mayor diversificación, siendo responsables de la quimio-diversidad específica de variedad que puede mediar resistencia a insectos y patógenos, un recurso evolutivo con gran potencial biotecnológico.` },
+            inventory: { title: "Innovaciones Metabólicas Específicas de Variedad", text: `Los genes del metabolismo secundario bajo selección positiva o exclusivos de una variedad (PAV) son los candidatos más probables para explicar diferencias en la composición química del jugo y la tolerancia a estrés biótico. Variaciones en genes de biosíntesis de <strong>flavonoides</strong> pueden determinar diferencias en la capacidad antioxidante y la respuesta a radiación UV, abriendo oportunidades para mejoramiento de calidad industrial.` }
+        }
+    }
+};
+
+// General gene family classifier
+function classifyGeneFamily(desc, categoryKey) {
+    if (!desc) return null;
+    const d = desc.toLowerCase();
+    const cat = FUNCTIONAL_CATEGORIES[categoryKey];
+    if (!cat) return null;
+    for (const [familyName, keywords] of Object.entries(cat.families)) {
+        if (keywords.some(kw => d.includes(kw.toLowerCase()))) {
+            return familyName;
+        }
+    }
+    return null;
+}
+
+// Get pairs for a given category (cached per category)
+function getCategoryPairs(categoryKey) {
+    if (!cachedCategoryPairs[categoryKey]) {
+        cachedCategoryPairs[categoryKey] = allData.filter(p =>
+            classifyGeneFamily(p.f1, categoryKey) || classifyGeneFamily(p.f2, categoryKey)
+        );
+    }
+    return cachedCategoryPairs[categoryKey];
+}
+
+// Sync both selectors to the same value
+function syncSelectors(value) {
+    ['functional-category-select-consensus', 'functional-category-select-inventory', 'functional-category-select-molecular'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+    });
+}
+
+// Called when category selector changes
+function onCategoryChange(newKey) {
+    currentFunctionalCategory = newKey;
+    syncSelectors(newKey);
+
+    // Reset rendered flags so tabs re-render
+    _consensusRendered = false;
+    _inventoryRendered = false;
+    _molecularRendered = false;
+
+    // Re-render whichever functional tab is currently visible
+    const consensusVisible  = document.getElementById('consensus-content').style.display  !== 'none';
+    const inventoryVisible  = document.getElementById('inventory-content').style.display  !== 'none';
+    const molecularVisible  = document.getElementById('molecular-content').style.display  !== 'none';
+    if (consensusVisible)       renderConsensusReport();
+    else if (inventoryVisible)  renderInventoryReport();
+    else if (molecularVisible)  renderMolecularTab();
+}
+
+// Update discussion block and header labels for a given category and tab
+function updateCategoryUI(categoryKey) {
+    const cat = FUNCTIONAL_CATEGORIES[categoryKey];
+    if (!cat) return;
+
+    const pairs = getCategoryPairs(categoryKey);
+    const pairCount = pairs.length;
+
+    // Update consensus tab UI elements
+    const consensusTitle = document.getElementById('consensus-tab-title');
+    if (consensusTitle) consensusTitle.textContent = `${cat.icon} Consenso Funcional — ${cat.label}`;
+    const consensusSubtitle = document.getElementById('consensus-tab-subtitle');
+    if (consensusSubtitle) consensusSubtitle.textContent = `Análisis de presiones de selección (Ka/Ks) por familia funcional · ${Object.keys(cat.families).length} familias analizadas`;
+    const consensusTableTitle = document.getElementById('consensus-table-title');
+    if (consensusTableTitle) consensusTableTitle.textContent = `${cat.icon} Consenso Evolutivo — ${cat.label}`;
+    const consensusCount = document.getElementById('consensus-gene-count');
+    if (consensusCount) consensusCount.textContent = `${pairCount.toLocaleString()} parejas sinténicas`;
+    const consensusDesc = document.getElementById('consensus-category-desc');
+    if (consensusDesc) consensusDesc.textContent = `${Object.keys(cat.families).join(' · ')}`;
+
+    // Update inventory tab UI elements
+    const inventoryTitle = document.getElementById('inventory-tab-title');
+    if (inventoryTitle) inventoryTitle.textContent = `${cat.icon} Inventario Funcional — ${cat.label}`;
+    const inventorySubtitle = document.getElementById('inventory-tab-subtitle');
+    if (inventorySubtitle) inventorySubtitle.textContent = `Censo individual de genes sinténicos · ${pairCount.toLocaleString()} parejas encontradas para esta categoría`;
+    const inventoryTableTitle = document.getElementById('inventory-table-title');
+    if (inventoryTableTitle) inventoryTableTitle.textContent = `${cat.icon} Inventario Detallado — ${cat.label}`;
+    const inventoryCount = document.getElementById('inventory-gene-count');
+    if (inventoryCount) inventoryCount.textContent = `${pairCount.toLocaleString()} parejas sinténicas`;
+    const inventoryDesc = document.getElementById('inventory-category-desc');
+    if (inventoryDesc) inventoryDesc.textContent = `${Object.keys(cat.families).join(' · ')}`;
+
+    // Update discussion blocks
+    const consDis = document.getElementById('consensus-discussion');
+    if (consDis) {
+        consDis.setAttribute('style', `margin-top:24px; ${cat.alertStyle}`);
+        consDis.innerHTML = `
+            <h5 style="font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              ${cat.icon} <span>Discusión y Análisis: ${cat.discussions.consensus.title}</span>
+            </h5>
+            <p style="font-size:12.5px; line-height:1.6; margin:0;">${cat.discussions.consensus.text}</p>`;
+    }
+    const invDis = document.getElementById('inventory-discussion');
+    if (invDis) {
+        invDis.setAttribute('style', `margin-top:24px; ${cat.alertStyle}`);
+        invDis.innerHTML = `
+            <h5 style="font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              ${cat.icon} <span>Discusión y Análisis: ${cat.discussions.inventory.title}</span>
+            </h5>
+            <p style="font-size:12.5px; line-height:1.6; margin:0;">${cat.discussions.inventory.text}</p>`;
+    }
+
+    // Update thead for consensus: show Orphan columns only if hasFamilyCounts
+    const thead = document.getElementById('p2-consensus-thead');
+    if (thead) {
+        if (cat.hasFamilyCounts) {
+            thead.innerHTML = `<tr>
+                <th>Familia Funcional</th>
+                <th><span class="g1-name-placeholder">${G1_NAME}</span> Sint./Total</th>
+                <th><span class="g2-name-placeholder">${G2_NAME}</span> Sint./Total</th>
+                <th>Huérfanos ${G1_NAME}</th><th>Huérfanos ${G2_NAME}</th>
+                <th>Ka/Ks Promedio</th><th>Consenso Selectivo</th></tr>`;
+        } else {
+            thead.innerHTML = `<tr>
+                <th>Familia Funcional</th>
+                <th>Parejas Sint. ${G1_NAME}</th>
+                <th>Parejas Sint. ${G2_NAME}</th>
+                <th>Ka/Ks Promedio</th>
+                <th>Consenso Selectivo</th></tr>`;
+        }
+    }
+}
+
+// Render functional consensus table (general)
+function renderFunctionalConsensus(categoryKey) {
+    const cat = FUNCTIONAL_CATEGORIES[categoryKey];
+    if (!cat) return;
+
+    const familyKaks = {};
+    const familySyntenic = {};
+    Object.keys(cat.families).forEach(fam => {
+        familyKaks[fam] = { totalRatio: 0, count: 0 };
+        familySyntenic[fam] = { g1: 0, g2: 0 };
+    });
+
+    allData.forEach(p => {
+        const fam1 = classifyGeneFamily(p.f1, categoryKey);
+        const fam2 = classifyGeneFamily(p.f2, categoryKey);
+        const fam = fam1 || fam2;
+        if (!fam) return;
+        if (fam1) familySyntenic[fam].g1++;
+        if (fam2) familySyntenic[fam].g2++;
+        if (familyKaks[fam] && p.kk && p.kk.ks > 0) {
+            familyKaks[fam].totalRatio += p.kk.r;
+            familyKaks[fam].count++;
+        }
+    });
+
+    const tbody = document.getElementById('p2-consensus-body');
+    let html = "";
+    Object.keys(cat.families).forEach(fam => {
+        const kaksData = familyKaks[fam];
+        const syn = familySyntenic[fam];
+        const avgKaksVal = kaksData.count > 0 ? (kaksData.totalRatio / kaksData.count) : null;
+        const avgKaksText = avgKaksVal !== null ? avgKaksVal.toFixed(3) : "N/D";
+
+        let consensusText = "Sin parejas ortólogas"; let consensusBadge = "badge-neutral";
+        if (avgKaksVal !== null) {
+            if (avgKaksVal < 0.2)       { consensusText = "Sel. Purificadora Fuerte";    consensusBadge = "badge-purifying"; }
+            else if (avgKaksVal < 0.5)  { consensusText = "Sel. Purificadora Moderada"; consensusBadge = "badge-purifying"; }
+            else if (avgKaksVal < 1.0)  { consensusText = "Sel. Purificadora Débil";    consensusBadge = "badge-neutral"; }
+            else                        { consensusText = "Sel. Positiva / Plástica";    consensusBadge = "badge-positive"; }
+        }
+
+        if (cat.hasFamilyCounts && SUGAR_FAMILY_COUNTS[fam]) {
+            const counts = SUGAR_FAMILY_COUNTS[fam];
+            const g1Orphans = counts.g1t - counts.g1s;
+            const g2Orphans = counts.g2t - counts.g2s;
+            html += `<tr>
+              <td><strong>${fam}</strong></td>
+              <td>${counts.g1s} <span style="color:var(--text-muted);font-size:10px;">(de ${counts.g1t} totales)</span></td>
+              <td>${counts.g2s} <span style="color:var(--text-muted);font-size:10px;">(de ${counts.g2t} totales)</span></td>
+              <td style="color:${g1Orphans > 0 ? '#ef4444' : 'inherit'};font-weight:${g1Orphans > 0 ? '600' : 'normal'};">${g1Orphans}</td>
+              <td style="color:${g2Orphans > 0 ? '#ef4444' : 'inherit'};font-weight:${g2Orphans > 0 ? '600' : 'normal'};">${g2Orphans}</td>
+              <td style="font-weight:600;">${avgKaksText}</td>
+              <td><span class="badge ${consensusBadge}">${consensusText}</span></td>
+            </tr>`;
+        } else {
+            html += `<tr>
+              <td><strong>${fam}</strong></td>
+              <td>${syn.g1}</td>
+              <td>${syn.g2}</td>
+              <td style="font-weight:600;">${avgKaksText}</td>
+              <td><span class="badge ${consensusBadge}">${consensusText}</span></td>
+            </tr>`;
+        }
+    });
+    tbody.innerHTML = html || `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron parejas para esta categoría.</td></tr>`;
+}
+
+// Render functional inventory table (general)
+function renderFunctionalInventory(categoryKey) {
+    const pairs = getCategoryPairs(categoryKey);
+    displayFunctionalTable(pairs, categoryKey);
+}
+
+// Filter the functional inventory table
+function filterFunctionalTable(query) {
+    const pairs = getCategoryPairs(currentFunctionalCategory);
+    const q = query.toLowerCase();
+    const filtered = q
+        ? pairs.filter(p =>
+            p.g1.toLowerCase().includes(q) ||
+            p.g2.toLowerCase().includes(q) ||
+            (p.f1 && p.f1.toLowerCase().includes(q)) ||
+            (p.f2 && p.f2.toLowerCase().includes(q)))
+        : pairs;
+    displayFunctionalTable(filtered, currentFunctionalCategory);
+}
+
+// Display the functional inventory table rows
+function displayFunctionalTable(data, categoryKey) {
+    const tbody = document.getElementById('p2-sugar-genes-body');
+    const cat = FUNCTIONAL_CATEGORIES[categoryKey] || {};
+    if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron genes para esta categoría funcional.</td></tr>`;
+        return;
+    }
+    let html = "";
+    data.forEach(p => {
+        const kaVal  = p.kk ? p.kk.ka.toFixed(4) : "N/D";
+        const ksVal  = p.kk ? p.kk.ks.toFixed(4) : "N/D";
+        const kaksVal = p.kk && p.kk.ks > 0 ? p.kk.r.toFixed(3) : "N/D";
+        let pressureBadge = "badge-neutral"; let pressureText = "Neutro / N/D";
+        if (p.kk && p.kk.ks > 0) {
+            if (p.kk.r < 1.0)  { pressureBadge = "badge-purifying"; pressureText = "Purificadora"; }
+            else if (p.kk.r > 1.0) { pressureBadge = "badge-positive"; pressureText = "Positiva"; }
+        }
+        const annotation = p.f1 || p.f2 || "Sin anotación";
+        const family = classifyGeneFamily(p.f1, categoryKey) || classifyGeneFamily(p.f2, categoryKey) || "—";
+        html += `<tr>
+          <td><strong>${p.g1}</strong></td><td>${p.c1}</td>
+          <td><strong>${p.g2}</strong></td><td>${p.c2}</td>
+          <td><span style="font-weight:600;color:${cat.color || 'inherit'};font-size:10px;">${family}</span><br><small style="color:var(--text-muted);">${annotation}</small></td>
+          <td>${kaVal}</td><td>${ksVal}</td>
+          <td style="font-weight:600;">${kaksVal}</td>
+          <td><span class="badge ${pressureBadge}">${pressureText}</span></td>
+          <td><button class="btn btn-sm btn-primary" onclick="locateAndHighlightGene('${p.g1}')" style="padding:4px 8px;font-size:10px;">🔎 Ver</button></td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
 function renderPhase2Report() {
     document.querySelectorAll('.g1-name-placeholder').forEach(el => el.textContent = G1_NAME);
     document.querySelectorAll('.g2-name-placeholder').forEach(el => el.textContent = G2_NAME);
@@ -1089,166 +2810,14 @@ function renderPhase2Report() {
         </div>
     `;
 
-    renderSugarConsensus();
-    renderSugarGenesTableUnfiltered();
+    renderFunctionalConsensus(currentFunctionalCategory);
+    renderFunctionalInventory(currentFunctionalCategory);
+    updateCategoryUI(currentFunctionalCategory);
 }
 
+// Legacy alias — kept for backward compatibility with any references
 function classifySugarFamily(desc) {
-    if (!desc) return null;
-    const d = desc.toLowerCase();
-    if (d.includes("sucrose-phosphate synthase") || d.includes("sps")) {
-        return "SPS";
-    } else if (d.includes("sucrose synthase") || d.includes("susy")) {
-        return "SuSy";
-    } else if (d.includes("sucrose transporter") || d.includes("sucrose proton") || d.includes("sut")) {
-        return "SUT";
-    } else if (d.includes("sweet") || d.includes("bidirectional sugar transporter")) {
-        return "SWEET";
-    } else if (d.includes("invertase") || d.includes("beta-fructofuranosidase")) {
-        return "Invertasas";
-    } else if (d.includes("fructosyltransferase")) {
-        return "Fructosyltransferase";
-    } else if (d.includes("galactosyltransferase")) {
-        return "Galactosyltransferase";
-    } else if (d.includes("sugar transporter") || d.includes("hexose transporter") || d.includes("monosaccharide transporter") || d.includes("glucose transporter") || d.includes("fructose transporter") || d.includes("erd6")) {
-        return "Otros del metabolismo de azúcares";
-    }
-    return null;
-}
-
-function renderSugarConsensus() {
-    const familyKaks = {};
-    Object.keys(SUGAR_FAMILY_COUNTS).forEach(fam => {
-        familyKaks[fam] = { totalRatio: 0, count: 0 };
-    });
-
-    allData.forEach(p => {
-        const fam1 = classifySugarFamily(p.f1);
-        const fam2 = classifySugarFamily(p.f2);
-        const fam = fam1 || fam2;
-        if (fam && familyKaks[fam] && p.kk && p.kk.ks > 0) {
-            familyKaks[fam].totalRatio += p.kk.r;
-            familyKaks[fam].count++;
-        }
-    });
-
-    const tbody = document.getElementById('p2-consensus-body');
-    let html = "";
-    Object.keys(SUGAR_FAMILY_COUNTS).forEach(fam => {
-        const counts = SUGAR_FAMILY_COUNTS[fam];
-        const kaksData = familyKaks[fam];
-        const avgKaksVal = kaksData.count > 0 ? (kaksData.totalRatio / kaksData.count) : null;
-        const avgKaksText = avgKaksVal !== null ? avgKaksVal.toFixed(3) : "N/D";
-        
-        const g1Orphans = counts.g1t - counts.g1s;
-        const g2Orphans = counts.g2t - counts.g2s;
-
-        let consensusText = "Sin parejas ortólogas";
-        let consensusBadge = "badge-neutral";
-        if (avgKaksVal !== null) {
-            if (avgKaksVal < 0.2) {
-                consensusText = "Selección Purificadora Fuerte";
-                consensusBadge = "badge-purifying";
-            } else if (avgKaksVal < 0.5) {
-                consensusText = "Selección Purificadora Moderada";
-                consensusBadge = "badge-purifying";
-            } else if (avgKaksVal < 1.0) {
-                consensusText = "Selección Purificadora Débil";
-                consensusBadge = "badge-neutral";
-            } else {
-                consensusText = "Selección Positiva / Plástica";
-                consensusBadge = "badge-positive";
-            }
-        }
-
-        html += `
-          <tr>
-            <td><strong>${fam}</strong></td>
-            <td>${counts.g1t} <span style="color:var(--text-muted); font-size:10px;">(${counts.g1s} sinténicos)</span></td>
-            <td>${counts.g2t} <span style="color:var(--text-muted); font-size:10px;">(${counts.g2s} sinténicos)</span></td>
-            <td style="color:${g1Orphans > 0 ? '#ef4444' : 'inherit'}; font-weight:${g1Orphans > 0 ? '600' : 'normal'};">${g1Orphans}</td>
-            <td style="color:${g2Orphans > 0 ? '#ef4444' : 'inherit'}; font-weight:${g2Orphans > 0 ? '600' : 'normal'};">${g2Orphans}</td>
-            <td style="font-weight:600;">${avgKaksText}</td>
-            <td><span class="badge ${consensusBadge}">${consensusText}</span></td>
-          </tr>
-        `;
-    });
-    tbody.innerHTML = html;
-}
-
-let cachedSugarPairs = null;
-
-function getSugarPairs() {
-    return allData.filter(p => classifySugarFamily(p.f1) || classifySugarFamily(p.f2));
-}
-
-function renderSugarGenesTableUnfiltered() {
-    if (!cachedSugarPairs) {
-        cachedSugarPairs = getSugarPairs();
-    }
-    displaySugarTable(cachedSugarPairs);
-}
-
-function filterSugarTable(query) {
-    if (!cachedSugarPairs) {
-        cachedSugarPairs = getSugarPairs();
-    }
-    const q = query.toLowerCase();
-    const filtered = cachedSugarPairs.filter(p => 
-        p.g1.toLowerCase().includes(q) || 
-        p.g2.toLowerCase().includes(q) || 
-        (p.f1 && p.f1.toLowerCase().includes(q)) || 
-        (p.f2 && p.f2.toLowerCase().includes(q))
-    );
-    displaySugarTable(filtered);
-}
-
-function displaySugarTable(data) {
-    const tbody = document.getElementById('p2-sugar-genes-body');
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px;">No se encontraron genes de azúcar.</td></tr>';
-        return;
-    }
-    let html = "";
-    data.forEach(p => {
-        const kaVal = p.kk ? p.kk.ka.toFixed(4) : "N/D";
-        const ksVal = p.kk ? p.kk.ks.toFixed(4) : "N/D";
-        const kaksVal = p.kk && p.kk.ks > 0 ? p.kk.r.toFixed(3) : "N/D";
-        
-        let pressureBadge = "badge-neutral";
-        let pressureText = "Neutro / N/D";
-        if (p.kk && p.kk.ks > 0) {
-            if (p.kk.r < 1.0) {
-                pressureBadge = "badge-purifying";
-                pressureText = "Purificadora";
-            } else if (p.kk.r > 1.0) {
-                pressureBadge = "badge-positive";
-                pressureText = "Positiva";
-            }
-        }
-
-        const annotation = p.f1 || p.f2 || "Sin anotación";
-
-        html += `
-          <tr>
-            <td><strong>${p.g1}</strong></td>
-            <td>${p.c1}</td>
-            <td><strong>${p.g2}</strong></td>
-            <td>${p.c2}</td>
-            <td><small>${annotation}</small></td>
-            <td>${kaVal}</td>
-            <td>${ksVal}</td>
-            <td style="font-weight:600;">${kaksVal}</td>
-            <td><span class="badge ${pressureBadge}">${pressureText}</span></td>
-            <td>
-              <button class="btn btn-sm btn-primary" onclick="locateAndHighlightGene('${p.g1}')" style="padding:4px 8px;font-size:10px;">
-                🔎 Ver en Visor
-              </button>
-            </td>
-          </tr>
-        `;
-    });
-    tbody.innerHTML = html;
+    return classifyGeneFamily(desc, 'sugar');
 }
 
 function locateAndHighlightGene(geneId) {
@@ -1636,12 +3205,57 @@ function searchGene(val){
   d3.select("#search-result").text(`${hits.size} block(s) highlighted.`);
 }
 
-// --- SVG Export ---
+// --- Export Graphics ---
 function exportSVG(){
   const svgEl=document.querySelector("#viz svg");
   if(!svgEl){alert("No chart to export.");return;}
   const blob=new Blob([svgEl.outerHTML],{type:"image/svg+xml"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="synteny_plot.svg";a.click();
+}
+
+function exportImage(format) {
+  const svgEl = document.querySelector("#viz svg");
+  if(!svgEl){alert("No chart to export.");return;}
+  
+  const svgClone = svgEl.cloneNode(true);
+  const styleEl = document.createElement('style');
+  let cssText = '';
+  for (let sheet of document.styleSheets) {
+    try {
+      for (let rule of sheet.cssRules) { cssText += rule.cssText; }
+    } catch(e) {}
+  }
+  styleEl.textContent = cssText;
+  svgClone.prepend(styleEl);
+
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svgClone);
+  if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    const scale = 2; // Alta resolución
+    const rect = svgEl.getBoundingClientRect();
+    canvas.width = rect.width * scale;
+    canvas.height = rect.height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white"; // Fondo blanco en lugar de transparente
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    
+    let mimeType = format === 'gif' ? 'image/gif' : 'image/png';
+    const imgURI = canvas.toDataURL(mimeType);
+    const a = document.createElement("a");
+    a.href = imgURI;
+    a.download = "synteny_plot." + format;
+    a.click();
+  };
+  img.src = url;
 }
 
 // --- Render ---
