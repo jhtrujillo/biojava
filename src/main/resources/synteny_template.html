@@ -591,6 +591,9 @@
       <button class="nav-item" id="tab-btn-gwas" onclick="switchTab('gwas')">
         <span class="nav-icon">🎯</span><span class="nav-label">GWAS · Validación QTL</span>
       </button>
+      <button class="nav-item" id="tab-btn-structural" onclick="switchTab('structural')">
+        <span class="nav-icon">⛓️</span><span class="nav-label">Cambios Estructurales</span>
+      </button>
     </div>
   </nav>
 
@@ -1324,6 +1327,79 @@
       <div id="gwas-discussion" class="db-alert" style="margin-top:24px;background:#fff7ed;border-left-color:#f97316;color:#7c2d12;"></div>
     </div>
   </div>
+
+  <!-- TAB CAMBIOS ESTRUCTURALES -->
+  <div id="structural-content" style="display:none; flex:1; padding:28px 40px; overflow-y:auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>⛓️ Cambios Estructurales y Variaciones Sinténicas</h2>
+        <p>Análisis de bloques directos vs invertidos, colinealidad cromosómica e impacto de reordenamientos en genes del metabolismo de azúcar.</p>
+      </div>
+
+      <!-- Metric cards -->
+      <div class="dashboard-container" id="structural-metrics-grid"></div>
+
+      <!-- ═══ SUB-TAB VISUALIZATION SELECTOR ═══ -->
+      <div class="db-table-container" style="margin-bottom:24px; padding: 24px;">
+        <div style="display:flex; justify-content: space-between; align-items:center; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px; margin-bottom: 20px;">
+          <h3 class="db-table-title" style="margin: 0; display:flex; align-items:center; gap:8px;">📊 Panel de Visualizaciones Interactivas</h3>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-sm subtab-btn active" onclick="switchSubTab('orientation')" style="border-radius:20px; font-weight:600; padding:6px 14px;">🧭 Orientación de Bloques</button>
+            <button class="btn btn-sm subtab-btn" onclick="switchSubTab('dotplot')" style="border-radius:20px; font-weight:600; padding:6px 14px;">📍 Dot-Plot Sintenia</button>
+            <button class="btn btn-sm subtab-btn" onclick="switchSubTab('sankey')" style="border-radius:20px; font-weight:600; padding:6px 14px;">🔀 Flujo Genómico</button>
+            <button class="btn btn-sm subtab-btn" onclick="switchSubTab('table')" style="border-radius:20px; font-weight:600; padding:6px 14px;">📋 Catálogo de Genes</button>
+          </div>
+        </div>
+
+        <!-- Sub-tab contents -->
+        <div id="subtab-orientation-content" class="subtab-content" style="width:100%;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Visualización interactiva que muestra la proporción global de bloques directos vs invertidos y su distribución a través de los principales pares cromosómicos.</p>
+          <iframe id="iframe-orientation" src="../plots/blocks_orientation.html" style="width:100%; height:620px; border:none; border-radius:12px; background:#0f172a; box-shadow:var(--shadow-lg);"></iframe>
+        </div>
+
+        <div id="subtab-dotplot-content" class="subtab-content" style="display:none; width:100%;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Dot-plot de colinealidad a nivel genómico entre CC-01-1940 y R570, coloreado y clasificado según la orientación del bloque y la presencia de variaciones estructurales.</p>
+          <iframe id="iframe-dotplot" src="" style="width:100%; height:620px; border:none; border-radius:12px; background:#0f172a; box-shadow:var(--shadow-lg);"></iframe>
+        </div>
+
+        <div id="subtab-sankey-content" class="subtab-content" style="display:none; width:100%;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Diagrama de Sankey interactivo que conecta cromosomas de origen, estados de sintenia (sinténico, huérfano/PAV, reordenamientos) y genes funcionales clave de metabolismo de azúcar.</p>
+          <iframe id="iframe-sankey" src="" style="width:100%; height:620px; border:none; border-radius:12px; background:#0f172a; box-shadow:var(--shadow-lg);"></iframe>
+        </div>
+
+        <div id="subtab-table-content" class="subtab-content" style="display:none; width:100%;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Buscador y catálogo completo de genes en regiones sinténicas, con filtros avanzados por cromosoma, estado de sintenia, orientación de bloques y genes relacionados con azúcar.</p>
+          <iframe id="iframe-table" src="" style="width:100%; height:680px; border:none; border-radius:12px; background:#0f172a; box-shadow:var(--shadow-lg);"></iframe>
+        </div>
+      </div>
+
+      <!-- ═══ DESCARGAS DE TABLAS Y REPOSITORIO DE DATOS ═══ -->
+      <div class="db-table-container" style="margin-bottom:24px;">
+        <div class="db-table-header">
+          <h3 class="db-table-title">💾 Descarga de Reportes y Datos Estructurados</h3>
+        </div>
+        <div style="padding:20px; display:flex; gap:16px; flex-wrap:wrap;">
+          <a href="../tables/sugar_snp_overlap.tsv" download class="btn" style="background:#0284c7; color:white; border:none; padding:10px 18px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            📥 TSV - Intersección de SNPs de Azúcar
+          </a>
+          <a href="../tables/go_enrichment.tsv" download class="btn" style="background:#0f766e; color:white; border:none; padding:10px 18px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            📥 TSV - Enriquecimiento GO/KEGG
+          </a>
+          <a href="../tables/sv_block_overlap.tsv" download class="btn" style="background:#4f46e5; color:white; border:none; padding:10px 18px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            📥 TSV - Solapamiento de Bloques y SVs
+          </a>
+          <a href="../../data/block_orientation.tsv" download class="btn" style="background:#d97706; color:white; border:none; padding:10px 18px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            📥 TSV - Catálogo de Orientación de Bloques
+          </a>
+        </div>
+      </div>
+
+      <!-- Interpretation alert -->
+      <div id="structural-discussion" class="db-alert" style="margin-top:24px; background:#f0fdf4; border-left-color:#22c55e; color:#14532d;">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
 </div><!-- end main-container -->
 </div><!-- end app-wrapper -->
 
@@ -1405,7 +1481,7 @@ function exportTableToCSV(tableId, filename) {
 
 function switchTab(tabId) {
     // Hide all tab content panels
-    ['explorer-content', 'balance-content', 'chr-content', 'consensus-content', 'inventory-content', 'kaks-content', 'wgd-content', 'molecular-content', 'gwas-content']
+    ['explorer-content', 'balance-content', 'chr-content', 'consensus-content', 'inventory-content', 'kaks-content', 'wgd-content', 'molecular-content', 'gwas-content', 'structural-content']
         .forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
@@ -1448,6 +1524,10 @@ function switchTab(tabId) {
         document.getElementById('gwas-content').style.display = 'block';
         document.getElementById('tab-btn-gwas').classList.add('active');
         renderGwasTab();
+    } else if (tabId === 'structural') {
+        document.getElementById('structural-content').style.display = 'block';
+        document.getElementById('tab-btn-structural').classList.add('active');
+        renderStructuralTab();
     }
 }
 
@@ -1716,6 +1796,97 @@ function applyGwasSnpFilter() {
     </tr>`;
   });
   tbody.innerHTML = html;
+}
+
+let _structuralRendered = false;
+
+function renderStructuralTab() {
+    if (!_structuralRendered) {
+        renderStructuralReport();
+        _structuralRendered = true;
+    }
+}
+
+function renderStructuralReport() {
+    const uniqueBlocks = new Set();
+    const directBlocks = new Set();
+    const invertedBlocks = new Set();
+    let totalPairs = allData.length;
+    let directPairs = 0;
+    let invertedPairs = 0;
+    let totalSVsCount = 0;
+    let sugarInInverted = 0;
+
+    allData.forEach(p => {
+        uniqueBlocks.add(p.b);
+        if (p.o === 'direct') {
+            directBlocks.add(p.b);
+            directPairs++;
+        } else if (p.o === 'inverted') {
+            invertedBlocks.add(p.b);
+            invertedPairs++;
+            
+            const desc = ((p.f1 || '') + ' ' + (p.f2 || '')).toLowerCase();
+            const isSugar = ['sps', 'susy', 'sut', 'sweet', 'invertasa', 'sacarosa', 'sucrose'].some(k => desc.includes(k));
+            if (isSugar) {
+                sugarInInverted++;
+            }
+        }
+        if (p.sv) {
+            totalSVsCount++;
+        }
+    });
+
+    const totalBlocksCount = uniqueBlocks.size;
+    const directBlocksCount = directBlocks.size;
+    const invertedBlocksCount = invertedBlocks.size;
+    const directPct = totalBlocksCount > 0 ? ((directBlocksCount / totalBlocksCount) * 100).toFixed(1) : 0;
+    const invertedPct = totalBlocksCount > 0 ? ((invertedBlocksCount / totalBlocksCount) * 100).toFixed(1) : 0;
+
+    const grid = document.getElementById('structural-metrics-grid');
+    if (grid) {
+        grid.innerHTML = `
+            <div class="db-card"><div class="db-card-val">${totalBlocksCount}</div><div class="db-card-lbl">Bloques Sinténicos Totales</div><div class="db-card-desc">Bloques sinténicos colineales identificados entre R570 y CC-01-1940.</div></div>
+            <div class="db-card success"><div class="db-card-val">${directBlocksCount} <span style="font-size:14px;font-weight:500;">(${directPct}%)</span></div><div class="db-card-lbl">Bloques Directos</div><div class="db-card-desc">Bloques con conservación de orientación en ambos genomas (concordancia de hebra).</div></div>
+            <div class="db-card" style="border-left:4px solid #f97316;"><div class="db-card-val">${invertedBlocksCount} <span style="font-size:14px;font-weight:500;">(${invertedPct}%)</span></div><div class="db-card-lbl">Bloques Invertidos</div><div class="db-card-desc">Bloques que muestran inversión estructural completa (reordenamientos cromosómicos).</div></div>
+            <div class="db-card accent"><div class="db-card-val">${sugarInInverted}</div><div class="db-card-lbl">Genes de Azúcar en Bloques Invertidos</div><div class="db-card-desc">Genes metabólicos de sacarosa ubicados en regiones con inversión de hebra.</div></div>
+        `;
+    }
+
+    const disc = document.getElementById('structural-discussion');
+    if (disc) {
+        disc.innerHTML = `
+            <h5 style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px;">⛓️ <span>Interpretación Biológica de Cambios Estructurales en Caña de Azúcar</span></h5>
+            <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>1. Frecuencia y Distribución de Inversiones.</strong> Se identificaron un total de <strong>${invertedBlocksCount} bloques invertidos (${invertedPct}%)</strong> de los ${totalBlocksCount} bloques sinténicos totales. Las inversiones estructurales representan puntos calientes de reordenamientos cromosómicos que pueden suprimir la recombinación local y fijar alelos adaptativos clave.</p>
+            <p style="font-size:12.5px;line-height:1.7;margin:0 0 10px;"><strong>2. Impacto en Genes de Metabolismo de Azúcar.</strong> La presencia de <strong>${sugarInInverted} genes de azúcar</strong> dentro de bloques invertidos sugiere que los reordenamientos estructurales desempeñan un papel crucial en la evolución de las rutas metabólicas de la sacarosa, modificando potencialmente los patrones de regulación de la expresión génica o aislando variantes adaptativas en los genotipos de caña de azúcar.</p>
+        `;
+    }
+}
+
+function switchSubTab(subtabId) {
+    // Hide all subtab contents
+    document.querySelectorAll('.subtab-content').forEach(el => el.style.display = 'none');
+    // Remove active class from buttons
+    document.querySelectorAll('.subtab-btn').forEach(btn => btn.classList.remove('active'));
+
+    // Show selected subtab content
+    document.getElementById(`subtab-${subtabId}-content`).style.display = 'block';
+    
+    // Add active class to clicked button
+    const btn = Array.from(document.querySelectorAll('.subtab-btn')).find(b => b.getAttribute('onclick').includes(subtabId));
+    if (btn) btn.classList.add('active');
+
+    // Dynamically set src of iframe if not already loaded
+    const iframe = document.getElementById(`iframe-${subtabId}`);
+    if (iframe && !iframe.getAttribute('src')) {
+        if (subtabId === 'dotplot') {
+            iframe.setAttribute('src', '../plots/dotplot_synteny_sv.html');
+        } else if (subtabId === 'sankey') {
+            iframe.setAttribute('src', '../plots/gene_sv_snp_network.html');
+        } else if (subtabId === 'table') {
+            iframe.setAttribute('src', '../plots/sv_gene_table.html');
+        }
+    }
 }
 
 function renderGwasTab() {

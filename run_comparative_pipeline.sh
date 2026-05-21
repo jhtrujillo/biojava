@@ -3,6 +3,13 @@
 # Integración automática de la Genómica Comparativa de Caña de Azúcar (CC-01-1940 vs R570)
 set -e
 
+RUN_SV=false
+for arg in "$@"; do
+  if [ "$arg" == "--run-sv" ]; then
+    RUN_SV=true
+  fi
+done
+
 echo "====================================================================="
 echo "   INICIANDO PIPELINE DE INTEGRACIÓN DE GENÓMICA COMPARATIVA         "
 echo "====================================================================="
@@ -45,7 +52,7 @@ java -jar target/biojava.jar comp-gen \
   --organism Saccharum
 
 # 4. Análisis de genes relacionados con sacarosa
-echo -e "\n[Paso 4/4] Buscando y cuantificando genes de metabolismo/transporte de azúcar..."
+echo -e "\n[Paso 4/5] Buscando y cuantificando genes de metabolismo/transporte de azúcar..."
 python3 scripts/check_sucrose_genes.py
 
 
