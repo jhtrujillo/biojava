@@ -53,8 +53,32 @@ java -jar target/biojava.jar comp-gen \
 
 # 4. Análisis de genes relacionados con sacarosa
 echo -e "\n[Paso 4/5] Buscando y cuantificando genes de metabolismo/transporte de azúcar..."
-python3 scripts/check_sucrose_genes.py
+./.venv/bin/python scripts/check_sucrose_genes.py
 
+# 5. Análisis de variaciones estructurales (SV)
+if [ "$RUN_SV" = true ]; then
+  echo -e "\n[Paso 5/5] Ejecutando pipeline de análisis de variaciones estructurales (SV)..."
+  mkdir -p genomica_comparativa/r570/tables
+  mkdir -p genomica_comparativa/r570/plots
+
+  echo "  - Clasificando bloques sinténicos por orientación..."
+  ./.venv/bin/python scripts/block_orientation.py
+
+  echo "  - Parseando variantes estructurales desde VCF..."
+  ./.venv/bin/python scripts/sv_parser.py benchmarks/vcfs/1940/cc-01-1940_flye_polishing_allhic_220_standarfiltered.vcf genomica_comparativa/r570/tables/sv_regions.bed
+
+  echo "  - Intersecando variantes estructurales con bloques sinténicos..."
+  ./.venv/bin/python scripts/intersect_sv_blocks.py
+
+  echo "  - Intersecando SNPs de azúcar..."
+  ./.venv/bin/python scripts/sugar_snp_intersect.py
+
+  echo "  - Ejecutando análisis de enriquecimiento de ontología génica (GO)..."
+  ./.venv/bin/python scripts/go_enrichment.py
+
+  echo "  - Generando gráficos interactivos de cambios estructurales..."
+  ./.venv/bin/python scripts/interactive_plots.py
+fi
 
 echo -e "\n====================================================================="
 echo "   ¡INTEGRACIÓN COMPLETADA CON ÉXITO!                               "

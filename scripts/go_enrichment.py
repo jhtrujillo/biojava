@@ -58,7 +58,6 @@ payload = {
     'user_threshold': 0.05,
     'no_evidences':   False,
     'all_results':    False,
-    'ordered_query':  False,
     'no_iea':         False,
     'domain_scope':   'annotated',
     'significance_threshold_method': 'g_SCS'
