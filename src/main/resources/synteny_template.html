@@ -1073,20 +1073,20 @@
           <tbody id="wgd-ploidy-body"></tbody>
       </div>
       
-      <!-- 🧬 ANÁLISIS DE MUTACIONES EN GENES DE SACAROSA -->
+      <!-- 🧬 ANÁLISIS DE MUTACIONES POR CATEGORÍA FUNCIONAL -->
       <div class="db-table-container" style="margin-bottom:24px;">
         <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
           <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
-            🧬 Mutaciones Sinónimas (Ks) y No Sinónimas (Ka) en Genes de Sacarosa
-            <button class="btn btn-sm" onclick="exportTableToCSV('wgd-sugar-table','mutaciones_sacarosa_wgd.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;" title="Exportar a CSV">
+            🧬 Presiones de Selección (Ka/Ks) por Ruta Biológica
+            <button class="btn btn-sm" onclick="exportTableToCSV('wgd-sugar-table','mutaciones_funcionales_wgd.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;" title="Exportar a CSV">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Excel
             </button>
           </h3>
-          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Cuantificación de presiones de selección sobre genes sinténicos relacionados con sacarosa.</span>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Cuantificación de presiones de selección (Ka/Ks) sobre genes sinténicos en rutas específicas.</span>
         </div>
         
-        <!-- KPI sub-grid for sugar genes -->
+        <!-- KPI sub-grid for sugar/functional genes -->
         <div class="dashboard-container" id="wgd-sugar-metrics-grid" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
           <!-- Loaded by JS -->
         </div>
@@ -1094,21 +1094,23 @@
         <!-- Filter bar -->
         <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; align-items:center; background:#f8fafc; padding:12px; border-radius:12px; border:1px solid var(--border);">
           <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; color:var(--primary);">🧬 Categoría:</label>
+            <select id="wgd-sugar-category-select" onchange="onWgdCategoryChange(this.value)" style="padding:6px 10px; font-size:12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; background:white; cursor:pointer; font-weight:700; color:var(--primary);">
+              <option value="sugar">🔬 Metabolismo del Azúcar</option>
+              <option value="disease">🛡️ Resistencia a Enfermedades</option>
+              <option value="tf">🎛️ Factores de Transcripción</option>
+              <option value="abiotic">🌡️ Respuesta a Estrés Abiótico</option>
+              <option value="secondary">🧪 Metabolismo Secundario</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
             <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">🔍 Buscar:</label>
             <input type="text" class="search-input" id="wgd-sugar-search" placeholder="ID o función..." oninput="applyWgdSugarFilters()" style="max-width:180px; padding:6px 10px; font-size:12px;">
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <label style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">📂 Familia:</label>
             <select id="wgd-sugar-family-filter" onchange="applyWgdSugarFilters()" style="padding:6px 10px; font-size:12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; background:white; cursor:pointer; font-weight:600;">
-              <option value="all">Todas las familias</option>
-              <option value="SPS">SPS (Sucrose-Phosphate Synthase)</option>
-              <option value="SuSy">SuSy (Sucrose Synthase)</option>
-              <option value="SUT">SUT (Sucrose Transporter)</option>
-              <option value="SWEET">SWEET Transporters</option>
-              <option value="Invertasas">Invertasas</option>
-              <option value="Fructosyltransferasa">Fructosyltransferasa</option>
-              <option value="Galactosyltransferasa">Galactosyltransferasa</option>
-              <option value="Otros Transportadores">Otros del metabolismo de azúcares</option>
+              <!-- Dynamically populated -->
             </select>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
@@ -1131,7 +1133,7 @@
                 <th style="cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('c1')">Chr G1 ↕</th>
                 <th style="cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('g2')">Gen R570 (G2) ↕</th>
                 <th style="cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('c2')">Chr G2 ↕</th>
-                <th style="cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('family')">Familia de Azúcar ↕</th>
+                <th style="cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('family')" id="wgd-sugar-family-header">Familia Genómica ↕</th>
                 <th style="position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;">Función Biológica</th>
                 <th style="text-align:right; cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('ka')">Ka ↕</th>
                 <th style="text-align:right; cursor:pointer; position:sticky; top:0; background:#f8fafc; z-index:10; font-size:10px;" onclick="sortWgdSugarTable('ks')">Ks ↕</th>
@@ -1632,6 +1634,8 @@ let _wgdRendered = false;
 let _wgdSugarData = [];
 let _wgdSugarSortCol = 'r';
 let _wgdSugarSortAsc = false;
+let _wgdSelectedCategory = 'sugar';
+let _wgdSugarFamiliesPopulated = false;
 let _molecularRendered = false;
 let _gwasRendered = false;
 
@@ -2460,15 +2464,59 @@ function renderWgdReport() {
 // ============================================================
 // WGD SUGAR MUTATIONS QUANTIFICATION
 // ============================================================
+function populateWgdSugarFamilies(categoryKey) {
+    const familyFilter = document.getElementById('wgd-sugar-family-filter');
+    if (!familyFilter) return;
+
+    let html = '<option value="all">Todas las familias</option>';
+    const cat = FUNCTIONAL_CATEGORIES[categoryKey];
+    if (cat && cat.families) {
+        for (const familyName of Object.keys(cat.families)) {
+            html += `<option value="${familyName}">${familyName}</option>`;
+        }
+    }
+    familyFilter.innerHTML = html;
+}
+
+function onWgdCategoryChange(val) {
+    _wgdSelectedCategory = val;
+    populateWgdSugarFamilies(val);
+    
+    // Sync the header cell text
+    const header = document.getElementById('wgd-sugar-family-header');
+    if (header) {
+        const catLabel = FUNCTIONAL_CATEGORIES[val].label;
+        header.innerHTML = `Familia (${catLabel}) ↕`;
+    }
+    
+    // Reset search input and other filters
+    const searchInput = document.getElementById('wgd-sugar-search');
+    if (searchInput) searchInput.value = '';
+    const familyFilter = document.getElementById('wgd-sugar-family-filter');
+    if (familyFilter) familyFilter.value = 'all';
+    const selectionFilter = document.getElementById('wgd-sugar-selection-filter');
+    if (selectionFilter) selectionFilter.value = 'all';
+    
+    renderWgdSugarMutations();
+}
+
 function renderWgdSugarMutations() {
-    // Filter sugar genes from allData
+    const cat = _wgdSelectedCategory || 'sugar';
+    
+    // Lazy populate families for the first time
+    if (!_wgdSugarFamiliesPopulated) {
+        populateWgdSugarFamilies(cat);
+        _wgdSugarFamiliesPopulated = true;
+    }
+    
+    // Filter genes from allData for the selected category
     _wgdSugarData = allData.filter(p => {
         const hasKaks = p.kk && typeof p.kk.ka === 'number' && typeof p.kk.ks === 'number';
         if (!hasKaks) return false;
-        const family = classifyGeneFamily(p.f1, 'sugar') || classifyGeneFamily(p.f2, 'sugar');
+        const family = classifyGeneFamily(p.f1, cat) || classifyGeneFamily(p.f2, cat);
         return family !== null;
     }).map(p => {
-        const family = classifyGeneFamily(p.f1, 'sugar') || classifyGeneFamily(p.f2, 'sugar');
+        const family = classifyGeneFamily(p.f1, cat) || classifyGeneFamily(p.f2, cat);
         return {
             g1: p.g1,
             c1: p.c1,
@@ -2504,33 +2552,36 @@ function renderWgdSugarMutations() {
     const pctPositive = total > 0 ? ((positiveCount / total) * 100).toFixed(1) : '0.0';
     const pctPurifying = total > 0 ? ((purifyingCount / total) * 100).toFixed(1) : '0.0';
 
+    const catLabel = FUNCTIONAL_CATEGORIES[cat].label;
+    const themeColor = FUNCTIONAL_CATEGORIES[cat].color || '#f97316';
+
     const metricsGrid = document.getElementById('wgd-sugar-metrics-grid');
     if (metricsGrid) {
         metricsGrid.innerHTML = `
-            <div class="db-card" style="border-left:4px solid #f97316;">
+            <div class="db-card" style="border-left:4px solid ${themeColor};">
                 <div class="db-card-val">${total}</div>
-                <div class="db-card-lbl">Genes de Azúcar Sinténicos</div>
-                <div class="db-card-desc">Parejas de ortólogos synténicos de metabolismo de azúcar con Ka/Ks estimado.</div>
+                <div class="db-card-lbl">Genes Sinténicos</div>
+                <div class="db-card-desc">Parejas de ortólogos sinténicos de <strong>${catLabel}</strong> con Ka/Ks estimado.</div>
             </div>
             <div class="db-card success" style="border-left:4px solid #10b981;">
                 <div class="db-card-val">${avgR}</div>
-                <div class="db-card-lbl">Ka/Ks Promedio (Azúcar)</div>
-                <div class="db-card-desc">Tasa de mutaciones no sinónimas / sinónimas promedio para la ruta del azúcar.</div>
+                <div class="db-card-lbl">Ka/Ks Promedio</div>
+                <div class="db-card-desc">Tasa de mutaciones no sinónimas / sinónimas promedio para la ruta de <strong>${catLabel}</strong>.</div>
             </div>
             <div class="db-card" style="border-left:4px solid #3b82f6;">
                 <div class="db-card-val">${avgKa} / ${avgKs}</div>
-                <div class="db-card-lbl">Ka Promedio / Ks Promedio</div>
+                <div class="db-card-lbl">Ka Medio / Ks Medio</div>
                 <div class="db-card-desc">Tasas mutacionales medias de sustituciones no sinónimas y sinónimas.</div>
             </div>
             <div class="db-card accent" style="border-left:4px solid #ef4444;">
                 <div class="db-card-val">${positiveCount} <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(${pctPositive}%)</span></div>
                 <div class="db-card-lbl">Bajo Selección Positiva</div>
-                <div class="db-card-desc">Loci de azúcar con Ka/Ks > 1.0 (potencial adaptación evolutiva rápida).</div>
+                <div class="db-card-desc">Loci con Ka/Ks > 1.0 (potencial adaptación evolutiva rápida en caña).</div>
             </div>
             <div class="db-card" style="border-left:4px solid #8b5cf6;">
                 <div class="db-card-val">${purifyingCount} <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(${pctPurifying}%)</span></div>
                 <div class="db-card-lbl">Bajo Selección Purificadora</div>
-                <div class="db-card-desc">Loci de azúcar con Ka/Ks < 0.3 (genes estructuralmente conservados).</div>
+                <div class="db-card-desc">Loci con Ka/Ks < 0.3 (genes estructural y funcionalmente conservados).</div>
             </div>
         `;
     }
@@ -2591,16 +2642,52 @@ function applyWgdSugarFilters() {
 
     // Render table rows
     let html = '';
-    const implications = {
-        "SPS": "Biosíntesis de sacarosa-6-fosfato en hojas (tejido fuente); controla la tasa de síntesis de azúcar.",
-        "SuSy": "Conversión reversible de sacarosa; regula la fuerza y descarga del sumidero en tallos y raíces.",
-        "SUT": "Carga activa y transporte de sacarosa a larga distancia a través del floema hacia los tallos acumuladores.",
-        "SWEET": "Eflujo pasivo/facilitado de azúcares al apoplasto; esencial para la partición de carbono.",
-        "Invertasas": "Hidrólisis de sacarosa en hexosas; regula el balance osmótico, desarrollo y señalización por azúcar.",
-        "Fructosyltransferasa": "Síntesis y almacenamiento alternativo de fructanos en vacuolas bajo estreses osmóticos.",
-        "Galactosyltransferasa": "Biosíntesis de azúcares de la familia de la rafinosa para protección contra estreses abióticos.",
-        "Otros Transportadores": "Transporte transmembranal de hexosas (glucosa/fructosa) en tejidos sumidero o vacuolas."
+    const ALL_IMPLICATIONS = {
+        sugar: {
+            "SPS": "Biosíntesis de sacarosa-6-fosfato en hojas (tejido fuente); controla la tasa de síntesis de azúcar.",
+            "SuSy": "Conversión reversible de sacarosa; regula la fuerza y descarga del sumidero en tallos y raíces.",
+            "SUT": "Carga activa y transporte de sacarosa a larga distancia a través del floema hacia los tallos acumuladores.",
+            "SWEET": "Eflujo pasivo/facilitado de azúcares al apoplasto; esencial para la partición de carbono.",
+            "Invertasas": "Hidrólisis de sacarosa en hexosas; regula el balance osmótico, desarrollo y señalización por azúcar.",
+            "Fructosyltransferasa": "Síntesis y almacenamiento alternativo de fructanos en vacuolas bajo estreses osmóticos.",
+            "Galactosyltransferasa": "Biosíntesis de azúcares de la familia de la rafinosa para protección contra estreses abióticos.",
+            "Otros Transportadores": "Transporte transmembranal de hexosas (glucosa/fructosa) en tejidos sumidero o vacuolas."
+        },
+        disease: {
+            "NBS-LRR": "Receptores inmunes intracelulares; reconocen efectores específicos de patógenos y desencadenan respuestas de defensa.",
+            "Proteínas PR": "Proteínas relacionadas con patogénesis; actividad antimicrobiana directa y degradación de paredes fúngicas.",
+            "WAK (Wall Kinase)": "Quinasas asociadas a la pared celular; monitorean integridad física celular y transducen señales de daño.",
+            "LRR-RK": "Receptores quinasas extracelulares; detectan patrones moleculares asociados a microbios (MAMPs) para activar inmunidad basal.",
+            "Chitinasa": "Enzimas hidrolíticas que degradan quitina en paredes celulares de hongos patógenos.",
+            "Glucanasa": "Hidrólisis de beta-glucanos; rompe paredes celulares de patógenos y activa defensas secundarias."
+        },
+        tf: {
+            "MYB": "Regulación del desarrollo, biosíntesis de metabolismo secundario (antocianinas/lignina) y respuestas a estrés.",
+            "WRKY": "Reguladores maestros de respuestas de defensa inmune frente a patógenos y senescencia celular.",
+            "ERF/AP2": "Factores de respuesta a etileno; modulan tolerancia a estreses osmóticos (DREB) y respuestas hormonales.",
+            "bZIP": "Regulación de procesos de fotomorfogénesis, senescencia, estrés salino y señalización por ácido abscísico (ABA).",
+            "NAC": "Coordinación del desarrollo de órganos, senescencia foliar y respuestas adaptativas a sequía y salinidad.",
+            "MADS-box": "Regulación del desarrollo floral, arquitectura de la inflorescencia y maduración del fruto."
+        },
+        abiotic: {
+            "HSP (Chaperonas)": "Protección y correcto plegamiento de proteínas bajo estrés térmico u oxidativo.",
+            "Deshidrinas / LEA": "Protección de membranas y macromoléculas contra la deshidratación y congelación celular.",
+            "Acuaporinas": "Canales transmembranales que facilitan el flujo de agua; regulan la conductancia hidráulica bajo sequía.",
+            "Superóxido Dismut.": "Detoxificación enzimática de especies reactivas de oxígeno (ROS); convierte superóxido en peróxido de hidrógeno.",
+            "Catalasa / APX": "Descomposición del peróxido de hidrógeno en agua; previene el daño oxidativo celular por estrés.",
+            "DREB / CBF": "Factores que coordinan la transcripción de redes completas de tolerancia a frío, sequía y salinidad."
+        },
+        secondary: {
+            "Flavonoides / CHS": "Biosíntesis de flavonoides y antocianinas; protección contra radiación UV y atracción de polinizadores.",
+            "PAL / Fenilprop.": "Punto de entrada al metabolismo de fenilpropanoides; precursor clave para la biosíntesis de lignina y fitohormonas.",
+            "Terpeno Sintasas": "Síntesis de compuestos volátiles (monoterpenos, sesquiterpenos) para defensa contra herbívoros y comunicación celular.",
+            "Lignificación": "Polimerización de monolignoles para el refuerzo mecánico de la pared celular secundaria y transporte de agua.",
+            "Glucósidos / GT (UGT)": "Glicosilación de metabolitos; regula solubilidad, estabilidad y almacenamiento de compuestos bioactivos y fitohormonas."
+        }
     };
+
+    const cat = _wgdSelectedCategory || 'sugar';
+    const implications = ALL_IMPLICATIONS[cat] || {};
 
     filtered.forEach(p => {
         let pressureClass = 'Neutral';
@@ -2614,7 +2701,7 @@ function applyWgdSugarFilters() {
         }
         
         const fn = (p.f1 || p.f2 || '—');
-        const impl = implications[p.family] || "Metabolismo general de azúcares y partición de carbono.";
+        const impl = implications[p.family] || "Implicación en procesos fisiológicos y celulares en caña de azúcar.";
         
         html += `<tr>
             <td style="font-size:11px; font-family:monospace; color:var(--primary); font-weight:600;">${p.g1}</td>
@@ -2633,7 +2720,7 @@ function applyWgdSugarFilters() {
 
     const tbody = document.getElementById('wgd-sugar-body');
     if (tbody) {
-        tbody.innerHTML = html || '<tr><td colspan="11" style="text-align:center; color:var(--text-muted); padding:24px;">No se encontraron genes de azúcar con los filtros aplicados.</td></tr>';
+        tbody.innerHTML = html || `<tr><td colspan="11" style="text-align:center; color:var(--text-muted); padding:24px;">No se encontraron genes en esta categoría con los filtros aplicados.</td></tr>`;
     }
 }
 
