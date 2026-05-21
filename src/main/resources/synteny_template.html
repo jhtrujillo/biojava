@@ -581,6 +581,9 @@
       <button class="nav-item" id="tab-btn-kaks" onclick="switchTab('kaks')">
         <span class="nav-icon">⚛️</span><span class="nav-label">Ka/Ks · Micro-Evolución</span>
       </button>
+      <button class="nav-item" id="tab-btn-pathway-kaks" onclick="switchTab('pathway-kaks')">
+        <span class="nav-icon">🧬</span><span class="nav-label">Ka/Ks por Ruta Biológica</span>
+      </button>
       <button class="nav-item" id="tab-btn-wgd" onclick="switchTab('wgd')">
         <span class="nav-icon">🌳</span><span class="nav-label">Filogenia · WGD</span>
       </button>
@@ -1063,27 +1066,33 @@
           <thead>
             <tr>
               <th>Cromosoma G1 (<span class="g1-name-placeholder"></span>)</th>
-              <th style="text-align:right;">Pares Sinténicos</th>
-              <th style="text-align:right;">Nº Cromosomas G2</th>
-              <th style="text-align:right;">Ks Promedio</th>
-              <th style="text-align:center;">Nivel Poliploidía</th>
-              <th>Cromosomas G2 Sinténicos</th>
-            </tr>
-          </thead>
-          <tbody id="wgd-ploidy-body"></tbody>
+              <th style="tex      </div>
+
+      <div class="db-alert" style="margin-top:24px;background:#f0fdf4;border-left-color:#10b981;color:#14532d;">
+        <h5 style="font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:6px;">🌳 <span>Discusión: WGD, Poliploidía y Evolución Cromosómica en <em>Saccharum</em></span></h5>
+        <p style="font-size:12.5px;line-height:1.7;margin:0;">La distribución de <strong>Ks</strong> entre pares sinténicos es la herramienta estándar para inferir eventos de <strong>WGD</strong>. Cada pico modal representa un evento de poliploidización: el tiempo se estima como <em>T = Ks / (2r)</em>, donde <em>r</em> ≈ 6.5–7.0 × 10⁻⁹ sub/sitio/año (gramíneas). Un pico en Ks ≈ 0.05–0.15 corresponde a la autopoliploidización reciente de <em>S. spontaneum</em>, mientras que picos en Ks &gt; 0.8 reflejan WGDs más antiguos compartidos con Poaceae (eventos σ y ρ).</p>
+        <p style="font-size:12.5px;line-height:1.7;margin-top:10px;margin-bottom:0;">La tabla de <strong>Profundidad de Poliploidía</strong> cuantifica la redundancia genómica: un cromosoma G1 de CC-01-1940 con sintenia en 5+ cromosomas G2 de R570 confirma la naturaleza <strong>poliplo-alopoliploide</strong> de R570. El análisis conjunto permite estimar el número de rondas de WGD y reconstruir la historia evolutiva del genoma de <em>Saccharum</em>.</p>
       </div>
-      
-      <!-- 🧬 ANÁLISIS DE MUTACIONES POR CATEGORÍA FUNCIONAL -->
+    </div>
+  </div>
+
+  <!-- TAB KA/KS POR RUTA BIOLOGICA -->
+  <div id="pathway-kaks-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">
+    <div class="report-section">
+      <div class="report-title-section">
+        <h2>🧬 Presiones de Selección (Ka/Ks) por Ruta Biológica</h2>
+        <p>Cuantificación de presiones de selección (Ka/Ks) sobre genes sinténicos en rutas biológicas específicas de caña de azúcar.</p>
+      </div>
+
       <div class="db-table-container" style="margin-bottom:24px;">
         <div class="db-table-header" style="flex-wrap:wrap;gap:10px;">
           <h3 class="db-table-title" style="display:flex;align-items:center;gap:8px;">
-            🧬 Presiones de Selección (Ka/Ks) por Ruta Biológica
-            <button class="btn btn-sm" onclick="exportTableToCSV('wgd-sugar-table','mutaciones_funcionales_wgd.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;" title="Exportar a CSV">
+            🧬 Análisis de Mutaciones y Presiones Evolutivas
+            <button class="btn btn-sm" onclick="exportTableToCSV('wgd-sugar-table','mutaciones_funcionales_ruta.csv')" style="background:#10b981;color:white;border:none;padding:4px 8px;font-size:11px;display:inline-flex;align-items:center;gap:4px;" title="Exportar a CSV">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Excel
             </button>
           </h3>
-          <span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Cuantificación de presiones de selección (Ka/Ks) sobre genes sinténicos en rutas específicas.</span>
         </div>
         
         <!-- KPI sub-grid for sugar/functional genes -->
@@ -1148,11 +1157,11 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="db-alert" style="margin-top:24px;background:#f0fdf4;border-left-color:#10b981;color:#14532d;">
-        <h5 style="font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:6px;">🌳 <span>Discusión: WGD, Poliploidía y Evolución Cromosómica en <em>Saccharum</em></span></h5>
-        <p style="font-size:12.5px;line-height:1.7;margin:0;">La distribución de <strong>Ks</strong> entre pares sinténicos es la herramienta estándar para inferir eventos de <strong>WGD</strong>. Cada pico modal representa un evento de poliploidización: el tiempo se estima como <em>T = Ks / (2r)</em>, donde <em>r</em> ≈ 6.5–7.0 × 10⁻⁹ sub/sitio/año (gramíneas). Un pico en Ks ≈ 0.05–0.15 corresponde a la autopoliploidización reciente de <em>S. spontaneum</em>, mientras que picos en Ks &gt; 0.8 reflejan WGDs más antiguos compartidos con Poaceae (eventos σ y ρ).</p>
-        <p style="font-size:12.5px;line-height:1.7;margin-top:10px;margin-bottom:0;">La tabla de <strong>Profundidad de Poliploidía</strong> cuantifica la redundancia genómica: un cromosoma G1 de CC-01-1940 con sintenia en 5+ cromosomas G2 de R570 confirma la naturaleza <strong>poliplo-alopoliploide</strong> de R570. El análisis conjunto permite estimar el número de rondas de WGD y reconstruir la historia evolutiva del genoma de <em>Saccharum</em>.</p>
+  <!-- TAB IDENTIFICACION MOLECULAR -->
+  <div id="molecular-content" style="display: none; flex: 1; padding: 28px 40px; overflow-y: auto;">a la redundancia genómica: un cromosoma G1 de CC-01-1940 con sintenia en 5+ cromosomas G2 de R570 confirma la naturaleza <strong>poliplo-alopoliploide</strong> de R570. El análisis conjunto permite estimar el número de rondas de WGD y reconstruir la historia evolutiva del genoma de <em>Saccharum</em>.</p>
       </div>
     </div>
   </div>
@@ -1563,7 +1572,7 @@ function exportTableToCSV(tableId, filename) {
 
 function switchTab(tabId) {
     // Hide all tab content panels
-    ['explorer-content', 'balance-content', 'chr-content', 'consensus-content', 'inventory-content', 'kaks-content', 'wgd-content', 'molecular-content', 'gwas-content', 'structural-content']
+    ['explorer-content', 'balance-content', 'chr-content', 'consensus-content', 'inventory-content', 'kaks-content', 'wgd-content', 'molecular-content', 'gwas-content', 'structural-content', 'pathway-kaks-content']
         .forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
@@ -1610,6 +1619,10 @@ function switchTab(tabId) {
         document.getElementById('structural-content').style.display = 'block';
         document.getElementById('tab-btn-structural').classList.add('active');
         renderStructuralTab();
+    } else if (tabId === 'pathway-kaks') {
+        document.getElementById('pathway-kaks-content').style.display = 'block';
+        document.getElementById('tab-btn-pathway-kaks').classList.add('active');
+        renderWgdSugarMutations();
     }
 }
 
@@ -2456,9 +2469,6 @@ function renderWgdReport() {
     });
     const tbody = document.getElementById('wgd-ploidy-body');
     if (tbody) tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No hay datos disponibles.</td></tr>';
-    
-    // Render sugar mutations section in WGD tab
-    renderWgdSugarMutations();
 }
 
 // ============================================================
