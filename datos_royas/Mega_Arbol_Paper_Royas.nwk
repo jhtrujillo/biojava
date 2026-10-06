@@ -1,0 +1,159 @@
+#NEXUS
+begin taxa;
+	dimensions ntax=55;
+	taxlabels
+	Coleosporium_asterum_GU058009
+	Gymnoconia_peckiana_GU058010
+	Gymnosporangium_confusum_GU058011
+	Kuehneola_uredinis_GU058013
+	Phakopsora_pachyrhizi_DQ354537
+	Phragmidium_violaceum_GU058015
+	Puccinia_agrophila_GU058016
+	Puccinia_andropogonis_GU057993
+	Puccinia_arundinariae_GU057997
+	Puccinia_caricis_DQ354514
+	Puccinia_cnici_oleracei_GU058017
+	Puccinia_convolvuli_GU058018
+	Puccinia_coronata_DQ354526
+	Puccinia_dioicae_GU058019
+	Puccinia_duthiae_GU057998
+	Puccinia_graminis_AF522177
+	Puccinia_hemerocallidis_GU058020
+	Puccinia_hordei_DQ354527
+	Puccinia_kuehnii_GU058021
+	Puccinia_kuehnii_Isolate_OR_CC[&!color=#ff0000]
+	Puccinia_magnusiana_GU058000
+	Puccinia_malvacearum_EF561641
+	Puccinia_mariae_wilsoniae_GU058022
+	Puccinia_melanocephala_GU058001
+	Puccinia_melanocephala_Isolate_BR_CC[&!color=#cc0000]
+	Puccinia_menthae_DQ354513
+	Puccinia_miscanthi_AJ296546
+	Puccinia_nakanishikii_GU058002
+	Puccinia_physalidis_DQ354522
+	Puccinia_pimpinellae_GU058023
+	Puccinia_pittieriana_EU851138
+	Puccinia_polysora_GU058024
+	Puccinia_purpurea_GU057999
+	Puccinia_rufipes_AJ296545
+	Puccinia_silvatica_AY222048
+	Puccinia_sorghi_GU057994
+	Puccinia_sparganioides_GU058027
+	Puccinia_spegazzinii_EU851150
+	Puccinia_striiformis_GU058005
+	Puccinia_substriata_GU058028
+	Puccinia_symphoricarpi_GU058006
+	Puccinia_triticina_GU058007
+	Puccinia_vexans_GU058008
+	Puccinia_violae_GU058029
+	Puccinia_windsoriae_GU057995
+	Pucciniosira_pallidula_DQ354534
+	Uromyces_acuminatus_GU058004
+	Uromyces_appendiculatus_AF522182
+	Uromyces_ari_triphylli_DQ354529
+	Uromyces_ciceris_arietini_GU058030
+	Uromyces_galegae_DQ250133
+	Uromyces_linearis_GU057996
+	Uromyces_neotropicalis_DQ021885
+	Uromyces_novissimus_EU851147
+	Uromyces_viciae_fabae_AY745695
+;
+end;
+
+begin trees;
+	tree tree_1 = [&R] (((Puccinia_malvacearum_EF561641:0.0278122,Puccinia_striiformis_GU058005:0.00497473)[&label=0.758]:0.00387465,(((Puccinia_andropogonis_GU057993:0.00146838,(Puccinia_sorghi_GU057994:0.00527682,Puccinia_windsoriae_GU057995:0.00166331)[&label=0.866]:0.00555103)[&label=0.925]:0.00579301,(Puccinia_symphoricarpi_GU058006:0.0218404,Uromyces_linearis_GU057996:0.00110719)[&label=0.755]:0.00220435)[&label=0.468]:0.00479064,Uromyces_acuminatus_GU058004:0.00378371)[&label=0.916]:0.00833014)[&label=0.786]:0.00490731,((Puccinia_arundinariae_GU057997:0.0191062,Uromyces_ari_triphylli_DQ354529:0.0294368)[&label=0.073]:0.00382233,((((Phakopsora_pachyrhizi_DQ354537:0.0803518,(((Gymnoconia_peckiana_GU058010:0.0686656,(Phragmidium_violaceum_GU058015:0.109159,Kuehneola_uredinis_GU058013:0.0661864)[&label=0.997]:0.0452374)[&label=0.854]:0.0234855,Gymnosporangium_confusum_GU058011:0.0378335)[&label=0.892]:0.0178559,Coleosporium_asterum_GU058009:0.120738)[&label=0.179]:0.0149425)[&label=0.937]:0.0170721,(((Puccinia_agrophila_GU058016:0.0463172,Puccinia_substriata_GU058028:0.00357361)[&label=1.0]:0.0355394,(Puccinia_kuehnii_Isolate_OR_CC[&!color=#000000]:0.00112382,Puccinia_kuehnii_GU058021:5.00000e-09)[&label=0.999]:0.0459945)[&label=0.958]:0.0225851,Puccinia_polysora_GU058024:0.0395052)[&label=0.943]:0.0171622)[&label=0.916]:0.0139151,((Pucciniosira_pallidula_DQ354534:0.0522627,(Puccinia_physalidis_DQ354522:0.0200804,Puccinia_sparganioides_GU058027:0.0176043)[&label=0.999]:0.0333038)[&label=0.898]:0.00858001,(((((Puccinia_menthae_DQ354513:0.0177445,(Uromyces_neotropicalis_DQ021885:0.0184029,Uromyces_novissimus_EU851147:0.0223690)[&label=0.906]:0.00935232)[&label=0.739]:0.00835270,(Puccinia_dioicae_GU058019:0.0126063,((Puccinia_silvatica_AY222048:0.00284952,(Puccinia_mariae_wilsoniae_GU058022:0.0176829,Puccinia_violae_GU058029:0.0127401)[&label=0.859]:0.00458046)[&label=0.0]:5.00000e-09,(Puccinia_pimpinellae_GU058023:0.0407926,Puccinia_spegazzinii_EU851150:0.0177581)[&label=0.88]:0.0108505)[&label=0.733]:0.00105978)[&label=0.682]:0.00179755)[&label=0.936]:0.00633252,(Puccinia_caricis_DQ354514:0.00390762,Puccinia_cnici_oleracei_GU058017:0.0137162)[&label=0.386]:0.00374804)[&label=0.849]:0.00446035,(((Uromyces_ciceris_arietini_GU058030:0.0270319,Uromyces_viciae_fabae_AY745695:0.00639632)[&label=0.872]:0.00603207,(Uromyces_appendiculatus_AF522182:0.0264009,Uromyces_galegae_DQ250133:0.0104006)[&label=0.397]:5.00000e-09)[&label=0.887]:0.00358874,Puccinia_convolvuli_GU058018:0.0175979)[&label=0.73]:0.00230811)[&label=0.93]:0.00883859,Puccinia_hemerocallidis_GU058020:0.0235142)[&label=0.998]:0.0206349)[&label=0.37]:0.00764910)[&label=0.955]:0.0131638,Puccinia_pittieriana_EU851138:0.0132235)[&label=0.735]:0.00275884)[&label=0.665]:0.00282099,((((Puccinia_vexans_GU058008:0.0141139,((Puccinia_rufipes_AJ296545:0.0153924,(Puccinia_purpurea_GU057999:0.0300144,Puccinia_duthiae_GU057998:0.0205240)[&label=0.857]:0.00798953)[&label=0.896]:0.00805172,(Puccinia_nakanishikii_GU058002:0.0236577,((Puccinia_melanocephala_Isolate_BR_CC[&!color=#000000]:0.00000,Puccinia_melanocephala_GU058001:0.00000):5.00000e-09,Puccinia_miscanthi_AJ296546:0.00178199)[&label=0.992]:0.0210871)[&label=0.836]:0.00677165)[&label=0.958]:0.0166581)[&label=0.863]:0.0109662,Puccinia_coronata_DQ354526:0.00657311)[&label=0.851]:0.00619033,(Puccinia_hordei_DQ354527:5.00000e-09,(Puccinia_magnusiana_GU058000:0.0307679,Puccinia_triticina_GU058007:0.00379510)[&label=0.942]:0.00920589)[&label=0.857]:0.00327744)[&label=0.261]:5.00000e-09,Puccinia_graminis_AF522177:0.00384921)[&label=0.89]:0.0100986);
+end;
+
+begin figtree;
+	set appearance.backgroundColorAttribute="Default";
+	set appearance.backgroundColour=#ffffff;
+	set appearance.branchColorAttribute="User selection";
+	set appearance.branchColorGradient=false;
+	set appearance.branchLineWidth=1.0;
+	set appearance.branchMinLineWidth=0.0;
+	set appearance.branchWidthAttribute="Fixed";
+	set appearance.foregroundColour=#000000;
+	set appearance.hilightingGradient=false;
+	set appearance.selectionColour=#2d3680;
+	set branchLabels.colorAttribute="User selection";
+	set branchLabels.displayAttribute="Branch times";
+	set branchLabels.fontName="sansserif";
+	set branchLabels.fontSize=7;
+	set branchLabels.fontStyle=0;
+	set branchLabels.isShown=true;
+	set branchLabels.significantDigits=2;
+	set layout.expansion=0;
+	set layout.layoutType="RECTILINEAR";
+	set layout.zoom=0;
+	set legend.attribute="label";
+	set legend.fontSize=10.0;
+	set legend.isShown=false;
+	set legend.significantDigits=4;
+	set nodeBars.barWidth=4.0;
+	set nodeBars.displayAttribute=null;
+	set nodeBars.isShown=false;
+	set nodeLabels.colorAttribute="User selection";
+	set nodeLabels.displayAttribute="Node ages";
+	set nodeLabels.fontName="sansserif";
+	set nodeLabels.fontSize=8;
+	set nodeLabels.fontStyle=0;
+	set nodeLabels.isShown=false;
+	set nodeLabels.significantDigits=4;
+	set nodeShapeExternal.colourAttribute="User selection";
+	set nodeShapeExternal.isShown=false;
+	set nodeShapeExternal.minSize=10.0;
+	set nodeShapeExternal.scaleType=Width;
+	set nodeShapeExternal.shapeType=Circle;
+	set nodeShapeExternal.size=4.0;
+	set nodeShapeExternal.sizeAttribute="Fixed";
+	set nodeShapeInternal.colourAttribute="User selection";
+	set nodeShapeInternal.isShown=true;
+	set nodeShapeInternal.minSize=10.0;
+	set nodeShapeInternal.scaleType=Width;
+	set nodeShapeInternal.shapeType=Circle;
+	set nodeShapeInternal.size=4.0;
+	set nodeShapeInternal.sizeAttribute="Fixed";
+	set polarLayout.alignTipLabels=false;
+	set polarLayout.angularRange=0;
+	set polarLayout.rootAngle=0;
+	set polarLayout.rootLength=100;
+	set polarLayout.showRoot=true;
+	set radialLayout.spread=3.0;
+	set rectilinearLayout.alignTipLabels=false;
+	set rectilinearLayout.curvature=0;
+	set rectilinearLayout.rootLength=100;
+	set scale.offsetAge=0.0;
+	set scale.rootAge=1.0;
+	set scale.scaleFactor=1.0;
+	set scale.scaleRoot=false;
+	set scaleAxis.automaticScale=true;
+	set scaleAxis.fontSize=8.0;
+	set scaleAxis.isShown=false;
+	set scaleAxis.lineWidth=1.0;
+	set scaleAxis.majorTicks=0.05;
+	set scaleAxis.minorTicks=0.025;
+	set scaleAxis.origin=0.0;
+	set scaleAxis.reverseAxis=false;
+	set scaleAxis.showGrid=true;
+	set scaleBar.automaticScale=true;
+	set scaleBar.fontSize=10.0;
+	set scaleBar.isShown=true;
+	set scaleBar.lineWidth=1.0;
+	set scaleBar.scaleRange=0.0;
+	set tipLabels.boxSize=4;
+	set tipLabels.colorAttribute="User selection";
+	set tipLabels.displayAttribute="Names";
+	set tipLabels.fontName="sansserif";
+	set tipLabels.fontSize=13;
+	set tipLabels.fontStyle=0;
+	set tipLabels.isShown=true;
+	set tipLabels.significantDigits=4;
+	set tipLabels.tipPath=true;
+	set trees.order=false;
+	set trees.orderType="increasing";
+	set trees.rooting=false;
+	set trees.rootingType="User Selection";
+	set trees.transform=false;
+	set trees.transformType="cladogram";
+end;
+
